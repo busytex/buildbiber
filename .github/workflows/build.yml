@@ -5,8 +5,8 @@ on: workflow_dispatch
 env:
   URLPERL: https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz
   URLBIBER: https://github.com/plk/biber/archive/v2.15.tar.gz
-  BIBERTESTFILES: test.bib test.bcf test-dev.bcf unifont.ttf
   URLTESTFILES: https://master.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/testfiles
+  BIBERTESTFILES: test.bib test.bcf test-dev.bcf unifont.ttf
   MAKEFLAGS: -j2
 
 jobs:
@@ -42,10 +42,12 @@ jobs:
            pushd biber
            ../prefix/bin/perl ./Build.PL
            ../prefix/bin/perl ./Build install
+           echo $PWD
        
        - name: Test Biber
          run: |
+           echo $PWD
+           pushd biber
            ../prefix/bin/perl ./Build test
            wget --trust-server-names $(printf "$URLTESTFILES/%s " $BIBERTESTFILES)
            ../prefix/bin/perl ./bin/biber --validate-control --convert-control test
-
