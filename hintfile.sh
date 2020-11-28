@@ -63,6 +63,9 @@ d_procselfexe='undef'
 d_dlopen='undef'
 dlsrc='none'
 
+d_setrgid='undef'
+d_setruid='undef'
+
 #TODO: almost all of the known_extensions are still being built. we should probably exclude some of them! (see also nonxs_ext)
 # [arybase attributes B Compress/Raw/Bzip2 Compress/Raw/Zlib Cwd Data/Dumper
 # Devel/Peek Devel/PPPort Digest/MD5 Digest/SHA Encode Fcntl File/DosGlob
