@@ -4,6 +4,7 @@ on: workflow_dispatch
 
 env:
   URL: https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz
+  MAKEFLAGS: -j2
 
 jobs:
   build:
@@ -20,9 +21,8 @@ jobs:
            pushd perl
            bash +x ./Configure -sde -Dprefix="$PWD/../prefix"
            test -f Makefile
-           make -j2
-           #make -j2 test
-           make -j2 install
+           make
+           make install
            popd
        
        - name: Install Biber Dependencies Without Test
