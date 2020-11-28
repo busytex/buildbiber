@@ -23,8 +23,6 @@
 osname="emscripten"
 archname="wasm"
 osvers="2.0.5"
-#osvers="`perl -e 'print qx(emcc --version)=~/(\d+\.\d+\.\d+)/'`"
-# grep -o '[0-9]\.[0-9]\.[0-9]'
 
 myhostname='localhost'
 mydomain='.local'
@@ -83,10 +81,12 @@ d_getgrgid_r='define'
 d_getgrnam_r='define'
 d_libname_unique="define"
 d_getnameinfo='define'
+
 d_setrgid='undef'
 d_setruid='undef'
 d_setproctitle='undef'
 d_malloc_size='undef'
+d_malloc_good_size='undef'
 
 #d_prctl='define' # hm, it's present in the libc source, but Configure shows Emscripten error output? -> for now, assume it's not available
 
