@@ -5,6 +5,8 @@ on: workflow_dispatch
 env:
   URLPERL: https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz
   URLBIBER: https://github.com/plk/biber/archive/v2.15.tar.gz
+  BIBERTESTFILES: test.bib test.bcf test-dev.bcf unifont.ttf
+  URLTESTFILES: https://master.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/testfiles
   MAKEFLAGS: -j2
 
 jobs:
@@ -16,7 +18,6 @@ jobs:
 
        - name: Install Perl from source
          run: |
-           
            mkdir perl 
            wget -nc $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
@@ -24,6 +25,7 @@ jobs:
            pushd perl
            bash +x ./Configure -sde -Dprefix="$PWD/../prefix"
            test -f Makefile
+           export MAKEFLAGS
            make
            make install
            popd
@@ -38,4 +40,12 @@ jobs:
            tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
 
            pushd biber
-           ../prefix/bin/perl Build.PL
+           ../prefix/bin/perl ./Build.PL
+           ../prefix/bin/perl ./Build install
+       
+       - name: Test Biber
+         run: |
+           ../prefix/bin/perl ./Build test
+         wget --trust-server-names $(printf "$URLTESTFILES/%s " $BIBERTESTFILES)
+         ../prefix/bin/perl ./bin/biber --validate-control --convert-control test
+
