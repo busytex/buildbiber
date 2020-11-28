@@ -19,18 +19,12 @@
 # You should have received a copy of the licenses along with this program.
 # If not, see http://perldoc.perl.org/index-licence.html
 
-EMPERL_HOSTPERLDIR="/home/vadimkantorov/buildbiber/build/native/perl"
-EMPERL_PREFIX="/opt/perl"
-EMPERL_OPTIMIZ="-O2"
-EMSCRIPTEN=$(dirname $(which emcc))
-
-
-hostperl="$EMPERL_HOSTPERLDIR/miniperl"
-hostgenerate="$EMPERL_HOSTPERLDIR/generate_uudmap"
 
 osname="emscripten"
 archname="wasm"
-osvers="`perl -e 'print qx(emcc --version)=~/(\d+\.\d+\.\d+)/'`"
+osvers="2.0.5"
+#osvers="`perl -e 'print qx(emcc --version)=~/(\d+\.\d+\.\d+)/'`"
+# grep -o '[0-9]\.[0-9]\.[0-9]'
 
 myhostname='localhost'
 mydomain='.local'
@@ -51,13 +45,12 @@ ranlib="`which llvm-ranlib`"
 #TODO Later: In NODEFS, does Perl's -e test work correctly on symlinks? (./t/TEST was having issues detecting ./t/perl, a symlink to ./perl).
 lns="/bin/ln"
 
-prefix="$EMPERL_PREFIX"
+prefix="/opt/perl"
 inc_version_list="none"
 
 man1dir="none"
 man3dir="none"
 
-sysroot="$EMSCRIPTEN/system"
 loclibpth=''
 glibpth=''
 
@@ -79,7 +72,7 @@ dlsrc='none'
 # Sys/Hostname Sys/Syslog threads threads/shared Tie/Hash/NamedCapture
 # Time/HiRes Time/Piece Unicode/Collate Unicode/Normalize XS/APItest XS/Typemap]  
 #TODO Later: Reinsert Storable after Socket, its Makefile seems to not work in our environment
-static_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX re SDBM_File Socket Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Normalize $EMPERL_STATIC_EXT"
+static_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX re SDBM_File Socket Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Normalize"
 dynamic_ext=''
 
 # It *looks* like shm*, sem* and a few others exist in Emscripten's libc,
@@ -155,7 +148,7 @@ ccflags="$ccflags -D_GNU_SOURCE -D_POSIX_C_SOURCE"
 # from Makefile.emcc / Makefile.micro
 ccflags="$ccflags -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS"
 
-ldflags="$ldflags $EMPERL_OPTIMIZ -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -Wno-almost-asm"
+ldflags="$ldflags -Oz -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -Wno-almost-asm"
 # Note: these can be ignored: "WARNING:root:not all asm.js optimizations are possible with ALLOW_MEMORY_GROWTH, disabling those. [-Walmost-asm]"
 # hence the switch to disable the warning above (we're not building for asm.js, just WebAssembly)
 

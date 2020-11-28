@@ -33,11 +33,12 @@ jobs:
 
       - name: Build Wasm Perl
         run: |
+          ROOT=$PWD
           export MAKEFLAGS
           mkdir -p build/wasm/perl
           
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
           cp hintfile.sh build/wasm/perl/hints/emscripten.sh
           pushd build/wasm/perl
-          emconfigure bash ./Configure -sde -Dhintfile=emscripten
+          emconfigure bash ./Configure -sde -Dhintfile=emscripten -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
           emmake make perl
