@@ -48,6 +48,6 @@ jobs:
          run: |
            echo $PWD
            pushd biber
-           wget --trust-server-names $(printf "$URLTESTFILES/%s " $BIBERTESTFILES)
+           wget $(printf "$URLTESTFILES/%s " $BIBERTESTFILES)
            ../prefix/bin/perl ./Build test || true
            ../prefix/bin/perl ./bin/biber --validate-control --convert-control test || true
