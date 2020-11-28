@@ -46,6 +46,6 @@ jobs:
        - name: Test Biber
          run: |
            ../prefix/bin/perl ./Build test
-         wget --trust-server-names $(printf "$URLTESTFILES/%s " $BIBERTESTFILES)
-         ../prefix/bin/perl ./bin/biber --validate-control --convert-control test
+           wget --trust-server-names $(printf "$URLTESTFILES/%s " $BIBERTESTFILES)
+           ../prefix/bin/perl ./bin/biber --validate-control --convert-control test
 
