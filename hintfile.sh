@@ -31,41 +31,6 @@ mydomain='.local'
 cf_email='haukex@zero-g.net'
 perladmin='root@localhost'
 
-cc="emcc"
-ld="emcc"
-
-#nm="`which llvm-nm`"  # note from Glossary: 'After Configure runs, the value is reset to a plain "nm" and is not useful.'
-ar="`which emar`"  # note from Glossary: 'After Configure runs, the value is reset to a plain "ar" and is not useful.'
-ranlib="`which emranlib`"
-w
-# Here's a fun one: apparently, when building perlmini.c, emcc notices that it's a symlink to perl.c, and compiles to perl.o
-# (because there is no -o option), so the final perl ends up thinking it's miniperl (shown in "perl -v", @INC doesn't work, etc.).
-# Because of this and other issues I've had with symlinks, I'm switching to hard links instead.
-# (Another possible fix might be to fix the Makefile steps so that they use the -o option, but this solution works for now.)
-#TODO Later: In NODEFS, does Perl's -e test work correctly on symlinks? (./t/TEST was having issues detecting ./t/perl, a symlink to ./perl).
-lns="/bin/ln"
-
-prefix="/opt/perl"
-inc_version_list="none"
-
-man1dir="none"
-man3dir="none"
-
-loclibpth=''
-glibpth=''
-
-usemymalloc="n"
-usemallocwrap="define"
-uselargefiles="n"
-usenm='undef'
-d_procselfexe='undef'
-
-d_dlopen='undef'
-dlsrc='none'
-
-d_setrgid='undef'
-d_setruid='undef'
-
 #TODO: almost all of the known_extensions are still being built. we should probably exclude some of them! (see also nonxs_ext)
 # [arybase attributes B Compress/Raw/Bzip2 Compress/Raw/Zlib Cwd Data/Dumper
 # Devel/Peek Devel/PPPort Digest/MD5 Digest/SHA Encode Fcntl File/DosGlob
@@ -83,20 +48,51 @@ dynamic_ext=''
 # to worry about them, and just not build IPC-SysV.
 noextensions='IPC/SysV'
 
-d_libname_unique="define"
+cc="emcc"
+ld="emcc"
 
-# For the following values, as far as I can tell by looking into Emscripten's
-# libc sources, Configure *appears* to misdetect them. Either Configure is wrong,
-# or I am wrong, so further investigation is needed.
+#nm="`which llvm-nm`"  # note from Glossary: 'After Configure runs, the value is reset to a plain "nm" and is not useful.'
+ar="`which emar`"  # note from Glossary: 'After Configure runs, the value is reset to a plain "ar" and is not useful.'
+ranlib="`which emranlib`"
+
+# Here's a fun one: apparently, when building perlmini.c, emcc notices that it's a symlink to perl.c, and compiles to perl.o
+# (because there is no -o option), so the final perl ends up thinking it's miniperl (shown in "perl -v", @INC doesn't work, etc.).
+# Because of this and other issues I've had with symlinks, I'm switching to hard links instead.
+# (Another possible fix might be to fix the Makefile steps so that they use the -o option, but this solution works for now.)
+#TODO Later: In NODEFS, does Perl's -e test work correctly on symlinks? (./t/TEST was having issues detecting ./t/perl, a symlink to ./perl).
+lns="/bin/ln"
+
+prefix="/opt/perl"
+inc_version_list="none"
+
+man1dir="none"
+man3dir="none"
+
+loclibpth=''
+glibpth=''
+
+usemymalloc="n"
+uselargefiles="n"
+usenm='undef'
+
+usemallocwrap="define"
+d_procselfexe='undef'
+d_dlopen='undef'
+dlsrc='none'
+d_setrgid='undef'
+d_setruid='undef'
+d_setproctitle='undef'
+d_getgrgid_r='define'
+d_getgrnam_r='define'
+d_libname_unique="define"
 d_getnameinfo='define'
+
 #d_prctl='define' # hm, it's present in the libc source, but Configure shows Emscripten error output? -> for now, assume it's not available
 
 # Configure seems to think the following two aren't available, although they seem to be in the Emscripten sources - leave them out anyway
 #d_recvmsg='define'
 #d_sendmsg='define'
 
-d_getgrgid_r='define'
-d_getgrnam_r='define'
 
 # Emscripten does not have signals support (documentation isn't 100% clear on this? but see "$EMSCRIPTEN/system/include/libc/setjmp.h")
 # but if you do: grep -r 'Calling stub instead of' "$EMSCRIPTEN"
@@ -118,8 +114,6 @@ d_fork='define' # BUT, perl needs this one to at least build
 d_vfork='undef'
 d_pseudofork='undef'
 
-# currently pthreads support is experimental
-# http://kripken.github.io/emscripten-site/docs/porting/pthreads.html
 i_pthread='undef'
 d_pthread_atfork='undef'
 d_pthread_attr_setscope='undef'
@@ -142,23 +136,22 @@ d_quad='undef'
 # https://github.com/kripken/emscripten/blob/ddfc3e32f65/src/library_syscall.js#L750
 # For now, just use this number from a build with an earlier version where this didn't fail:
 selectminbits='32'
+alignbytes='4'
+
 
 optimize="-O2"
 
-# the following is needed for the "musl" libc provided by emscripten to provide all functions
-ccflags="$ccflags -D_GNU_SOURCE -D_POSIX_C_SOURCE"
-
-# from Makefile.emcc / Makefile.micro
-ccflags="$ccflags -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS"
 
 ldflags="$ldflags -O2 -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -Wno-almost-asm"
-
 ldflags="$ldflags -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WASM=1"
 
-alignbytes='4'
-
+# the following is needed for the "musl" libc provided by emscripten to provide all functions
+ccflags="$ccflags -D_GNU_SOURCE -D_POSIX_C_SOURCE"
+# from Makefile.emcc / Makefile.micro
+ccflags="$ccflags -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS"
 # disable this warning, I don't think we need it - TODO: how to append this after -Wall?
 ccflags="$ccflags -Wno-null-pointer-arithmetic"
+
 
 # Configure apparently changes "-s ASSERTIONS=2 -s STACK_OVERFLOW_CHECK=2" to "-s -s" when converting ccflags to cppflags
 # this is the current hack/workaround: copy cppflags from config.sh and fix it (TODO Later: better way would be to patch Configure)
