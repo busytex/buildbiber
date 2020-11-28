@@ -9,25 +9,25 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
- 	  - name: Install Perl
-	    run: |
-          echo Downloading and compiling in [$PWD] from [$URL]
-          
-          mkdir perl 
-          wget -nc $URL
-          tar -xf $(basename $URL) --strip-components=1 --directory=perl
+       - name: Install Perl
+         run: |
+           echo Downloading and compiling in [$PWD] from [$URL]
+           
+           mkdir perl 
+           wget -nc $URL
+           tar -xf $(basename $URL) --strip-components=1 --directory=perl
 
-          pushd perl
-          bash +x ./Configure -sde -Dprefix="$PWD/../prefix"
-          test -f Makefile
-          make -j2
-          #make -j2 test
-          make -j2 install
-		  popd
- 	  
-      - name: Install Biber Dependencies Without Test
-	    run: |
-          BEFORE=$(find ../prefix | wc -l)
-          ./prefix/bin/cpan -T Data::Compare autovivification Class::Accessor Data::Dump Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit
-          AFTER=$(find ../prefix | wc -l)
-          echo files before: $BEFORE after: $AFTER
+           pushd perl
+           bash +x ./Configure -sde -Dprefix="$PWD/../prefix"
+           test -f Makefile
+           make -j2
+           #make -j2 test
+           make -j2 install
+           popd
+       
+       - name: Install Biber Dependencies Without Test
+         run: |
+           BEFORE=$(find ../prefix | wc -l)
+           ./prefix/bin/cpan -T Data::Compare autovivification Class::Accessor Data::Dump Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit
+           AFTER=$(find ../prefix | wc -l)
+           echo files before: $BEFORE after: $AFTER
