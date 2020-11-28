@@ -6,15 +6,6 @@
 
 # You must edit this to point to your Emscripten SDK's emsdk_env.sh.
 
-# A whitespace-separated list of modules to download and add to the build.
-# Note: Cpanel::JSON::XS is required for WebPerl!
-export EMPERL_EXTENSIONS="Devel::StackTrace Future"
-
-# Modules from the above list that have XS code need to be linked statically.
-# Add them here, separated by whitespace (see also the "static_ext" variable
-# in https://perl5.git.perl.org/perl.git/blob/HEAD:/Porting/Glossary ).
-export EMPERL_STATIC_EXT=""
-
 # Do not edit (this gets this script's parent directory)
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. >/dev/null && pwd )"
 

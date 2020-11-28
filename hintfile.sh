@@ -34,10 +34,10 @@ perladmin='root@localhost'
 cc="emcc"
 ld="emcc"
 
-nm="`which llvm-nm`"  # note from Glossary: 'After Configure runs, the value is reset to a plain "nm" and is not useful.'
-ar="`which llvm-ar`"  # note from Glossary: 'After Configure runs, the value is reset to a plain "ar" and is not useful.'
-ranlib="`which llvm-ranlib`"
-
+#nm="`which llvm-nm`"  # note from Glossary: 'After Configure runs, the value is reset to a plain "nm" and is not useful.'
+ar="`which emar`"  # note from Glossary: 'After Configure runs, the value is reset to a plain "ar" and is not useful.'
+ranlib="`which emranlib`"
+w
 # Here's a fun one: apparently, when building perlmini.c, emcc notices that it's a symlink to perl.c, and compiles to perl.o
 # (because there is no -o option), so the final perl ends up thinking it's miniperl (shown in "perl -v", @INC doesn't work, etc.).
 # Because of this and other issues I've had with symlinks, I'm switching to hard links instead.
@@ -140,7 +140,7 @@ d_quad='undef'
 # For now, just use this number from a build with an earlier version where this didn't fail:
 selectminbits='32'
 
-optimize="$EMPERL_OPTIMIZ"
+optimize="-O2"
 
 # the following is needed for the "musl" libc provided by emscripten to provide all functions
 ccflags="$ccflags -D_GNU_SOURCE -D_POSIX_C_SOURCE"
@@ -148,29 +148,16 @@ ccflags="$ccflags -D_GNU_SOURCE -D_POSIX_C_SOURCE"
 # from Makefile.emcc / Makefile.micro
 ccflags="$ccflags -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS"
 
-ldflags="$ldflags -Oz -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -Wno-almost-asm"
-# Note: these can be ignored: "WARNING:root:not all asm.js optimizations are possible with ALLOW_MEMORY_GROWTH, disabling those. [-Walmost-asm]"
-# hence the switch to disable the warning above (we're not building for asm.js, just WebAssembly)
+ldflags="$ldflags -O2 -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -Wno-almost-asm"
 
-# we need WASM because Perl does a lot of unaligned memory access, and that is only supported by WASM, not asm.js.
-ldflags="$ldflags -s WASM=1 -s BINARYEN_METHOD=native-wasm"
-#TODO Later: figure out "-s BINARYEN_METHOD='native-wasm,interpret-binary'"
-# when I tried it, I got this warning during compilation:
-# "BINARYEN_ASYNC_COMPILATION disabled due to user options. This will reduce performance and compatibility (some browsers limit synchronous compilation), see https://github.com/kripken/emscripten/wiki/WebAssembly#codegen-effects"
-# and this JS exception:
-# abort("sync fetching of the wasm failed: you can preload it to Module['wasmBinary'] manually, or emcc.py will do that for you when generating HTML (but not JS)")
+ldflags="$ldflags -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WASM=1"
 
 alignbytes='4'
-
-# enable all checks for debugging (remember to keep in sync with build.sh!)
-ccflags="$ccflags $EMPERL_DEBUG_FLAGS"
-ldflags="$ldflags $EMPERL_DEBUG_FLAGS"
-lddlflags="$lddlflags $EMPERL_DEBUG_FLAGS"
 
 # disable this warning, I don't think we need it - TODO: how to append this after -Wall?
 ccflags="$ccflags -Wno-null-pointer-arithmetic"
 
 # Configure apparently changes "-s ASSERTIONS=2 -s STACK_OVERFLOW_CHECK=2" to "-s -s" when converting ccflags to cppflags
 # this is the current hack/workaround: copy cppflags from config.sh and fix it (TODO Later: better way would be to patch Configure)
-cppflags='-D_GNU_SOURCE -D_POSIX_C_SOURCE -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS -Wno-null-pointer-arithmetic -fno-strict-aliasing -pipe -fstack-protector-strong -I/usr/local/include'
+cppflags='-s ERROR_ON_UNDEFINED_SYMBOLS=0 -D_GNU_SOURCE -D_POSIX_C_SOURCE -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS -Wno-null-pointer-arithmetic -fno-strict-aliasing -pipe -fstack-protector-strong -I/usr/local/include'
 

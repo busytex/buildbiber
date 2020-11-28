@@ -15,8 +15,9 @@ wget -nc $URLPERL -P source
 #make perl
 #popd
 
-#tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
+tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
 cp hintfile.sh build/wasm/perl/hints/emscripten.sh
 pushd build/wasm/perl
-emconfigure bash ./Configure -sde -Dhintfile=emscripten
+emconfigure bash ./Configure -sde -Dhintfile=emscripten -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
+#sed -i 's/$(generated_pods)//' Makefile
 emmake make perl
