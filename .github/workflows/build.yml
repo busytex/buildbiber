@@ -11,8 +11,12 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-       - name: Install Perl
+       - name: Install Package Dependencies
+         run: sudo apt-get install -y libxslt-dev
+
+       - name: Install Perl from source
          run: |
+           
            mkdir perl 
            wget -nc $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
@@ -24,12 +28,8 @@ jobs:
            make install
            popd
        
-       - name: Install Biber Dependencies Without Test
-         run: |
-           BEFORE=$(find ./prefix | wc -l)
-           ./prefix/bin/cpan -T Module::Build Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit || true
-           AFTER=$(find ./prefix | wc -l)
-           echo files before: $BEFORE after: $AFTER
+       - name: Install Biber Dependencies Without Test from Build.PL
+         run: ./prefix/bin/cpan -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit 
 
        - name: Download and Compile Biber
          run: |
