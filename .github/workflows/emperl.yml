@@ -1,0 +1,43 @@
+name: emperl
+
+on: workflow_dispatch
+
+env:
+  URLPERL: https://www.cpan.org/src/5.0/perl-5.30.0.tar.gz
+  MAKEFLAGS: -j2
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: 2.0.5
+
+      - uses: actions/checkout@v2
+
+      - name: Build Native Perl
+        run: |
+          export MAKEFLAGS
+          mkdir -p source build/native/perl
+          wget -nc $URLPERL -P source
+
+          tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
+          pushd build/native/perl
+          bash ./Configure -sde -Aldflags=-lm
+          make miniperl
+          make generate_uudmap
+          make perl
+          popd
+
+      - name: Build Wasm Perl
+        run: |
+          export MAKEFLAGS
+          mkdir -p build/wasm/perl
+          
+          tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
+          cp hintfile.sh build/wasm/perl/hints/emscripten.sh
+          pushd build/wasm/perl
+          emconfigure bash ./Configure -sde -Dhintfile=emscripten
+          emmake make perl

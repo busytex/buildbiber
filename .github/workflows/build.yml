@@ -19,11 +19,11 @@ jobs:
        - name: Install Perl from source
          run: |
            mkdir perl 
-           wget -nc $URLPERL
+           wget $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
 
            cd perl
-           bash +x ./Configure -sde -Dprefix="$PWD/../prefix"
+           bash ./Configure -sde -Dprefix="$PWD/../prefix"
            test -f Makefile
            export MAKEFLAGS
            make
