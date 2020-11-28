@@ -3,7 +3,8 @@ name: build
 on: workflow_dispatch
 
 env:
-  URL: https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz
+  URLPERL: https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz
+  URLBIBER: https://github.com/plk/biber/archive/v2.15.tar.gz
   MAKEFLAGS: -j2
 
 jobs:
@@ -12,11 +13,11 @@ jobs:
     steps:
        - name: Install Perl
          run: |
-           echo Downloading and compiling in [$PWD] from [$URL]
+           echo Downloading and compiling in [$PWD] from [$URLPERL]
            
            mkdir perl 
-           wget -nc $URL
-           tar -xf $(basename $URL) --strip-components=1 --directory=perl
+           wget -nc $URLPERL
+           tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
 
            pushd perl
            bash +x ./Configure -sde -Dprefix="$PWD/../prefix"
@@ -28,6 +29,13 @@ jobs:
        - name: Install Biber Dependencies Without Test
          run: |
            BEFORE=$(find ./prefix | wc -l)
-           ./prefix/bin/cpan -T Module::Build Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit
+           ./prefix/bin/cpan -T Module::Build Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit || true
            AFTER=$(find ./prefix | wc -l)
            echo files before: $BEFORE after: $AFTER
+
+       - name: Download and Compile Biber
+         run: |
+           wget $URLBIBER
+           tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
+           cd biber
+           ../prefix/bin/perl Build.PL
