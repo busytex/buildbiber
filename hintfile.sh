@@ -79,13 +79,14 @@ usemallocwrap="define"
 d_procselfexe='undef'
 d_dlopen='undef'
 dlsrc='none'
-d_setrgid='undef'
-d_setruid='undef'
-d_setproctitle='undef'
 d_getgrgid_r='define'
 d_getgrnam_r='define'
 d_libname_unique="define"
 d_getnameinfo='define'
+d_setrgid='undef'
+d_setruid='undef'
+d_setproctitle='undef'
+d_malloc_size='undef'
 
 #d_prctl='define' # hm, it's present in the libc source, but Configure shows Emscripten error output? -> for now, assume it's not available
 
