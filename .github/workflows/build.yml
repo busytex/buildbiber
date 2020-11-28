@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
        - name: Install Package Dependencies
-         run: sudo apt-get install -y libxslt-dev
+         run: sudo apt-get install -y libxml2-dev libxslt-dev
 
        - name: Install Perl from source
          run: |
