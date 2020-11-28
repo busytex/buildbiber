@@ -13,8 +13,6 @@ jobs:
     steps:
        - name: Install Perl
          run: |
-           echo Downloading and compiling in [$PWD] from [$URLPERL]
-           
            mkdir perl 
            wget -nc $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
@@ -35,7 +33,9 @@ jobs:
 
        - name: Download and Compile Biber
          run: |
+           mkdir biber
            wget $URLBIBER
            tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
-           cd biber
+
+           pushd biber
            ../prefix/bin/perl Build.PL
