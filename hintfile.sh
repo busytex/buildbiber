@@ -87,6 +87,7 @@ d_setruid='undef'
 d_setproctitle='undef'
 d_malloc_size='undef'
 d_malloc_good_size='undef'
+d_fdclose='undef'
 
 #d_prctl='define' # hm, it's present in the libc source, but Configure shows Emscripten error output? -> for now, assume it's not available
 
