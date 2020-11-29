@@ -10,8 +10,7 @@ wget -nc $URLPERL -P source
 #tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
 #pushd build/native/perl
 #bash ./Configure -sde -Aldflags=-lm
-#make miniperl
-#make generate_uudmap
+#make miniperl generate_uudmap
 #make perl
 #popd
 
