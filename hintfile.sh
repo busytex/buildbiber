@@ -1,3 +1,5 @@
+#2020-11-29T00:24:34.8505712Z warning: undefined symbol: __stack_chk_fail (referenced by top-level compiled C/C++ code)
+#2020-11-29T00:24:34.8573524Z warning: undefined symbol: sigsuspend (referenced by top-level compiled C/C++ code)
 
 # ##### WebPerl - http://webperl.zero-g.net #####
 # 
@@ -41,9 +43,7 @@ perladmin='root@localhost'
 static_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX re SDBM_File Socket Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Normalize"
 dynamic_ext=''
 
-# It *looks* like shm*, sem* and a few others exist in Emscripten's libc,
-# but I'm not sure why Configure isn't detecting them. But at the moment I'm not going
-# to worry about them, and just not build IPC-SysV.
+
 noextensions='IPC/SysV'
 
 cc="emcc"
@@ -94,6 +94,25 @@ d_fdclose='undef'
 # Configure seems to think the following two aren't available, although they seem to be in the Emscripten sources - leave them out anyway
 #d_recvmsg='define'
 #d_sendmsg='define'
+
+# It *looks* like shm*, sem* and a few others exist in Emscripten's libc,
+# but I'm not sure why Configure isn't detecting them. But at the moment I'm not going
+# to worry about them, and just not build IPC-SysV.
+d_clearenv='undef'
+d_cuserid='undef'
+d_eaccess='undef'
+d_getspnam='undef'
+d_msgctl='undef'
+d_msgget='undef'
+d_msgrcv='undef'
+d_msgsnd='undef'
+d_semget='undef'
+d_semop='undef'
+d_shmat='undef'
+d_shmctl='undef'
+d_shmdt='undef'
+d_shmget='undef'
+d_syscall='undef'
 
 
 # Emscripten does not have signals support (documentation isn't 100% clear on this? but see "$EMSCRIPTEN/system/include/libc/setjmp.h")
