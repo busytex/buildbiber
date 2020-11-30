@@ -25,7 +25,7 @@ jobs:
 
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
           cd build/native/perl
-          bash ./Configure -sde -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_.sh -Aldflags=-lm 
+          bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm
           make miniperl generate_uudmap
           make perl
           make install
@@ -37,9 +37,8 @@ jobs:
           mkdir -p build/wasm/perl
           
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
-          cp hintfile.sh build/wasm/perl/hints/emscripten.sh
           cd build/wasm/perl
-          emconfigure bash ./Configure -sde  -Dprefix=$PWD/../prefix -Dhintfile=emscripten -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
+          emconfigure bash ./Configure -sde  -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_wasm.sh -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
           sed -i 's/$(generated_pods)//' Makefile
           emmake make perl
           emmake make install
