@@ -25,10 +25,10 @@ jobs:
 
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
           pushd build/native/perl
-          bash ./Configure -sde -Aldflags=-lm
-          make miniperl
-          make generate_uudmap
+          bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm 
+          make miniperl generate_uudmap
           make perl
+          make install
           popd
 
       - name: Build Wasm Perl
@@ -40,5 +40,6 @@ jobs:
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
           cp hintfile.sh build/wasm/perl/hints/emscripten.sh
           pushd build/wasm/perl
-          emconfigure bash ./Configure -sde -Dhintfile=emscripten -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
+          emconfigure bash ./Configure -sde  -Dprefix=$PWD/../prefix -Dhintfile=emscripten -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
           emmake make perl
+          emmake make install

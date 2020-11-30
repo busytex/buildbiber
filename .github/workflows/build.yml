@@ -41,9 +41,6 @@ jobs:
 
        - name: Download and Compile Biber
          run: |
-           ROOT=$PWD
-           PREFIX=$ROOT/prefix
-           
            mkdir biber
            wget $URLBIBER
            tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
@@ -51,13 +48,14 @@ jobs:
            # https://github.com/plk/biber/blob/dev/dist/linux_x86_64/build.sh
            # https://github.com/plk/biber/blob/dev/dist/linux_x86_64-musl/build.sh
            
+           ROOT=$PWD
+           PREFIX=$ROOT/prefix
            PARFILESBIBER="../data/biber-tool.conf;lib/Biber/biber-tool.conf ../data/schemata/config.rnc;lib/Biber/config.rnc ../data/schemata/config.rng;lib/Biber/config.rng ../data/schemata/bcf.rnc;lib/Biber/bcf.rnc ../data/schemata/bcf.rng;lib/Biber/bcf.rng ../data/bcf.xsl;Biber/bcf.xsl Biber/LaTeX/recode_data.xml;Biber/LaTeX/recode_data.xml"
            PARFILESUNICODE="$PREFIX/lib/$PERLVERSION/Unicode/Collate/Locale;lib/Unicode/Collate/Locale $PREFIX/lib/$PERLVERSION/Unicode/Collate/CJK;lib/Unicode/Collate/CJK $PREFIX/lib/$PERLVERSION/Unicode/Collate/allkeys.txt;lib/Unicode/Collate/allkeys.txt $PREFIX/lib/$PERLVERSION/Unicode/Collate/keys.txt;lib/Unicode/Collate/keys.txt"
            PARFILESSYS="$PREFIX/lib/site_perl/$PERLVERSION/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem $PREFIX/lib/$PERLVERSION/$PERLPLATFORM/PerlIO;lib/PerlIO $PREFIX/lib/$PERLVERSION/$PERLPLATFORM/auto/PerlIO;lib/auto/PerlIO $PREFIX/lib/site_perl/$PERLVERSION/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
            
            cd biber/lib
            PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $PARMODULESSYS) $(printf -- "--module %s " $PARMODULESBIBER) $(printf -- "--link $PARLIBSSYSROOT/%s " $PARLIBSSYS) $(printf -- "--link %s " $PARLIBS) $(printf -- "--addfile %s " $PARFILESBIBER) $(printf -- "--addfile %s " $PARFILESUNICODE) $(printf -- "--addfile %s " $PARFILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
-
 
 
 
