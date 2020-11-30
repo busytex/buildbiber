@@ -3,11 +3,18 @@ name: build
 on: workflow_dispatch
 
 env:
-  URLPERL: https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz
+  URLPERL: https://www.cpan.org/src/5.0/perl-5.30.0.tar.gz
   URLBIBER: https://github.com/plk/biber/archive/v2.15.tar.gz
-  URLTESTFILES: https://master.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/testfiles
-  BIBERTESTFILES: test.bib test.bcf test-dev.bcf unifont.ttf
+  URLTESTPARFILES: https://master.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/testfiles
+  BIBERTESTPARFILES: test.bib test.bcf test-dev.bcf unifont.ttf
+  PERLPLATFORM: x86_64-linux
+  PERLVERSION: 5.30.0
   MAKEFLAGS: -j2
+  PARLIBSSYSROOT: /usr/lib/x86_64-linux-gnu
+  PARMODULESSYS: deprecate Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::MoreUtils::XS List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date Encode:: File::Find::Rule IO::Socket::SSL IO::String PerlIO::utf8_strict Text::CSV_XS DateTime
+  PARMODULESBIBER: Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml
+  PARLIBSSYS: libxml2.so libz.so libxslt.so libexslt.so libssl.so.1.1 libcrypto.so.1.1
+  PARLIBS: /usr/lib/libbtparse.so.1
 
 jobs:
   build:
@@ -34,28 +41,22 @@ jobs:
 
        - name: Download and Compile Biber
          run: |
+           ROOT=$PWD
+           PREFIX=$ROOT/prefix
+           
            mkdir biber
            wget $URLBIBER
            tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
-
-           ROOT=$PWD
-           PREFIX=$ROOT/prefix
-           platform='x86_64-linux'
-           platform_='x86_64-linux-gnu'
-           perlv='5.30.0'
            
-           MODULESSYS="deprecate Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::MoreUtils::XS List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date Encode:: File::Find::Rule IO::Socket::SSL IO::String PerlIO::utf8_strict Text::CSV_XS DateTime"
-           MODULESBIBER="Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml"
-           LIBSSYSROOT=/usr/lib/${platform_}
-           LIBSSYS="libxml2.so libz.so libxslt.so libexslt.so libssl.so.1.1 libcrypto.so.1.1"
-           LIBS="/usr/lib/libbtparse.so.1"
-           FILESBIBER="../data/biber-tool.conf;lib/Biber/biber-tool.conf ../data/schemata/config.rnc;lib/Biber/config.rnc ../data/schemata/config.rng;lib/Biber/config.rng ../data/schemata/bcf.rnc;lib/Biber/bcf.rnc ../data/schemata/bcf.rng;lib/Biber/bcf.rng ../data/bcf.xsl;Biber/bcf.xsl Biber/LaTeX/recode_data.xml;Biber/LaTeX/recode_data.xml"
-           FILESUNICODE="$PREFIX/lib/$perlv/Unicode/Collate/Locale;lib/Unicode/Collate/Locale $PREFIX/lib/$perlv/Unicode/Collate/CJK;lib/Unicode/Collate/CJK $PREFIX/lib/$perlv/Unicode/Collate/allkeys.txt;lib/Unicode/Collate/allkeys.txt $PREFIX/lib/$perlv/Unicode/Collate/keys.txt;lib/Unicode/Collate/keys.txt"
-           FILESSYS="$PREFIX/lib/site_perl/$perlv/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem $PREFIX/lib/$perlv/$platform/PerlIO;lib/PerlIO $PREFIX/lib/$perlv/$platform/auto/PerlIO;lib/auto/PerlIO $PREFIX/lib/site_perl/$perlv/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
+           # https://github.com/plk/biber/blob/dev/dist/linux_x86_64/build.sh
+           # https://github.com/plk/biber/blob/dev/dist/linux_x86_64-musl/build.sh
+           
+           PARFILESBIBER="../data/biber-tool.conf;lib/Biber/biber-tool.conf ../data/schemata/config.rnc;lib/Biber/config.rnc ../data/schemata/config.rng;lib/Biber/config.rng ../data/schemata/bcf.rnc;lib/Biber/bcf.rnc ../data/schemata/bcf.rng;lib/Biber/bcf.rng ../data/bcf.xsl;Biber/bcf.xsl Biber/LaTeX/recode_data.xml;Biber/LaTeX/recode_data.xml"
+           PARFILESUNICODE="$PREFIX/lib/$PERLVERSION/Unicode/Collate/Locale;lib/Unicode/Collate/Locale $PREFIX/lib/$PERLVERSION/Unicode/Collate/CJK;lib/Unicode/Collate/CJK $PREFIX/lib/$PERLVERSION/Unicode/Collate/allkeys.txt;lib/Unicode/Collate/allkeys.txt $PREFIX/lib/$PERLVERSION/Unicode/Collate/keys.txt;lib/Unicode/Collate/keys.txt"
+           PARFILESSYS="$PREFIX/lib/site_perl/$PERLVERSION/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem $PREFIX/lib/$PERLVERSION/$PERLPLATFORM/PerlIO;lib/PerlIO $PREFIX/lib/$PERLVERSION/$PERLPLATFORM/auto/PerlIO;lib/auto/PerlIO $PREFIX/lib/site_perl/$PERLVERSION/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
            
            cd biber/lib
-           PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $MODULESSYS) $(printf -- "--module %s " $MODULESBIBER) $(printf -- "--link $LIBSSYSROOT/%s " $LIBSSYS) $(printf -- "--link %s " $LIBS) $(printf -- "--addfile %s " $FILESBIBER) $(printf -- "--addfile %s " $FILESUNICODE) $(printf -- "--addfile %s " $FILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
-
+           PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $PARMODULESSYS) $(printf -- "--module %s " $PARMODULESBIBER) $(printf -- "--link $PARLIBSSYSROOT/%s " $PARLIBSSYS) $(printf -- "--link %s " $PARLIBS) $(printf -- "--addfile %s " $PARFILESBIBER) $(printf -- "--addfile %s " $PARFILESUNICODE) $(printf -- "--addfile %s " $PARFILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
 
 
 
@@ -67,6 +68,6 @@ jobs:
            #       - name: Test Biber
            #         run: |
            #           cd biber
-           #           wget $(printf "$URLTESTFILES/%s " $BIBERTESTFILES)
+           #           wget $(printf "$URLTESTPARFILES/%s " $BIBERTESTPARFILES)
            #           ../prefix/bin/perl ./Build test || true
            #           ../prefix/bin/perl ./bin/biber --validate-control --convert-control test || true
