@@ -25,7 +25,7 @@ jobs:
 
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
           cd build/native/perl
-          bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm 
+          bash ./Configure -sde -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_.sh -Aldflags=-lm 
           make miniperl generate_uudmap
           make perl
           make install
