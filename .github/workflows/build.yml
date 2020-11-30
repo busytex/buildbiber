@@ -30,7 +30,7 @@ jobs:
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
 
            cd perl
-           bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm #-Dhintfile=$PWD/../../../hintfile_native.sh
+           bash ./Configure -sde -Dprefix=$PWD/../prefix #-Aldflags=-lm -Accflags=-lm #-Dhintfile=$PWD/../../../hintfile_native.sh
            test -f Makefile
            export MAKEFLAGS
            make
