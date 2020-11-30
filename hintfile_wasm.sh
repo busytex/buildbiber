@@ -42,8 +42,6 @@ perladmin='root@localhost'
 #TODO Later: Reinsert Storable after Socket, its Makefile seems to not work in our environment
 static_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX re SDBM_File Socket Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Normalize"
 dynamic_ext=''
-
-
 noextensions='IPC/SysV'
 
 cc="emcc"
@@ -90,10 +88,6 @@ d_malloc_good_size='undef'
 d_fdclose='undef'
 
 #d_prctl='define' # hm, it's present in the libc source, but Configure shows Emscripten error output? -> for now, assume it's not available
-
-# Configure seems to think the following two aren't available, although they seem to be in the Emscripten sources - leave them out anyway
-#d_recvmsg='define'
-#d_sendmsg='define'
 
 # It *looks* like shm*, sem* and a few others exist in Emscripten's libc,
 # but I'm not sure why Configure isn't detecting them. But at the moment I'm not going
