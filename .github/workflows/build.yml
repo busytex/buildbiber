@@ -11,10 +11,10 @@ env:
   PERLVERSION: 5.30.0
   MAKEFLAGS: -j2
   PARLIBSSYSROOT: /usr/lib/x86_64-linux-gnu
-  PARMODULESSYS: deprecate Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::MoreUtils::XS List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date Encode:: File::Find::Rule IO::Socket::SSL IO::String PerlIO::utf8_strict Text::CSV_XS DateTime
-  PARMODULESBIBER: Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml
   PARLIBSSYS: libxml2.so libz.so libxslt.so libexslt.so libssl.so.1.1 libcrypto.so.1.1
   PARLIBS: /usr/lib/libbtparse.so.1
+  PARMODULESSYS: "deprecate Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::MoreUtils::XS List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date Encode:: File::Find::Rule IO::Socket::SSL IO::String PerlIO::utf8_strict Text::CSV_XS DateTime"
+  PARMODULESBIBER: "Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml"
 
 jobs:
   build:
