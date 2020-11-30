@@ -12,7 +12,7 @@ env:
   MAKEFLAGS: -j2
   PARLIBSSYSROOT: /usr/lib/x86_64-linux-gnu
   PARLIBSSYS: libxml2.so libz.so libxslt.so libexslt.so libssl.so.1.1 libcrypto.so.1.1
-  PARLIBS: /usr/lib/libbtparse.so.1
+  PARLIBS: /usr/lib/libbtparse.so
   PARMODULESSYS: "deprecate Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::MoreUtils::XS List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date Encode:: File::Find::Rule IO::Socket::SSL IO::String PerlIO::utf8_strict Text::CSV_XS DateTime"
   PARMODULESBIBER: "Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml"
 
@@ -55,10 +55,6 @@ jobs:
            PARFILESUNICODE="$PREFIX/lib/$PERLVERSION/Unicode/Collate/Locale;lib/Unicode/Collate/Locale $PREFIX/lib/$PERLVERSION/Unicode/Collate/CJK;lib/Unicode/Collate/CJK $PREFIX/lib/$PERLVERSION/Unicode/Collate/allkeys.txt;lib/Unicode/Collate/allkeys.txt $PREFIX/lib/$PERLVERSION/Unicode/Collate/keys.txt;lib/Unicode/Collate/keys.txt"
            PARFILESSYS="$PREFIX/lib/site_perl/$PERLVERSION/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem $PREFIX/lib/$PERLVERSION/$PERLPLATFORM/PerlIO;lib/PerlIO $PREFIX/lib/$PERLVERSION/$PERLPLATFORM/auto/PerlIO;lib/auto/PerlIO $PREFIX/lib/site_perl/$PERLVERSION/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
            
-           ls /usr/lib
-           ls $PARLIBSSYSROOT
-           ls /usr/local/lib
-
            cd biber/lib
            PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $PARMODULESSYS) $(printf -- "--module %s " $PARMODULESBIBER) $(printf -- "--link $PARLIBSSYSROOT/%s " $PARLIBSSYS) $(printf -- "--link %s " $PARLIBS) $(printf -- "--addfile %s " $PARFILESBIBER) $(printf -- "--addfile %s " $PARFILESUNICODE) $(printf -- "--addfile %s " $PARFILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
 
