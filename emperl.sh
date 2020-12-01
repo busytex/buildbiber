@@ -9,9 +9,9 @@ wget -nc $URLPERL -P source
 
 tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
 
-CPANMODULES="Log::Log4perl autovivification URI Business::ISBN Business::ISSN Business::ISMN DateTime::Format::Builder DateTime::Calendar::Julian Sort::Key Text::Roman Data::Dump Data::Compare Data::Uniqid Mozilla::CA Regexp::Common Class::Accessor File::Slurper IO::String  List::AllUtils Encode::Locale"
+CPANMODULES="Log::Log4perl autovivification URI Business::ISBN Business::ISSN Business::ISMN DateTime::Format::Builder DateTime::Calendar::Julian Sort::Key Text::Roman Data::Dump Data::Compare Data::Uniqid Mozilla::CA Regexp::Common Class::Accessor File::Slurper IO::String  List::AllUtils Encode::Locale Parse::RecDescent"
 # Unicode::LineBreak
-# Parse::RecDescent PerlIO::utf8_strict
+# PerlIO::utf8_strict
 # Unicode::GCString 
 # IPC::Run3 IO::File 
 # Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra 
