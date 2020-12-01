@@ -9,7 +9,7 @@ env:
   BIBERTESTPARFILES: test.bib test.bcf test-dev.bcf unifont.ttf
   PERLPLATFORM: x86_64-linux
   PERLVERSION: 5.30.0
-  MAKEFLAGS: -j2
+  MAKEFLAGS: -j1
   PARLIBSSYSROOT: /usr/lib/x86_64-linux-gnu
   PARLIBSSYS: libxml2.so libz.so libxslt.so libexslt.so libssl.so.1.1 libcrypto.so.1.1
   PARLIBS: /usr/lib/libbtparse.so
@@ -31,7 +31,7 @@ jobs:
 
            cd perl
            bash ./Configure -sde -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_native.sh -Aldflags=-lm -Accflags=-lm 
-           export MAKEFLAGS
+           #export MAKEFLAGS
            make
            make install
        
