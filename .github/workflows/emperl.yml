@@ -29,6 +29,7 @@ jobs:
           make miniperl generate_uudmap
           make perl
           make install
+          find $PWD/../prefix
 
       - name: Build Wasm Perl
         run: |
@@ -42,3 +43,4 @@ jobs:
           sed -i 's/$(generated_pods)//' Makefile
           emmake make perl
           emmake make install
+          find $PWD/../prefix
