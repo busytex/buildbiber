@@ -157,7 +157,7 @@ alignbytes='4'
 optimize="-O2"
 
 
-ldflags="$ldflags -O2 -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -Wno-almost-asm"
+ldflags="$ldflags -lm -O2 -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -Wno-almost-asm"
 ldflags="$ldflags -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WASM=1"
 
 # the following is needed for the "musl" libc provided by emscripten to provide all functions
@@ -170,5 +170,5 @@ ccflags="$ccflags -Wno-null-pointer-arithmetic"
 
 # Configure apparently changes "-s ASSERTIONS=2 -s STACK_OVERFLOW_CHECK=2" to "-s -s" when converting ccflags to cppflags
 # this is the current hack/workaround: copy cppflags from config.sh and fix it (TODO Later: better way would be to patch Configure)
-cppflags='-s ERROR_ON_UNDEFINED_SYMBOLS=0 -D_GNU_SOURCE -D_POSIX_C_SOURCE -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS -Wno-null-pointer-arithmetic -fno-strict-aliasing -pipe -fstack-protector-strong -I/usr/local/include'
+cppflags='-lm -s ERROR_ON_UNDEFINED_SYMBOLS=0 -D_GNU_SOURCE -D_POSIX_C_SOURCE -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS -Wno-null-pointer-arithmetic -fno-strict-aliasing -pipe -fstack-protector-strong -I/usr/local/include'
 
