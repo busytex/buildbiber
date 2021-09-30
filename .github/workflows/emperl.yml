@@ -29,7 +29,7 @@ jobs:
           make miniperl generate_uudmap
           make perl
           make install
-          rm -rf ../prefix/man
+          rm -rf ../prefix/man ../prefix/lib/*/pod/
           find ../prefix
 
       - name: Build Wasm Perl
@@ -44,5 +44,5 @@ jobs:
           #sed -i 's/$(generated_pods)//' Makefile
           emmake make perl
           emmake make install
-          rm -rf ../prefix/man
+          rm -rf ../prefix/man ../prefix/lib/*/pod/
           find ../prefix
