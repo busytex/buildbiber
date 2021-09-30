@@ -43,5 +43,6 @@ jobs:
           emconfigure bash ./Configure -sde -Alibs=-lm -Aldflags=-lm -Accflags=-lm -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_wasm.sh -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
           #sed -i 's/$(generated_pods)//' Makefile
           emmake make perl
-          #emmake make install
-          find build/wasm/perl
+          emmake make install
+          rm -rf ../prefix/man
+          find ../prefix
