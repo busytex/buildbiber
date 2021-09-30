@@ -172,3 +172,4 @@ ccflags="$ccflags -Wno-null-pointer-arithmetic"
 # this is the current hack/workaround: copy cppflags from config.sh and fix it (TODO Later: better way would be to patch Configure)
 cppflags='-lm -s ERROR_ON_UNDEFINED_SYMBOLS=0 -D_GNU_SOURCE -D_POSIX_C_SOURCE -DSTANDARD_C -DPERL_USE_SAFE_PUTENV -DNO_MATHOMS -Wno-null-pointer-arithmetic -fno-strict-aliasing -pipe -fstack-protector-strong -I/usr/local/include'
 
+libs='-lm'
