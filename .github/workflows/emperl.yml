@@ -24,7 +24,7 @@ jobs:
           wget -nc $URLPERL -P source
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
           cd build/native/perl
-          bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="Fcntl"
+          bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="Fcntl IO"
           make miniperl generate_uudmap
           make perl
           make install
@@ -35,7 +35,7 @@ jobs:
           echo BEGIN
           ../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts
           echo END
-          cc -o emperl ../../../emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts` ./lib/auto/Fcntl/Fcntl.a
+          cc -o emperl ../../../emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts`
           echo BEGIN
           ./emperl -e 'printf("%x", 3735928559)'
           echo END
