@@ -35,6 +35,10 @@ jobs:
           echo BEGIN
           ../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts
           echo END
+          echo BEGIN
+          ../prefix/bin/perl5.30.0 -e 'print 123; use Fcntl; print 456;'
+          echo END
+
           cc -o emperl ../../../emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts`
           echo BEGIN
           ./emperl -e 'print 123; use Fcntl; print 456;'
