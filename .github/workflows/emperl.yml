@@ -32,19 +32,21 @@ jobs:
           rm -rf ../prefix/man ../prefix/lib/*/pod/
           find ../prefix
           find -name '*.a'
+          # https://perldoc.perl.org/perlembed
+          cc -o emperl $PWD/emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts`
+          ./emperl -e 'printf("%x", 3735928559)'
 
-      - name: Build Wasm Perl
-        run: |
-          ROOT=$PWD
-          export MAKEFLAGS
-          mkdir -p build/wasm/perl
-          
-          tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
-          cd build/wasm/perl
-          emconfigure bash ./Configure -sde -Alibs=-lm -Aldflags=-lm -Accflags=-lm -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_wasm.sh -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
-          #sed -i 's/$(generated_pods)//' Makefile
-          emmake make perl
-          emmake make install
-          rm -rf ../prefix/man ../prefix/lib/*/pod/
-          find ../prefix
-          find -name '*.a'
+#      - name: Build Wasm Perl
+#        run: |
+#          ROOT=$PWD
+#          export MAKEFLAGS
+#          mkdir -p build/wasm/perl          
+#          tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
+#          cd build/wasm/perl
+#          emconfigure bash ./Configure -sde -Alibs=-lm -Aldflags=-lm -Accflags=-lm -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_wasm.sh -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
+#          #sed -i 's/$(generated_pods)//' Makefile
+#          emmake make perl
+#          emmake make install
+#          rm -rf ../prefix/man ../prefix/lib/*/pod/
+#          find ../prefix
+#          find -name '*.a'
