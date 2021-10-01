@@ -22,7 +22,6 @@ jobs:
           export MAKEFLAGS
           mkdir -p source build/native/perl
           wget -nc $URLPERL -P source
-
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
           cd build/native/perl
           bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm
@@ -33,7 +32,7 @@ jobs:
           find ../prefix
           find -name '*.a'
           # https://perldoc.perl.org/perlembed
-          cc -o emperl $PWD/emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts`
+          cc -o emperl ../../..//emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts`
           ./emperl -e 'printf("%x", 3735928559)'
 
 #      - name: Build Wasm Perl
