@@ -1,6 +1,8 @@
 #include <EXTERN.h>               /* from the Perl distribution     */
 #include <perl.h>                 /* from the Perl distribution     */
 
+#include <xsinit.c>
+
 static PerlInterpreter *my_perl;  /***    The Perl interpreter    ***/
 
 int main(int argc, char **argv, char **env)
