@@ -40,7 +40,7 @@ jobs:
           ./emperl -e 'print 123; use Fcntl; print 456;'
           echo END
           ldd ./emperl
-          ./emperl ../../../fmtutil_.pl --help
+          #./emperl ../../../fmtutil_.pl --help
 
 #      - name: Build Wasm Perl
 #        run: |
