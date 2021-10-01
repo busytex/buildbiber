@@ -26,8 +26,8 @@ jobs:
           cd build/native/perl
           bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel
           # -Uusedl
-          make LINKTYPE=static miniperl generate_uudmap
-          make LINKTYPE=static perl
+          make miniperl generate_uudmap
+          make perl
           make install
           rm -rf ../prefix/man ../prefix/lib/*/pod/
           find ../prefix
@@ -36,10 +36,9 @@ jobs:
           echo BEGIN; ../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts; echo END
           echo BEGIN; ../prefix/bin/perl5.35.4 -e 'print 123; use Fcntl; print 456;'; echo END
 
-          echo BEGIN; find -name ext.libs -exec cat {} +; echo END
-
-          cc -o emperl ../../../emperl.c `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts`
-          cc -o emperl2  -lm -fstack-protector-strong -L/usr/local/lib -Wl,-E ../../../emperl.c  lib/auto/IO/IO.a lib/auto/Fcntl/Fcntl.a libperl.a -lpthread -lnsl -ldl -lm -lcrypt -lutil -lc    -D_FILE_OFFSET_BITS=64  -I/home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/CORE
+          ../prefix/bin/perl5.35.4 -MExtUtils::Embed -e xsinit -- -o xsinit.c -std Fcntl IO
+          cc -o xs.o xsinit.c `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts`
+          cc -o emperl ../../../emperl.c xs.o `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts`
           echo BEGIN2; ./emperl2 -e 'print 123; use Fcntl; print 456;'; echo END
           echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
           ldd ./emperl
