@@ -3,7 +3,7 @@ name: emperl
 on: workflow_dispatch
 
 env:
-  URLPERL: https://www.cpan.org/src/5.0/perl-5.30.0.tar.gz
+  URLPERL: https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
   MAKEFLAGS: -j2
 
 jobs:
