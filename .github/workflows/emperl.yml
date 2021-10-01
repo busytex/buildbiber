@@ -32,9 +32,13 @@ jobs:
           find ../prefix
           find -name '*.a'
           # https://perldoc.perl.org/perlembed
+          echo BEGIN
           ../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts
-          cc -o emperl ../../../emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts`
+          echo END
+          cc -o emperl ../../../emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts` ./lib/auto/Fcntl/Fcntl.a
+          echo BEGIN
           ./emperl -e 'printf("%x", 3735928559)'
+          echo END
           ldd ./emperl
           ./emperl ../../../fmtutil_.pl --help
 
