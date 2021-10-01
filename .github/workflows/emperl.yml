@@ -26,8 +26,8 @@ jobs:
           cd build/native/perl
           bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel
           # -Uusedl
-          make miniperl generate_uudmap
-          make perl
+          make LINKTYPE=static miniperl generate_uudmap
+          make LINKTYPE=static perl
           make install
           rm -rf ../prefix/man ../prefix/lib/*/pod/
           find ../prefix
