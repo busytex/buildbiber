@@ -24,7 +24,7 @@ jobs:
           wget -nc $URLPERL -P source
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
           cd build/native/perl
-          bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl"
+          bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedl="undef"
           make miniperl generate_uudmap
           make perl
           make install
