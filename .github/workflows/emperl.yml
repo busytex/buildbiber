@@ -35,6 +35,7 @@ jobs:
           ../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts
           cc -o emperl ../../..//emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts`
           ./emperl -e 'printf("%x", 3735928559)'
+          ldd ./emperl
 
 #      - name: Build Wasm Perl
 #        run: |
