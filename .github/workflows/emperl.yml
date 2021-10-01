@@ -32,17 +32,15 @@ jobs:
           find ../prefix
           find -name '*.a'
           # https://perldoc.perl.org/perlembed
-          echo BEGIN
-          ../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts
-          echo END
-          echo BEGIN
-          ../prefix/bin/perl5.30.0 -e 'print 123; use Fcntl; print 456;'
-          echo END
+          echo BEGIN; ../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts; echo END
+          echo BEGIN; ../prefix/bin/perl5.30.0 -e 'print 123; use Fcntl; print 456;'; echo END
+
+          echo BEGIN; find -name ext.libs -exec cat {} +; echo END
 
           cc -o emperl ../../../emperl.c `../prefix/bin/perl5.30.0 -MExtUtils::Embed -e ccopts -e ldopts`
-          echo BEGIN
-          ./emperl -e 'print 123; use Fcntl; print 456;'
-          echo END
+          cc -o emperl2  -lm -fstack-protector-strong -L/usr/local/lib -Wl,-E ../../../emperl.c  lib/auto/IO/IO.a lib/auto/Fcntl/Fcntl.a libperl.a -lpthread -lnsl -ldl -lm -lcrypt -lutil -lc
+          echo BEGIN2; ./emperl2 -e 'print 123; use Fcntl; print 456;'; echo END
+          echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
           ldd ./emperl
           #./emperl ../../../fmtutil_.pl --help
 
