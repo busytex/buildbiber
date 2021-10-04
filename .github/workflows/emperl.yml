@@ -23,9 +23,10 @@ jobs:
           mkdir -p source build/native/perl
           wget -nc $URLPERL -P source
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
-          cd build/native/perl
           mkdir ext/TeXLive
-          wget -P ext/TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm 
+          wget -P ext/TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm
+          echo > ext/TeXLive/TeXLive.pm
+          cd build/native/perl
           bash ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl TeXLive" -Dusedevel
           # -Uusedl
           make miniperl generate_uudmap
