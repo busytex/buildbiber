@@ -24,12 +24,17 @@ jobs:
           wget -nc $URLPERL -P source
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
           cd build/native/perl
-          bash ./Configure -sde -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel
+          pushd ext
+          mkdir TeXLive
+	      wget -P TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm
+	      wget -P TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm 
+          popd
+          bash ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl TeXLive" -Dusedevel
           # -Uusedl
           make miniperl generate_uudmap
           make perl
           make install
-          rm -rf ../prefix/man ../prefix/lib/*/pod/
+          rm -rf ../prefix/man ../prefix/lib/*/pod/ || true
           find ../prefix
           find -name '*.a'
           # https://perldoc.perl.org/perlembed
@@ -41,7 +46,8 @@ jobs:
           cc -o emperl ../../../emperl.c -I$PWD `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts`
           echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
           ldd ./emperl
-          ./emperl ../../../fmtutil_.pl --help
+          wget https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
+          ./emperl fmtutil.pl --help
 
 #      - name: Build Wasm Perl
 #        run: |
