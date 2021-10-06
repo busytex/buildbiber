@@ -1,4 +1,6 @@
-fmtutil_.pl:
+all: fmtutil.pl updmap.pl
+
+fmtutil.pl updmap.pl:
 	echo 'BEGIN {' > $@
 	curl https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm >> $@
 	echo '$$INC{ ( __PACKAGE__ =~ s{::}{/}rg ) . ".pm" } = 1;' >> $@
@@ -7,4 +9,4 @@ fmtutil_.pl:
 	curl https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm | sed '/=pod/,/=cut/d' | sed '/__END__/,/=cut/d' >> $@
 	echo '$$INC{ ( __PACKAGE__ =~ s{::}{/}rg ) . ".pm" } = 1;' >> $@
 	echo '}' >> $@
-	curl https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl >> $@
+	curl https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/$@ >> $@
