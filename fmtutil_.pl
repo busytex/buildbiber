@@ -404,121 +404,6 @@ my $svnrev = '$Revision$';
 my $_modulerevision = ($svnrev =~ m/: ([0-9]+) /) ? $1 : "unknown";
 sub module_revision { return $_modulerevision; }
 
-=pod
-
-=head1 NAME
-
-C<TeXLive::TLUtils> - TeX Live infrastructure miscellany
-
-=head1 SYNOPSIS
-
-  use TeXLive::TLUtils;
-
-=head2 Platform detection
-
-  TeXLive::TLUtils::platform();
-  TeXLive::TLUtils::platform_name($canonical_host);
-  TeXLive::TLUtils::platform_desc($platform);
-  TeXLive::TLUtils::win32();
-  TeXLive::TLUtils::unix();
-
-=head2 System tools
-
-  TeXLive::TLUtils::getenv($string);
-  TeXLive::TLUtils::which($string);
-  TeXLive::TLUtils::initialize_global_tmpdir();
-  TeXLive::TLUtils::tl_tmpdir();
-  TeXLive::TLUtils::tl_tmpfile();
-  TeXLive::TLUtils::xchdir($dir);
-  TeXLive::TLUtils::wsystem($msg,@args);
-  TeXLive::TLUtils::xsystem(@args);
-  TeXLive::TLUtils::run_cmd($cmd);
-  TeXLive::TLUtils::system_pipe($prog, $infile, $outfile, $removeIn, @args);
-
-=head2 File utilities
-
-  TeXLive::TLUtils::dirname($path);
-  TeXLive::TLUtils::basename($path);
-  TeXLive::TLUtils::dirname_and_basename($path);
-  TeXLive::TLUtils::tl_abs_path($path);
-  TeXLive::TLUtils::dir_writable($path);
-  TeXLive::TLUtils::dir_creatable($path);
-  TeXLive::TLUtils::mkdirhier($path);
-  TeXLive::TLUtils::rmtree($root, $verbose, $safe);
-  TeXLive::TLUtils::copy($file, $target_dir);
-  TeXLive::TLUtils::touch(@files);
-  TeXLive::TLUtils::collapse_dirs(@files);
-  TeXLive::TLUtils::removed_dirs(@files);
-  TeXLive::TLUtils::download_file($path, $destination);
-  TeXLive::TLUtils::setup_programs($bindir, $platform);
-  TeXLive::TLUtils::tlcmp($file, $file);
-  TeXLive::TLUtils::nulldev();
-  TeXLive::TLUtils::get_full_line($fh);
-
-=head2 Installer functions
-
-  TeXLive::TLUtils::make_var_skeleton($path);
-  TeXLive::TLUtils::make_local_skeleton($path);
-  TeXLive::TLUtils::create_fmtutil($tlpdb,$dest);
-  TeXLive::TLUtils::create_updmap($tlpdb,$dest);
-  TeXLive::TLUtils::create_language_dat($tlpdb,$dest,$localconf);
-  TeXLive::TLUtils::create_language_def($tlpdb,$dest,$localconf);
-  TeXLive::TLUtils::create_language_lua($tlpdb,$dest,$localconf);
-  TeXLive::TLUtils::time_estimate($totalsize, $donesize, $starttime)
-  TeXLive::TLUtils::install_packages($from_tlpdb,$media,$to_tlpdb,$what,$opt_src, $opt_doc)>);
-  TeXLive::TLUtils::do_postaction($how, $tlpobj, $do_fileassocs, $do_menu, $do_desktop, $do_script);
-  TeXLive::TLUtils::announce_execute_actions($how, @executes, $what);
-  TeXLive::TLUtils::add_symlinks($root, $arch, $sys_bin, $sys_man, $sys_info);
-  TeXLive::TLUtils::remove_symlinks($root, $arch, $sys_bin, $sys_man, $sys_info);
-  TeXLive::TLUtils::w32_add_to_path($bindir, $multiuser);
-  TeXLive::TLUtils::w32_remove_from_path($bindir, $multiuser);
-  TeXLive::TLUtils::setup_persistent_downloads();
-
-=head2 Logging and debugging
-
-  TeXLive::TLUtils::info($str1, ...);    # output unless -q
-  TeXLive::TLUtils::debug($str1, ...);   # output if -v
-  TeXLive::TLUtils::ddebug($str1, ...);  # output if -vv
-  TeXLive::TLUtils::dddebug($str1, ...); # output if -vvv
-  TeXLive::TLUtils::log($str1, ...);     # only to log file
-  TeXLive::TLUtils::tlwarn($str1, ...);  # warn on stderr and log
-  TeXLive::TLUtils::tldie($str1, ...);   # tlwarn and die
-  TeXLive::TLUtils::debug_hash_str($label, HASH); # stringified HASH
-  TeXLive::TLUtils::debug_hash($label, HASH);   # warn stringified HASH
-  TeXLive::TLUtils::backtrace();                # return call stack as string
-  TeXLive::TLUtils::process_logging_options($texdir); # handle -q -v* -logfile
-
-=head2 Miscellaneous
-
-  TeXLive::TLUtils::sort_uniq(@list);
-  TeXLive::TLUtils::push_uniq(\@list, @items);
-  TeXLive::TLUtils::member($item, @list);
-  TeXLive::TLUtils::merge_into(\%to, \%from);
-  TeXLive::TLUtils::texdir_check($texdir);
-  TeXLive::TLUtils::quotify_path_with_spaces($path);
-  TeXLive::TLUtils::conv_to_w32_path($path);
-  TeXLive::TLUtils::native_slashify($internal_path);
-  TeXLive::TLUtils::forward_slashify($path_from_user);
-  TeXLive::TLUtils::give_ctan_mirror();
-  TeXLive::TLUtils::give_ctan_mirror_base();
-  TeXLive::TLUtils::compare_tlpobjs($tlpA, $tlpB);
-  TeXLive::TLUtils::compare_tlpdbs($tlpdbA, $tlpdbB);
-  TeXLive::TLUtils::report_tlpdb_differences(\%ret);
-  TeXLive::TLUtils::tlnet_disabled_packages($root);
-  TeXLive::TLUtils::mktexupd();
-  TeXLive::TLUtils::setup_sys_user_mode($optsref,$tmfc, $tmfsc, $tmfv, $tmfsv);
-  TeXLive::TLUtils::prepend_own_path();
-  TeXLive::TLUtils::repository_to_array($str);
-
-=head2 JSON
-
-  TeXLive::TLUtils::encode_json($ref);
-  TeXLive::TLUtils::True();
-  TeXLive::TLUtils::False();
-
-=head1 DESCRIPTION
-
-=cut
 
 # avoid -warnings.
 our $PERL_SINGLE_QUOTE; # we steal code from Text::ParseWords
@@ -2429,19 +2314,6 @@ sub announce_execute_actions {
 }
 
 
-=pod
-
-=item C<add_symlinks($root, $arch, $sys_bin, $sys_man, $sys_info)>
-
-=item C<remove_symlinks($root, $arch, $sys_bin, $sys_man, $sys_info)>
-
-These two functions try to create/remove symlinks for binaries, man pages,
-and info files as specified by the options $sys_bin, $sys_man, $sys_info.
-
-The functions return 1 on success and 0 on error.
-On Windows it returns undefined.
-
-=cut
 
 sub add_link_dir_dir {
   my ($from,$to) = @_;
@@ -2588,21 +2460,6 @@ sub add_remove_symlinks {
 sub add_symlinks    { return (add_remove_symlinks("add", @_));    }
 sub remove_symlinks { return (add_remove_symlinks("remove", @_)); }
 
-=pod
-
-=item C<w32_add_to_path($bindir, $multiuser)>
-=item C<w32_remove_from_path($bindir, $multiuser)>
-
-These two functions try to add/remove the binary directory $bindir
-on Windows to the registry PATH variable.
-
-If running as admin user and $multiuser is set, the system path will
-be adjusted, otherwise the user path.
-
-After calling these functions TeXLive::TLWinGoo::broadcast_env() should
-be called to make the changes immediately visible.
-
-=cut
 
 sub w32_add_to_path {
   my ($bindir, $multiuser) = @_;
@@ -2646,21 +2503,6 @@ sub w32_remove_from_path {
   TeXLive::TLWinGoo::adjust_reg_path_for_texlive('remove', $bindir, $mode);
 }
 
-=pod
-
-=item C<check_file_and_remove($what, $checksum, $checksize>
-
-Remove the file C<$what> if either the given C<$checksum> or
-C<$checksize> for C<$what> does not agree with our recomputation using
-C<TLCrypto::tlchecksum> and C<stat>, respectively. If a check argument
-is not given, that check is not performed. If the checksums agree, the
-size is not checked. The return status is random.
-
-This unusual behavior (removing the given file) is because this is used
-for newly-downloaded files; see the calls in the C<unpack> routine
-(which is the only caller).
-
-=cut
 
 sub check_file_and_remove {
   my ($xzfile, $checksum, $checksize) = @_;
@@ -2721,24 +2563,6 @@ sub check_file_and_remove {
   # or unwind packages might die.
 }
 
-=pod
-
-=item C<unpack($what, $targetdir, @opts>
-
-If necessary, downloads C$what>, and then unpacks it into C<$targetdir>.
-C<@opts> is assigned to a hash and can contain the following 
-keys: C<tmpdir> (use this directory for downloaded files), 
-C<checksum> (check downloaded file against this checksum), 
-C<size> (check downloaded file against this size),
-C<remove> (remove temporary files after operation).
-
-Returns a pair of values: in case of error return 0 and an additional
-explanation, in case of success return 1 and the name of the package.
-
-If C<checksum> or C<size> is C<-1>, no warnings about missing checksum/size
-is printed. This is used during restore and unwinding of failed updates.
-
-=cut
 
 sub unpack {
   my ($what, $target, %opts) = @_;
@@ -2821,17 +2645,6 @@ sub unpack {
   }
 }
 
-=pod
-
-=item C<untar($tarfile, $targetdir, $remove_tarfile)>
-
-Unpacks C<$tarfile> in C<$targetdir> (changing directories to
-C<$targetdir> and then back to the original directory).  If
-C<$remove_tarfile> is true, unlink C<$tarfile> after unpacking.
-
-Assumes the global C<$::progs{"tar"}> has been set up.
-
-=cut
 
 # return 1 if success, 0 if failure.
 sub untar {
@@ -4273,15 +4086,6 @@ sub texdir_check {
   return 0;
 }
 
-=pod
-
-This function takes a single argument I<path> and returns it with
-C<"> chars surrounding it on Unix.  On Windows, the C<"> chars are only
-added if I<path> contains special characters, since unconditional quoting
-leads to errors there.  In all cases, any C<"> chars in I<path> itself
-are (erroneously) eradicated.
- 
-=cut
 
 sub quotify_path_with_spaces {
   my $p = shift;
@@ -4293,20 +4097,6 @@ sub quotify_path_with_spaces {
   return($p);
 }
 
-=pod
-
-This function returns a "Windows-ized" version of its single argument
-I<path>, i.e., replaces all forward slashes with backslashes, and adds
-an additional C<"> at the beginning and end if I<path> contains any
-spaces.  It also makes the path absolute. So if $path does not start
-with one (arbitrary) characer followed by C<:>, we add the output of
-C<`cd`>.
-
-The result is suitable for running in shell commands, but not file tests
-or other manipulations, since in such internal Perl contexts, the quotes
-would be considered part of the filename.
-
-=cut
 
 sub conv_to_w32_path {
   my $p = shift;
@@ -4322,14 +4112,6 @@ sub conv_to_w32_path {
   return($pabs);
 }
 
-=pod
-
-The next two functions are meant for user input/output in installer menus.
-They help making the windows user happy by turning slashes into backslashes
-before displaying a path, and our code happy by turning backslashes into forwars
-slashes after reading a path. They both are no-ops on Unix.
-
-=cut
 
 sub native_slashify {
   my ($r) = @_;
@@ -4638,13 +4420,6 @@ sub extract_mirror_entry {
   return $foo[$#foo] . "/" . $TeXLive::TLConfig::TeXLiveServerPath;
 }
 
-=pod
-
-=item C<< slurp_file($file) >>
-
-Reads the whole file and returns the content in a scalar.
-
-=cut
 
 sub slurp_file {
   my $file = shift;
@@ -4656,17 +4431,6 @@ sub slurp_file {
   return($file_data);
 }
 
-=pod
-
-=item C<< download_to_temp_or_file($url) >>
-
-If C<$url> is a url, tries to download the file into a temporary file.
-Otherwise assume that C<$url> is a local file.
-In both cases returns the local file.
-
-Returns the local file name if succeeded, otherwise undef.
-
-=cut
 
 sub download_to_temp_or_file {
   my $url = shift;
@@ -5243,16 +5007,6 @@ bless $TLFalse, 'TLBOOLEAN';
 
 our $jsonmode = "";
 
-=pod
-
-=item C<True()>
-
-=item C<False()>
-
-These two crazy functions must be used to get proper JSON C<true> and
-C<false> in the output independent of the backend used.
-
-=cut
 
 sub True {
   ensure_json_available();
@@ -5395,28 +5149,8 @@ sub array_to_json {
   return($ret);
 }
 
-=pod
-
-=back
-
-=cut
 
 1;
-__END__
-
-=head1 SEE ALSO
-
-The other modules in C<Master/tlpkg/TeXLive/> (L<TeXLive::TLConfig> and
-the rest), and the scripts in C<Master/tlpg/bin/> (especially
-C<tl-update-tlpdb>), the documentation in C<Master/tlpkg/doc/>, etc.
-
-=head1 AUTHORS AND COPYRIGHT
-
-This script and its documentation were written for the TeX Live
-distribution (L<https://tug.org/texlive>) and both are licensed under the
-GNU General Public License Version 2 or later.
-
-=cut
 
 ### Local Variables:
 ### perl-indent-level: 2

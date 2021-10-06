@@ -4,7 +4,7 @@ fmtutil_.pl:
 	echo '$$INC{ ( __PACKAGE__ =~ s{::}{/}rg ) . ".pm" } = 1;' >> $@
 	echo '}' >> $@
 	echo 'BEGIN {' >> $@
-	curl https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm >> $@
+	curl https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm | sed '/=pod/,/=cut/d' | sed '/__END__/,/=cut/d' >> $@
 	echo '$$INC{ ( __PACKAGE__ =~ s{::}{/}rg ) . ".pm" } = 1;' >> $@
 	echo '}' >> $@
 	curl https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl >> $@
