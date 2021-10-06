@@ -1,4 +1,4 @@
-{
+BEGIN {
 # $Id$
 # TeXLive::TLConfig.pm - module exporting configuration values
 # Copyright 2007-2021 Norbert Preining
@@ -389,8 +389,9 @@ GNU General Public License Version 2 or later.
 ### indent-tabs-mode: nil
 ### End:
 # vim:set tabstop=2 expandtab: #
+$INC{ ( __PACKAGE__ =~ s{::}{/}rg ) . ".pm" } = 1;
 }
-{
+BEGIN {
 # $Id$
 # TeXLive::TLUtils.pm - the inevitable utilities for TeX Live.
 # Copyright 2007-2021 Norbert Preining, Reinhard Kotucha
@@ -5423,6 +5424,7 @@ GNU General Public License Version 2 or later.
 ### indent-tabs-mode: nil
 ### End:
 # vim:set tabstop=2 expandtab: #
+$INC{ ( __PACKAGE__ =~ s{::}{/}rg ) . ".pm" } = 1;
 }
 #!/usr/bin/env perl
 # $Id: fmtutil.pl 60154 2021-08-03 21:55:56Z karl $
