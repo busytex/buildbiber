@@ -16,10 +16,13 @@ int main(int argc, char **argv, char **env)
     //FILE* f = fopen(argv[1], "r");
     //fread(script, sizeof(script), 1, f);
     //fclose(f);
-    
-    int iSize =  (int)(&_binary__________fmtutil_pl_end - &_binary__________fmtutil_pl_start);
+    printf("start: %p\n", _binary__________fmtutil_pl_start);
+    printf("end: %p\n", _binary__________fmtutil_pl_end);
 
-    printf("Size: %d, iSize: %d\n", _binary__________fmtutil_pl_size, iSize);
+    printf("size: %d\n", _binary__________fmtutil_pl_size);
+
+    //int iSize =  (int)(&_binary__________fmtutil_pl_end - &_binary__________fmtutil_pl_start);
+    //printf("isize: %d\n", iSize);
 
     char *one_args[] = { "one_perl", "-e", "print($#ARGV); print(123); print(@ARGV); print(456); print($ARGV[0]); print(789); print($ARGV[1]); print(000);", "a", "b", NULL };
 
