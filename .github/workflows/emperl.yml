@@ -33,8 +33,9 @@ jobs:
           make perl
           make install
           rm -rf ../prefix/man ../prefix/lib/*/pod/ || true
+          find ../prefix/lib -name '*.pm' -delete
           
-          find ../prefix
+          find ../prefix -type f
           find -name '*.a'
           find ../prefix -name '*.so'
           #../prefix/bin/perl -MExtUtils::Embed -e ccopts -e ldopts
