@@ -10,19 +10,18 @@ static char script[1 << 20];
 extern char _binary__________fmtutil_pl_start[];
 extern char _binary__________fmtutil_pl_end[];
 
+extern char _binary__________updmap_pl_start[];
+extern char _binary__________updmap_pl_end[];
+
 int main(int argc, char **argv, char **env)
 {
     //FILE* f = fopen(argv[1], "r");
     //fread(script, sizeof(script), 1, f);
     //fclose(f);
-    int iSize =  (int)(_binary__________fmtutil_pl_end - _binary__________fmtutil_pl_start);
     
-    printf("start: %p\n", _binary__________fmtutil_pl_start);
-    printf("end: %p\n", _binary__________fmtutil_pl_end);
-    printf("isize: %d\n", iSize);
-
+    int iSize =  (int)(_binary__________fmtutil_pl_end - _binary__________fmtutil_pl_start);
     strncpy(script, _binary__________fmtutil_pl_start, iSize);
-    strncpy[iSize] = '\0';
+    script[iSize] = '\0';
 
     char *one_args[] = { "one_perl", "-e", script, argv[1], NULL };
 
