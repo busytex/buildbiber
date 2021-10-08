@@ -45,16 +45,6 @@ extern char _binary_updmap_pl_end[];
 
 
 typedef int   (*orig_open_func_type)(const char *__file, int flags, ...);
-typedef off_t (*orig_lseek_func_type)(int __fd, off_t __offset, int __whence);
-
-off_t lseek(int __fd, off_t __offset, int __whence)
-{
-    orig_lseek_func_type orig_func;
-    orig_func = (orig_lseek_func_type)dlsym(RTLD_NEXT, "lseek");
-    printf("lseek: %d\n", __fd);
-
-    return orig_func(__fd, __offset, __whence);
-}
 
 int open(const char *__file, int __oflag, ...)
 {
@@ -76,7 +66,7 @@ int open(const char *__file, int __oflag, ...)
     return res;
 }
 
-int open64(const char *__file, int flags, ...)
+int open64(const char *__file, int __oflag, ...)
 {
     orig_open_func_type orig_func;
     orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "open64");
