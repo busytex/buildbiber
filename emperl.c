@@ -53,7 +53,7 @@ off_t lseek(int __fd, off_t __offset, int __whence)
     orig_func = (orig_lseek_func_type)dlsym(RTLD_NEXT, "lseek");
     printf("lseek: %d\n", __fd);
 
-    return orig_func(__fd, offset, __whence);
+    return orig_func(__fd, __offset, __whence);
 }
 
 int open(const char *__file, int __oflag, ...)
@@ -65,7 +65,7 @@ int open(const char *__file, int __oflag, ...)
     if (__oflag & O_CREAT) {
         va_list ap;
 		va_start(ap, __oflag);
-		mode = va_arg(ap, unsigned);
+		int mode = va_arg(ap, unsigned);
 		res = orig_func(__file, __oflag, mode);
 		va_end(ap);
 	}
@@ -85,7 +85,7 @@ int open64(const char *__file, int flags, ...)
     if (__oflag & O_CREAT) {
         va_list ap;
 		va_start(ap, __oflag);
-		mode = va_arg(ap, unsigned);
+		int mode = va_arg(ap, unsigned);
 		res = orig_func(__file, __oflag, mode);
 		va_end(ap);
 	}
