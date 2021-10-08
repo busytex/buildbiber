@@ -19,8 +19,8 @@ int main(int argc, char **argv, char **env)
     //fread(script, sizeof(script), 1, f);
     //fclose(f);
     
-    int iSize =  (int)(_binary__________fmtutil_pl_end - _binary__________fmtutil_pl_start);
-    strncpy(script, _binary__________fmtutil_pl_start, iSize);
+    int iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
+    strncpy(script,    _binary_fmtutil_pl_start, iSize);
     script[iSize] = '\0';
 
     char *one_args[] = { "one_perl", "-e", script, argv[1], NULL };
