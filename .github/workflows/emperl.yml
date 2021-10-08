@@ -52,7 +52,7 @@ jobs:
 
           #echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
           ldd ./emperl
-          ./emperl --help || true
+          ./emperl || true
           #./emperl ../../../updmap.pl --help || true
           #wget https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
           #./emperl fmtutil.pl --help
