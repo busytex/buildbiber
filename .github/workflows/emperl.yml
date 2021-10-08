@@ -32,15 +32,14 @@ jobs:
           make miniperl generate_uudmap
           make perl
           make install
-          ln -s $PWD/../prefix/bin/perl5.35.4 $PWD/../prefix/bin/perl
           rm -rf ../prefix/man ../prefix/lib/*/pod/ || true
           
           find ../prefix
           find -name '*.a'
           find ../prefix -name '*.so'
-          ../prefix/bin/perl -MExtUtils::Embed -e ccopts -e ldopts
-          ../prefix/bin/perl -MExtUtils::Embed -e xsinit -- -o xsinit.c -std Fcntl IO
-          cat xsinit.c
+          #../prefix/bin/perl -MExtUtils::Embed -e ccopts -e ldopts
+          #../prefix/bin/perl -MExtUtils::Embed -e xsinit -- -o xsinit.c -std Fcntl IO
+          #cat xsinit.c
           
           popd
 

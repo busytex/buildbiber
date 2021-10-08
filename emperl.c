@@ -2,7 +2,28 @@
 #include <EXTERN.h>
 #include <perl.h>
 
-#include <xsinit.c>
+// #include <xsinit.c>
+
+#include "XSUB.h"
+
+EXTERN_C void xs_init (pTHX);
+
+EXTERN_C void boot_Fcntl (pTHX_ CV* cv);
+EXTERN_C void boot_IO (pTHX_ CV* cv);
+EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
+
+EXTERN_C void xs_init(pTHX)
+{
+    static const char file[] = __FILE__;
+    dXSUB_SYS;
+    PERL_UNUSED_CONTEXT;
+
+    newXS("Fcntl::bootstrap", boot_Fcntl, file);
+    newXS("IO::bootstrap", boot_IO, file);
+    newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+}
+
+
 
 static char script[1 << 20];
 
