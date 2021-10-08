@@ -56,7 +56,7 @@ off_t lseek(int __fd, off_t __offset, int __whence)
     return orig_func(pathname, flags);
 }
 
-int open(const char *pathname, int __oflag, ...)
+int open(const char *__file, int __oflag, ...)
 {
     orig_open_func_type orig_func;
     orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "open");
@@ -69,13 +69,13 @@ int open(const char *pathname, int __oflag, ...)
 		va_end(ap);
 	}
     else
-        res = orig_func(pathname, __oflag);
+        res = orig_func(__file, __oflag);
 
     printf("open: %d (%s)\n", res, pathname);
     return res;
 }
 
-int open64(const char *pathname, int flags, ...)
+int open64(const char *__file, int flags, ...)
 {
     orig_open_func_type orig_func;
     orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "open64");
@@ -88,7 +88,7 @@ int open64(const char *pathname, int flags, ...)
 		va_end(ap);
 	}
     else
-        res = orig_func(pathname, __oflag);
+        res = orig_func(__file, __oflag);
 
     printf("open64: %d (%s)\n", res, pathname);
     return res;
