@@ -13,7 +13,7 @@ int main(int argc, char **argv, char **env)
     //fread(script, sizeof(script), 1, f);
     //fclose(f);
 
-    char *one_args[] = { "one_perl", "-e", "print(@ARGV);", "a", "b", NULL };
+    char *one_args[] = { "one_perl", "-e", "print($#ARGV); print(123); print(@ARGV); print(456); print($ARGV[0]); print(789); print($ARGV[1]); print(000);", "a", "b", NULL };
 
     PERL_SYS_INIT3(&argc,&argv,&env);
     my_perl = perl_alloc();
