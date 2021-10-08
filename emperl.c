@@ -29,8 +29,8 @@ int main(int argc, char **argv, char **env)
     strncpy(script,    _binary_fmtutil_pl_start, iSize);
     script[iSize] = '\0';
 
-    char *one_args[] = { "my_perl", "-e", script, NULL };
-    perl_parse(my_perl, xs_init, 3, one_args, (char **)NULL);
+    char *one_args[] = { "my_perl", "-e", script, "--", argv[1], NULL };
+    perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
     
     perl_run(my_perl);
     perl_destruct(my_perl);
