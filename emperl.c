@@ -1,4 +1,12 @@
+//#define _GNU_SOURCE
+
 #include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <stdarg.h>
 
 #include <EXTERN.h>
 #include <perl.h>
@@ -34,6 +42,58 @@ extern char _binary_fmtutil_pl_end[];
 
 extern char _binary_updmap_pl_start[];
 extern char _binary_updmap_pl_end[];
+
+
+typedef int   (*orig_open_func_type)(const char *pathname, int flags, ...);
+typedef off_t (*orig_lseek_func_type)(int __fd, off_t __offset, int __whence);
+
+off_t lseek(int __fd, off_t __offset, int __whence)
+{
+    orig_lseek_func_type orig_func;
+    orig_func = (orig_lseek_func_type)dlsym(RTLD_NEXT, "lseek");
+    printf("lseek: %d\n", __fd);
+
+    return orig_func(pathname, flags);
+}
+
+int open(const char *pathname, int __oflag, ...)
+{
+    orig_open_func_type orig_func;
+    orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "open");
+    int res = 0;
+
+    if (__oflag & O_CREAT) {
+		va_start(ap, __oflag);
+		mode = va_arg(ap, unsigned);
+		res = orig_func(__file, __oflag, mode);
+		va_end(ap);
+	}
+    else
+        res = orig_func(pathname, __oflag);
+
+    printf("open: %d (%s)\n", res, pathname);
+    return res;
+}
+
+int open64(const char *pathname, int flags, ...)
+{
+    orig_open_func_type orig_func;
+    orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "open64");
+    int res = 0;
+
+    if (__oflag & O_CREAT) {
+		va_start(ap, __oflag);
+		mode = va_arg(ap, unsigned);
+		res = orig_func(__file, __oflag, mode);
+		va_end(ap);
+	}
+    else
+        res = orig_func(pathname, __oflag);
+
+    printf("open64: %d (%s)\n", res, pathname);
+    return res;
+}
+
 
 int main(int argc, char **argv, char **env)
 {
