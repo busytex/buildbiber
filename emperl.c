@@ -15,20 +15,23 @@ int main(int argc, char **argv, char **env)
     //FILE* f = fopen(argv[1], "r");
     //fread(script, sizeof(script), 1, f);
     //fclose(f);
+    int iSize =  (int)(_binary__________fmtutil_pl_end - _binary__________fmtutil_pl_start);
+    
     printf("start: %p\n", _binary__________fmtutil_pl_start);
     printf("end: %p\n", _binary__________fmtutil_pl_end);
-
-    int iSize =  (int)(_binary__________fmtutil_pl_end - _binary__________fmtutil_pl_start);
     printf("isize: %d\n", iSize);
 
-    char *one_args[] = { "one_perl", "-e", "print($#ARGV); print(123); print(@ARGV); print(456); print($ARGV[0]); print(789); print($ARGV[1]); print(000);", "a", "b", NULL };
+    strncpy(script, _binary__________fmtutil_pl_start, iSize);
+    strncpy[iSize] = '\0';
+
+    char *one_args[] = { "one_perl", "-e", script, argv[1], NULL };
 
     PERL_SYS_INIT3(&argc,&argv,&env);
     my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
     //perl_parse(my_perl, xs_init, argc, argv, (char **)NULL);
-    perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
+    perl_parse(my_perl, xs_init, 4, one_args, (char **)NULL);
     
     perl_run(my_perl);
     perl_destruct(my_perl);

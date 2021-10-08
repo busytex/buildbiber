@@ -41,9 +41,10 @@ jobs:
 
           ../prefix/bin/perl5.35.4 -MExtUtils::Embed -e xsinit -- -o xsinit.c -std Fcntl IO
           cat xsinit.c
+          
           ld -r -b binary -o binary.o ../../../fmtutil.pl
-          nm binary.o
           cc -o emperl ../../../emperl.c binary.o -I$PWD `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts`
+
           #echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
           ldd ./emperl
           ./emperl ../../../fmtutil.pl --help || true
