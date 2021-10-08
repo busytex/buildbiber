@@ -21,6 +21,7 @@ int main(int argc, char **argv, char **env)
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
     //perl_parse(my_perl, xs_init, argc, argv, (char **)NULL);
     perl_parse(my_perl, xs_init, 3, one_args, (char **)NULL);
+    
     perl_run(my_perl);
     perl_destruct(my_perl);
     perl_free(my_perl);
