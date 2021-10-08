@@ -9,7 +9,6 @@ static char script[1 << 20];
 
 extern char _binary__________fmtutil_pl_start[];
 extern char _binary__________fmtutil_pl_end[];
-extern int _binary__________fmtutil_pl_size;
 
 int main(int argc, char **argv, char **env)
 {
@@ -19,10 +18,8 @@ int main(int argc, char **argv, char **env)
     printf("start: %p\n", _binary__________fmtutil_pl_start);
     printf("end: %p\n", _binary__________fmtutil_pl_end);
 
-    printf("size: %d\n", _binary__________fmtutil_pl_size);
-
-    //int iSize =  (int)(&_binary__________fmtutil_pl_end - &_binary__________fmtutil_pl_start);
-    //printf("isize: %d\n", iSize);
+    int iSize =  (int)(_binary__________fmtutil_pl_end - _binary__________fmtutil_pl_start);
+    printf("isize: %d\n", iSize);
 
     char *one_args[] = { "one_perl", "-e", "print($#ARGV); print(123); print(@ARGV); print(456); print($ARGV[0]); print(789); print($ARGV[1]); print(000);", "a", "b", NULL };
 
