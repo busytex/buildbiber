@@ -1,18 +1,20 @@
 #include <stdio.h>
+
 #include <EXTERN.h>
 #include <perl.h>
+#include <XSUB.h>
 
+
+///////////////////////////////////////
 // #include <xsinit.c>
 
-#include "XSUB.h"
+extern void boot_Fcntl      (pTHX_ CV* cv);
+extern void boot_IO         (pTHX_ CV* cv);
+extern void boot_DynaLoader (pTHX_ CV* cv);
 
-EXTERN_C void xs_init (pTHX);
-
-EXTERN_C void boot_Fcntl (pTHX_ CV* cv);
-EXTERN_C void boot_IO (pTHX_ CV* cv);
-EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
-
-EXTERN_C void xs_init(pTHX)
+//EXTERN_C void xs_init         (pTHX);
+//EXTERN_C 
+void xs_init         (pTHX)
 {
     static const char file[] = __FILE__;
     dXSUB_SYS;
@@ -22,7 +24,7 @@ EXTERN_C void xs_init(pTHX)
     newXS("IO::bootstrap", boot_IO, file);
     newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
 }
-
+///////////////////////////////////////
 
 
 static char script[1 << 20];
