@@ -7,7 +7,7 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <stdarg.h>
-
+/*
 typedef int   (*orig_open_func_type)(const char *__file, int flags, ...);
 
 int open(const char *__file, int __oflag, ...)
@@ -49,7 +49,7 @@ int open64(const char *__file, int __oflag, ...)
     printf("open64: %d (%s)\n", res, __file);
     return res;
 }
-
+*/
 char source[2 << 20];
 
 int main(int argc, char **argv, char **env)
