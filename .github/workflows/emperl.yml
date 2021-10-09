@@ -47,13 +47,13 @@ jobs:
           ld -r -b binary -o fmtutil.o fmtutil.pl
           ld -r -b binary -o updmap.o  updmap.pl
 
-          cc -o emperl emperl.c fmtutil.o updmap.o -I$PWD/build/native/perl       -Wl,-E  -lm -fstack-protector-strong -L/usr/local/lib                         /home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a                                      /home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/auto/IO/IO.a                                          -L/home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/CORE                                                  -lperl -lpthread -lnsl -ldl -lm -lcrypt -lutil -lc -lm -fwrapv -fno-strict-aliasing -pipe -fstack-protector-strong -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64                                                                                                                      -I/home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/CORE
+          gcc -o emperl emperl.c fmtutil.o updmap.o -I$PWD/build/native/perl       -Wl,-E  -lm -fstack-protector-strong -L/usr/local/lib                         /home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a                                      /home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/auto/IO/IO.a                                          -L/home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/CORE                                                  -lperl -lpthread -lnsl -ldl -lm -lcrypt -lutil -lc -lm -fwrapv -fno-strict-aliasing -pipe -fstack-protector-strong -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64                                                                                                                      -I/home/runner/work/buildbiber/buildbiber/build/native/perl/../prefix/lib/5.35.4/x86_64-linux/CORE
           # `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts`
 
           #echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
           ldd ./emperl
           gcc preload.c -o preload.so -ldl -shared
-          LD_PRELOAD=preload.so ./emperl --help || true
+          LD_PRELOAD=$PWD/preload.so ./emperl --help || true
           # print($^X)
           #./emperl ../../../updmap.pl --help || true
           #wget https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
