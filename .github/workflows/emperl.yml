@@ -52,7 +52,8 @@ jobs:
 
           #echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
           ldd ./emperl
-          ./emperl --help || true
+          gcc preload.c -o preload.so -ldl -shared
+          LD_PRELOAD=preload.so ./emperl --help || true
           # print($^X)
           #./emperl ../../../updmap.pl --help || true
           #wget https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
