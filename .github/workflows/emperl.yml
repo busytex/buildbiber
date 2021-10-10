@@ -38,6 +38,8 @@ jobs:
           find ../prefix -type f
           find -name '*.a'
           find ../prefix -name '*.so'
+          find ../prefix -name config.h
+          cat `find ../prefix -name config.h`
           #../prefix/bin/perl -MExtUtils::Embed -e ccopts -e ldopts
           #../prefix/bin/perl -MExtUtils::Embed -e xsinit -- -o xsinit.c -std Fcntl IO
           #cat xsinit.c
