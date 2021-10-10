@@ -27,7 +27,7 @@ jobs:
           #wget -P ext/TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm
           #echo > ext/TeXLive/TeXLive.pm
           pushd build/native/perl
-          bash ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel
+          bash ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=$PWD/../prefix -Aclear:d_crypt -Aclear:d_crypt_r -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel
           # -Uusedl
           make miniperl generate_uudmap
           make perl
