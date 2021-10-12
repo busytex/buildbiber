@@ -61,6 +61,13 @@ jobs:
           #wget https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
           #./emperl fmtutil.pl --help
 
+      - name: Prefix
+        uses: actions/upload-artifact@v2
+        with:
+          name: prefix
+          path: |
+            build/native/prefix/
+
 #      - name: Build Wasm Perl
 #        run: |
 #          ROOT=$PWD
