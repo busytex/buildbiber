@@ -30,7 +30,7 @@ jobs:
           #mkdir ext/TeXLive
           #wget -P ext/TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm
           #echo > ext/TeXLive/TeXLive.pm
-          pushd build/native/perl
+          cd build/native/perl
           bash ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -lnsl -ldl -lm -lutil -lc"
           #  -Aclear:d_crypt -Aclear:d_crypt_r
           # -Uusedl
@@ -48,7 +48,7 @@ jobs:
           #../prefix/bin/perl -MExtUtils::Embed -e xsinit -- -o xsinit.c -std Fcntl IO
           #cat xsinit.c
           
-          popd
+          cd ../../..
 
           ld -r -b binary -o fmtutil.o fmtutil.pl
           ld -r -b binary -o updmap.o  updmap.pl
