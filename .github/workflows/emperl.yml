@@ -9,11 +9,15 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    container: alpine:3.14
     steps:
-      - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v10
-        with:
-          version: 2.0.30
+      - name: Install Prerequisites
+        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 strace && ln -sf python3 /usr/bin/python
+
+#      - name: Setup Emscripten
+#        uses: mymindstorm/setup-emsdk@v10
+#        with:
+#          version: 2.0.30
 
       - uses: actions/checkout@v2
 
@@ -53,20 +57,20 @@ jobs:
           # `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts`
 
           #echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
-          ldd ./emperl
-          gcc preload.c -o preload.so -ldl -shared
-          LD_PRELOAD=$PWD/preload.so ./emperl --help || true
+          #ldd ./emperl
+          #gcc preload.c -o preload.so -ldl -shared
+          #LD_PRELOAD=$PWD/preload.so ./emperl --help || true
           # print($^X)
           #./emperl ../../../updmap.pl --help || true
           #wget https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
-          #./emperl fmtutil.pl --help
+          ./emperl fmtutil.pl --help
 
-      - name: Prefix
-        uses: actions/upload-artifact@v2
-        with:
-          name: prefix
-          path: |
-            build/native/prefix/
+#      - name: Prefix
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: prefix
+#          path: |
+#            build/native/prefix/
 
 #      - name: Build Wasm Perl
 #        run: |
