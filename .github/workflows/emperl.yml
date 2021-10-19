@@ -31,7 +31,7 @@ jobs:
           #wget -P ext/TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm
           #echo > ext/TeXLive/TeXLive.pm
           cd build/native/perl
-          sh ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -lnsl -ldl -lm -lutil -lc"
+          sh ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=$PWD/../prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -ldl -lm -lutil -lc"
           #  -Aclear:d_crypt -Aclear:d_crypt_r
           # -Uusedl
           make miniperl generate_uudmap
@@ -53,7 +53,7 @@ jobs:
           ld -r -b binary -o fmtutil.o fmtutil.pl
           ld -r -b binary -o updmap.o  updmap.pl
 
-          gcc -o emperl emperl.c fmtutil.o updmap.o -I$PWD/build/native/perl       -Wl,-E  -lm -fstack-protector-strong -L/usr/local/lib                         build/native/prefix/lib/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/prefix/lib/5.35.4/x86_64-linux/auto/IO/IO.a                                           build/native/prefix/lib/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -lnsl -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -pipe -fstack-protector-strong -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64                                                                                                                      -Ibuild/native/prefix/lib/5.35.4/x86_64-linux/CORE
+          gcc -o emperl emperl.c fmtutil.o updmap.o -I$PWD/build/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/prefix/lib/5.35.4/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         build/native/prefix/lib/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/prefix/lib/5.35.4/x86_64-linux/auto/IO/IO.a                                           build/native/prefix/lib/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm  -pipe  
           # `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts`
 
           #echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END

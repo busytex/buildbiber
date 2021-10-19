@@ -50,7 +50,7 @@ int main(int argc, char **argv, char **env)
     //fread(script, sizeof(script), 1, f);
     //fclose(f);
     
-    PERL_SYS_INIT3(&argc, &argv, &env);
+    PERL_SYS_INIT3(&argc, &argv, NULL);
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
