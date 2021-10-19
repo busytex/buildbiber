@@ -41,9 +41,6 @@ static char script[1 << 20];
 extern char _binary_fmtutil_pl_start[];
 extern char _binary_fmtutil_pl_end[];
 
-extern char _binary_updmap_pl_start[];
-extern char _binary_updmap_pl_end[];
-
 int main(int argc, char **argv, char **env)
 {
     //FILE* f = fopen(argv[1], "r");
