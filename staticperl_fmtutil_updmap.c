@@ -42,7 +42,7 @@ extern char _binary_fmtutil_pl_start[];
 extern char _binary_fmtutil_pl_end[];
 
 extern char _binary_updmap_pl_start[];
-extern char _binary_fupdmap_pl_end[];
+extern char _binary_updmap_pl_end[];
 
 int main(int argc, char **argv)
 {
@@ -59,12 +59,14 @@ int main(int argc, char **argv)
 
     if(0 == strcmp("fmtutil.pl", argv[1]))
     {
-        strncpy(script,    _binary_fmtutil_pl_start, (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start));
+        int iSize = (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
+        strncpy(script,    _binary_fmtutil_pl_start, iSize);
         script[iSize] = '\0';
     }
     if(0 == strcmp("updmap.pl", argv[1]))
     {
-        strncpy(script,    _binary_updmap_pl_start, (int)(_binary_updmap_pl_end - _binary_updmap_pl_start));
+        int iSize = (int)(_binary_updmap_pl_end - _binary_updmap_pl_start);
+        strncpy(script,    _binary_updmap_pl_start, iSize);
         script[iSize] = '\0';
     }
 
