@@ -1,4 +1,4 @@
-name: emperl
+name: staticperl_fmtutil_updmap
 
 on: workflow_dispatch
 
@@ -7,7 +7,7 @@ env:
   MAKEFLAGS: -j2
 
 jobs:
-  build:
+  staticperl_fmtutil_updmap:
     runs-on: ubuntu-20.04
     container: alpine:3.14
     steps:
