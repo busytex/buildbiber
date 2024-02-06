@@ -14,11 +14,6 @@ jobs:
       - name: Install Prerequisites
         run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 strace && ln -sf python3 /usr/bin/python
 
-#      - name: Setup Emscripten
-#        uses: mymindstorm/setup-emsdk@v10
-#        with:
-#          version: 2.0.30
-
       - uses: actions/checkout@v2
 
       - name: Build Native Perl
@@ -27,64 +22,24 @@ jobs:
           mkdir -p source build/native/perl
           wget -nc $URLPERL -P source
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
-          #mkdir ext/TeXLive
-          #wget -P ext/TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm
-          #echo > ext/TeXLive/TeXLive.pm
+          
           cd build/native/perl
           sh ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -ldl -lm -lutil -lc"
-          #  -Aclear:d_crypt -Aclear:d_crypt_r
-          # -Uusedl
           make miniperl generate_uudmap
           make perl
           make install
+          
           rm -rf prefix/man prefix/lib/*/pod/ || true
           find prefix/lib -name '*.pod' -delete
-          
           find prefix -type f
           find -name '*.a'
           find prefix -name '*.so'
           find prefix -name config.h
-          #../prefix/bin/perl -MExtUtils::Embed -e ccopts -e ldopts
-          #../prefix/bin/perl -MExtUtils::Embed -e xsinit -- -o xsinit.c -std Fcntl IO
-          #cat xsinit.c
-          
           cd ../../..
 
           ld -r -b binary -o fmtutil.o fmtutil.pl
           ld -r -b binary -o updmap.o  updmap.pl
 
-          find build/native/perl/prefix -name '*.a'
-
           gcc -o emperl emperl.c fmtutil.o updmap.o -I$PWD/build/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
-          # `../prefix/bin/perl5.35.4 -MExtUtils::Embed -e ccopts -e ldopts`
-
-          #echo BEGIN1; ./emperl -e 'print 123; use Fcntl; print 456;'; echo END
-          #ldd ./emperl
-          #gcc preload.c -o preload.so -ldl -shared
-          #LD_PRELOAD=$PWD/preload.so ./emperl --help || true
-          # print($^X)
-          #./emperl ../../../updmap.pl --help || true
-          #wget https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
+          ldd ./emperl || true
           ./emperl fmtutil.pl --help
-
-#      - name: Prefix
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: prefix
-#          path: |
-#            build/native/prefix/
-
-#      - name: Build Wasm Perl
-#        run: |
-#          ROOT=$PWD
-#          export MAKEFLAGS
-#          mkdir -p build/wasm/perl          
-#          tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/wasm/perl
-#          cd build/wasm/perl
-#          emconfigure bash ./Configure -sde -Alibs=-lm -Aldflags=-lm -Accflags=-lm -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_wasm.sh -Dsysroot=$(dirname $(which emcc))/system -Dhostperl=$ROOT/build/native/perl/miniperl -Dhostgenerate=$ROOT/build/native/perl/generate_uudmap
-#          #sed -i 's/$(generated_pods)//' Makefile
-#          emmake make perl
-#          emmake make install
-#          rm -rf ../prefix/man ../prefix/lib/*/pod/
-#          find ../prefix
-#          find -name '*.a'
