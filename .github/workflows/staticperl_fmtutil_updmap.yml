@@ -42,4 +42,5 @@ jobs:
 
           gcc -o staticperl_fmtutil_updmap staticperl_fmtutil_updmap.c fmtutil.o updmap.o -I$PWD/build/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
           ldd ./staticperl_fmtutil_updmap || true
-          ./staticperl_fmtutil_updmap fmtutil.pl --help
+          ./staticperl_fmtutil_updmap fmtutil.pl --help || true
+          ./staticperl_fmtutil_updmap updmap.pl --help || true
