@@ -46,7 +46,7 @@ extern char _binary_fupdmap_pl_end[];
 
 int main(int argc, char **argv)
 {
-    if(argc < 2)
+    if(argc < 3)
     {
         puts("need more arguments");
         return 1;
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
         script[iSize] = '\0';
     }
 
-    char *one_args[] = { "staticperl_fmtutil_updmap", "-e", script, "--", argv[1], NULL };
+    char *one_args[] = { "staticperl_fmtutil_updmap", "-e", script, "--", argv[2], NULL };
     perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
     perl_run(my_perl);
     perl_destruct(my_perl);
