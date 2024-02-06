@@ -34,8 +34,7 @@ jobs:
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
 
            cd perl
-           bash ./Configure -sde -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../../../hintfile_native.sh -Aldflags=-lm -Accflags=-lm 
-           #export MAKEFLAGS
+           bash ./Configure -sde -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../hintfile_native.sh -Aldflags=-lm -Accflags=-lm -Dlibs="-lpthread -ldl -lm -lutil -lc"
            make
            make install
        
