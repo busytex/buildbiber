@@ -1,4 +1,4 @@
-# Roadmap
+# Perl static/embedding experiments for busytex
 1. Compile static Perl embedding `updmap.pl` and `fmtutil.pl`
 2. Compile dynamic Perl embedding `tlmgr`
 2. Compile static Perl calling `tlmgr`: https://github.com/TeX-Live/installer/blob/master/texmf-dist/scripts/texlive/tlmgr.pl
