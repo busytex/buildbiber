@@ -75,6 +75,14 @@ jobs:
            wget $BIBERTESTPARFILES
            ../bin/biber --validate-control --convert-control test
 
+       - name: Archive artifacts
+         uses: actions/upload-artifact@v4
+         with:
+           name: build
+           path: |
+             biber/
+             prefix/
+
 #ROOT=$PWD
 #URLBIBER=https://github.com/plk/biber/archive/v2.15.tar.gz
 #PREFIX=$ROOT/build/native/prefix
