@@ -5,6 +5,7 @@ on: workflow_dispatch
 # https://texdoc.org/serve/biber.pdf/0
 # https://github.com/plk/biber/blob/dev/BUILDERS.README
 # https://github.com/plk/biber/blob/dev/dist/linux_x86_64/build.sh
+# https://github.com/plk/biber/blob/dev/dist/linux_x86_64-musl/build.sh
 
 env:
   URLPERL: https://www.cpan.org/src/5.0/perl-5.30.0.tar.gz
@@ -34,6 +35,7 @@ jobs:
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
 
            cd perl
+           #bash ./Configure -sde -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../hintfile_native.sh -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            #bash ./Configure -sde -Dprefix=$PWD/../prefix -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX re SDBM_File Socket Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Normalize                        Log/Log4perl autovivification URI Business/ISBN Business/ISSN Business/ISMN DateTime/Format/Builder DateTime/Calendar/Julian   Sort/Key Text/Roman Data/Dump Data/Compare Data/Uniqid Storable Mozilla/CA Regexp/Common Class/Accessor IO/String File/Slurper  List/Util List/AllUtils  Unicode/Collate Encode/Locale Parse/RecDescent I18N/Langinfo" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            bash ./Configure -sde -Dprefix=$PWD/../prefix
            make
@@ -56,9 +58,6 @@ jobs:
            wget $URLBIBER
            tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
            
-           # https://github.com/plk/biber/blob/dev/dist/linux_x86_64/build.sh
-           # https://github.com/plk/biber/blob/dev/dist/linux_x86_64-musl/build.sh
-           
            ROOT=$PWD
            PREFIX=$ROOT/prefix
            PARFILESBIBER="../data/biber-tool.conf;lib/Biber/biber-tool.conf ../data/schemata/config.rnc;lib/Biber/config.rnc ../data/schemata/config.rng;lib/Biber/config.rng ../data/schemata/bcf.rnc;lib/Biber/bcf.rnc ../data/schemata/bcf.rng;lib/Biber/bcf.rng ../data/bcf.xsl;Biber/bcf.xsl Biber/LaTeX/recode_data.xml;Biber/LaTeX/recode_data.xml"
@@ -67,6 +66,7 @@ jobs:
            
            cd biber/lib
            PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $PARMODULESSYS) $(printf -- "--module %s " $PARMODULESBIBER) $(printf -- "--link $PARLIBSSYSROOT/%s " $PARLIBSSYS) $(printf -- "--link %s " $PARLIBS) $(printf -- "--addfile %s " $PARFILESBIBER) $(printf -- "--addfile %s " $PARFILESUNICODE) $(printf -- "--addfile %s " $PARFILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
+           ls -lah ../bin/biber
 
 
 
