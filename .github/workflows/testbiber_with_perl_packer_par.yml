@@ -1,4 +1,4 @@
-name: test_biber_with_perl_packer_par
+name: testbiber_with_perl_packer_par
 
 on: workflow_dispatch
 
@@ -22,7 +22,7 @@ env:
   PARMODULESBIBER: "Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml"
 
 jobs:
-  test_biber_with_perl_packer_par:
+  testbiber_with_perl_packer_par:
     runs-on: ubuntu-20.04
     steps:
        - name: Install Package Dependencies
