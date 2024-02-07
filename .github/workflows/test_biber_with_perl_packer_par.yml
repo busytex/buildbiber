@@ -67,6 +67,7 @@ jobs:
            cd biber/lib
            PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $PARMODULESSYS) $(printf -- "--module %s " $PARMODULESBIBER) $(printf -- "--link $PARLIBSSYSROOT/%s " $PARLIBSSYS) $(printf -- "--link %s " $PARLIBS) $(printf -- "--addfile %s " $PARFILESBIBER) $(printf -- "--addfile %s " $PARFILESUNICODE) $(printf -- "--addfile %s " $PARFILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
            ls -lah ../bin/biber
+           ldd ../bin/biber || true
 
 
 
@@ -74,12 +75,13 @@ jobs:
            #           ../prefix/bin/perl ./Build.PL
            #           ../prefix/bin/perl ./Build install
            #       
-           #       - name: Test Biber
-           #         run: |
-           #           cd biber
-           #           wget $(printf "$URLTESTPARFILES/%s " $BIBERTESTPARFILES)
-           #           ../prefix/bin/perl ./Build test || true
-           #           ../prefix/bin/perl ./bin/biber --validate-control --convert-control test || true
+
+       - name: Test Biber
+         run: |
+           cd biber
+           wget $(printf "$URLTESTPARFILES/%s " $BIBERTESTPARFILES)
+           ../prefix/bin/perl ./Build test || true
+           ../prefix/bin/perl ./bin/biber --validate-control --convert-control test || true
 
 #ROOT=$PWD
 #URLBIBER=https://github.com/plk/biber/archive/v2.15.tar.gz
