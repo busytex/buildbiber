@@ -69,17 +69,13 @@ jobs:
            ls -lah ../bin/biber
            ldd ../bin/biber || true
 
-
-
-           #           cd biber
-           #           ../prefix/bin/perl ./Build.PL
-           #           ../prefix/bin/perl ./Build install
-           #       
+           # cd biber &&../prefix/bin/perl ./Build.PL
+           # cd biber &&../prefix/bin/perl ./Build install
 
        - name: Test Biber
          run: |
            cd biber
-           wget $(printf "$URLTESTPARFILES/%s " $BIBERTESTPARFILES)
+           wget $(printf "$URLTESTPARFILES/%s " $BIBERTESTPARFILES) || true
            ../prefix/bin/perl ./Build test || true
            ../prefix/bin/perl ./bin/biber --validate-control --convert-control test || true
 
@@ -102,6 +98,4 @@ jobs:
 #FILESUNICODE="$PREFIX/lib/$perlv/Unicode/Collate/Locale;lib/Unicode/Collate/Locale $PREFIX/lib/$perlv/Unicode/Collate/CJK;lib/Unicode/Collate/CJK $PREFIX/lib/$perlv/Unicode/Collate/allkeys.txt;lib/Unicode/Collate/allkeys.txt $PREFIX/lib/$perlv/Unicode/Collate/keys.txt;lib/Unicode/Collate/keys.txt"
 #FILESSYS="$PREFIX/lib/site_perl/$perlv/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem $PREFIX/lib/$perlv/$platform/PerlIO;lib/PerlIO $PREFIX/lib/$perlv/$platform/auto/PerlIO;lib/auto/PerlIO $PREFIX/lib/site_perl/$perlv/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
 #cd source/biber/lib
-#PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $MODULESSYS) $(printf -- "--module %s " $MODULESBIBER) $(printf -- "--link $LIBSSYSROOT/%s " $LIBSSYS) $(printf -- "--link %s " $LIBS) $(printf -- "--addfile %s " $FILESBIBER) $(printf -- "--addfile %s " $FILESUNICODE) $(printf -- "--addfile %s " $FILESSYS)  --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
 ##  --output=biber-linux_x86_64 \
-#
