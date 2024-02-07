@@ -8,7 +8,7 @@ import urllib.request
 parser = argparse.ArgumentParser()
 parser.add_argument('--encoding', default = 'utf-8')
 parser.add_argument('--method', default = 'inchook', choices = ['inchook', 'incpatch'], help = 'order of pm files is important for [incpatch] and not important for [inchook]')
-parser.add_argument('--delete-pod', nargs = '*', default = ['=pod,=cut', '__END__,=cut', '=head1,=cut', '=item,=cut'])
+parser.add_argument('--delete-pod', nargs = '*', default = ['=pod,=cut', '__END__,=cut', '=head1,=cut', '=head2,=cut','=head3,=cut', '=head4,=cut', '=head5,=cut', '=head6,=cut', '=back,=cut', '=item,=cut'])
 parser.add_argument('--delete-pod-sep', default = ',')
 parser.add_argument('--delete-comments-naive', action = 'store_true')
 parser.add_argument('--pl')
@@ -41,10 +41,12 @@ if args.method == 'inchook':
         path, *key = p.split('@')
         if not key:
             key = [os.path.basename(path)]
-        print(f'''"${key[0]}" => <<'__EOI__',''')
+        print('# PACKPERLMODULESBEGIN', p)
+        print(f'''"{key[0]}" => <<'__EOI__',''')
         print(read_pl_source(path))
         print('1;')
         print('__EOI__')
+        print('# PACKPERLMODULESEND', p)
     print(');')
     print('unshift @INC, sub {')
     print('my $module = $modules{$_[1]}')
