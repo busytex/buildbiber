@@ -67,21 +67,17 @@ jobs:
            PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $PARMODULESSYS) $(printf -- "--module %s " $PARMODULESBIBER) $(printf -- "--link $PARLIBSSYSROOT/%s " $PARLIBSSYS) $(printf -- "--link %s " $PARLIBS) $(printf -- "--addfile %s " $PARFILESBIBER) $(printf -- "--addfile %s " $PARFILESUNICODE) $(printf -- "--addfile %s " $PARFILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
            ls -lah ../bin/biber
            ldd ../bin/biber || true
-
-           # cd biber &&../prefix/bin/perl ./Build.PL
-           # cd biber &&../prefix/bin/perl ./Build install
+           # cd ../ &&../prefix/bin/perl ./Build.PL && ../prefix/bin/perl ./Build.PL install
 
        - name: Test Biber
          run: |
-           cd biber
-           wget $BIBERTESTPARFILES || true
-           ../prefix/bin/perl ./Build test || true
-           ../prefix/bin/perl ./bin/biber --validate-control --convert-control test || true
+           cd biber/testfiles
+           wget $BIBERTESTPARFILES
+           ../bin/biber --validate-control --convert-control test
 
 #ROOT=$PWD
 #URLBIBER=https://github.com/plk/biber/archive/v2.15.tar.gz
 #PREFIX=$ROOT/build/native/prefix
-#
 ##mkdir -p source/biber
 ##wget $URLBIBER
 ##tar -xf $(basename $URLBIBER) --strip-components=1 --directory source/biber
@@ -96,5 +92,4 @@ jobs:
 #FILESBIBER="../data/biber-tool.conf;lib/Biber/biber-tool.conf ../data/schemata/config.rnc;lib/Biber/config.rnc ../data/schemata/config.rng;lib/Biber/config.rng ../data/schemata/bcf.rnc;lib/Biber/bcf.rnc ../data/schemata/bcf.rng;lib/Biber/bcf.rng ../data/bcf.xsl;Biber/bcf.xsl Biber/LaTeX/recode_data.xml;Biber/LaTeX/recode_data.xml"
 #FILESUNICODE="$PREFIX/lib/$perlv/Unicode/Collate/Locale;lib/Unicode/Collate/Locale $PREFIX/lib/$perlv/Unicode/Collate/CJK;lib/Unicode/Collate/CJK $PREFIX/lib/$perlv/Unicode/Collate/allkeys.txt;lib/Unicode/Collate/allkeys.txt $PREFIX/lib/$perlv/Unicode/Collate/keys.txt;lib/Unicode/Collate/keys.txt"
 #FILESSYS="$PREFIX/lib/site_perl/$perlv/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem $PREFIX/lib/$perlv/$platform/PerlIO;lib/PerlIO $PREFIX/lib/$perlv/$platform/auto/PerlIO;lib/auto/PerlIO $PREFIX/lib/site_perl/$perlv/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
-#cd source/biber/lib
 ##  --output=biber-linux_x86_64 \
