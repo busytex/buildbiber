@@ -9,9 +9,8 @@ on: workflow_dispatch
 
 env:
   URLPERL: https://www.cpan.org/src/5.0/perl-5.30.0.tar.gz
-  URLBIBER: https://github.com/plk/biber/archive/v2.15.tar.gz
-  URLTESTPARFILES: https://master.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/testfiles
-  BIBERTESTPARFILES: test.bib test.bcf test-dev.bcf unifont.ttf
+  URLBIBER: https://github.com/plk/biber/archive/v2.19.tar.gz
+  BIBERTESTPARFILES: https://master.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/testfiles/unifont.ttf
   PERLPLATFORM: x86_64-linux
   PERLVERSION: 5.30.0
   MAKEFLAGS: -j1
@@ -75,7 +74,7 @@ jobs:
        - name: Test Biber
          run: |
            cd biber
-           wget $(printf "$URLTESTPARFILES/%s " $BIBERTESTPARFILES) || true
+           wget $BIBERTESTPARFILES || true
            ../prefix/bin/perl ./Build test || true
            ../prefix/bin/perl ./bin/biber --validate-control --convert-control test || true
 
