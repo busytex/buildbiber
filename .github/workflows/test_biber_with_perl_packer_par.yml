@@ -34,7 +34,7 @@ jobs:
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perl
 
            cd perl
-           bash ./Configure -sde -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../hintfile_native.sh -Aldflags=-lm -Accflags=-lm -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           bash ./Configure -sde -Dprefix=$PWD/../prefix -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX re SDBM_File Socket Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Normalize                        Log/Log4perl autovivification URI Business/ISBN Business/ISSN Business/ISMN DateTime/Format/Builder DateTime/Calendar/Julian   Sort/Key Text/Roman Data/Dump Data/Compare Data/Uniqid Storable Mozilla/CA Regexp/Common Class/Accessor IO/String File/Slurper  List/Util List/AllUtils  Unicode/Collate Encode/Locale Parse/RecDescent I18N/Langinfo" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            make
            make install
        
@@ -81,8 +81,8 @@ jobs:
 #ROOT=$PWD
 #URLBIBER=https://github.com/plk/biber/archive/v2.15.tar.gz
 #PREFIX=$ROOT/build/native/prefix
-##$PREFIX/bin/cpan -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit
-##$PREFIX/bin/cpan -T PAR PAR::Packer
+#
+
 ##mkdir -p source/biber
 ##wget $URLBIBER
 ##tar -xf $(basename $URLBIBER) --strip-components=1 --directory source/biber
