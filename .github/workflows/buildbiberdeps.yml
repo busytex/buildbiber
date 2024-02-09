@@ -32,9 +32,10 @@ jobs:
 
        - name: Install Biber
          run: |
-           mkdir biber
-           wget $URLBIBER
-           tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
+           git clone https://github.com/plk/biber
+           #mkdir biber
+           #wget $URLBIBER
+           #tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
 
        - name: Install Biber Dependencies Without Test
          run: |
