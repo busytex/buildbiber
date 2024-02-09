@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 jobs:
   buildbiberdeps:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
        - name: Install Package Dependencies
          run: sudo apt-get install -y libxml2-dev libxslt-dev libbtparse-dev
