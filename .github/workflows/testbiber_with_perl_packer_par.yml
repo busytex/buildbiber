@@ -11,6 +11,8 @@ env:
   URLPERL: https://www.cpan.org/src/5.0/perl-5.30.0.tar.gz
   URLBIBER: https://github.com/plk/biber/archive/v2.19.tar.gz
   BIBERTESTPARFILES: https://master.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/testfiles/unifont.ttf
+  PERLCPAN: cpan
+  # ./prefix/bin/cpan
   PERLPLATFORM: x86_64-linux
   PERLVERSION: 5.30.0
   MAKEFLAGS: -j1
@@ -36,15 +38,16 @@ jobs:
            cd perl
            #bash ./Configure -sde -Dprefix=$PWD/../prefix -Dhintfile=$PWD/../hintfile_native.sh -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            #bash ./Configure -sde -Dprefix=$PWD/../prefix -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX re SDBM_File Socket Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Normalize Log/Log4perl autovivification URI Business/ISBN Business/ISSN Business/ISMN DateTime/Format/Builder DateTime/Calendar/Julian   Sort/Key Text/Roman Data/Dump Data/Compare Data/Uniqid Storable Mozilla/CA Regexp/Common Class/Accessor IO/String File/Slurper  List/Util List/AllUtils  Unicode/Collate Encode/Locale Parse/RecDescent I18N/Langinfo" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
-           bash ./Configure -sde -Dprefix=$PWD/../prefix
-           make
-           make install
-           ldd $PWD/../prefix/bin/perl || true
+           #bash ./Configure -sde -Dprefix=$PWD/../prefix
+           #make
+           #make install
+           #ldd $PWD/../prefix/bin/perl || true
        
        - name: Install Biber Dependencies Without Test from Build.PL
          run: |
-          ./prefix/bin/cpan -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit 
-          ./prefix/bin/cpan -T PAR PAR::Packer  
+          $PERLCPAN -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit 
+          $PERLCPAN -T PAR PAR::Packer
+          which pp
        
        - name: Search PAR
          run: |
@@ -64,7 +67,7 @@ jobs:
            PARFILESSYS="$PREFIX/lib/site_perl/$PERLVERSION/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem $PREFIX/lib/$PERLVERSION/$PERLPLATFORM/PerlIO;lib/PerlIO $PREFIX/lib/$PERLVERSION/$PERLPLATFORM/auto/PerlIO;lib/auto/PerlIO $PREFIX/lib/site_perl/$PERLVERSION/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
            
            cd biber/lib
-           PAR_VERBATIM=1 $PREFIX/bin/pp $(printf -- "--module %s " $PARMODULESSYS) $(printf -- "--module %s " $PARMODULESBIBER) $(printf -- "--link $PARLIBSSYSROOT/%s " $PARLIBSSYS) $(printf -- "--link %s " $PARLIBS) $(printf -- "--addfile %s " $PARFILESBIBER) $(printf -- "--addfile %s " $PARFILESUNICODE) $(printf -- "--addfile %s " $PARFILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
+           PAR_VERBATIM=1 pp $(printf -- "--module %s " $PARMODULESSYS) $(printf -- "--module %s " $PARMODULESBIBER) $(printf -- "--link $PARLIBSSYSROOT/%s " $PARLIBSSYS) $(printf -- "--link %s " $PARLIBS) $(printf -- "--addfile %s " $PARFILESBIBER) $(printf -- "--addfile %s " $PARFILESUNICODE) $(printf -- "--addfile %s " $PARFILESSYS) --unicode --cachedeps=scancache --output=$ROOT/biber.par ../bin/biber
            ls -lah ../bin/biber
            ldd ../bin/biber || true
            # cd ../ &&../prefix/bin/perl ./Build.PL && ../prefix/bin/perl ./Build.PL install
