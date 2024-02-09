@@ -22,9 +22,10 @@ def read_pl_source(p, ):
     t = f.read().decode(args.encoding)
     
     r = ''
-    for l in t.splitlines():
+    for l in t.split('\n'):
         if (not l or args.delete_comments_naive is False or not l.lstrip().startswith('#')):
-            if args.comment_unshift_inc and l.lstrip().replace(' ', '').startswith('unshift(@INC'):
+            lnospaces = l.lstrip().replace(' ', '')
+            if args.comment_unshift_inc and (lnospaces.startswith('unshift(@INC') or lnospaces.startswith('unshift @INC')):
                 l = '#' + l + '# ' + args.comment_signature
             r += l + '\n'
     t = r
@@ -33,7 +34,7 @@ def read_pl_source(p, ):
         r = ''
         b, e = be.split(args.delete_pod_sep)
         skip = False
-        for l in t.splitlines():
+        for l in t.split('\n'):
             s = l.split()
             if s and s[0] == b:
                 skip = True
