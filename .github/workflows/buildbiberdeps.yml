@@ -1,9 +1,9 @@
-name: buildbiber
+name: buildbiberdeps
 
 on: workflow_dispatch
 
 jobs:
-  buildbiber:
+  buildbiberdeps:
     runs-on: ubuntu-20.04
     steps:
        - name: Install Package Dependencies
