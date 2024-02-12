@@ -43,6 +43,7 @@ jobs:
            ./mycpan.sh Config::AutoConf ExtUtils::LibBuilder Business::ISBN Business::ISMN Business::ISSN    Class::Accessor Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder    Encode::EUCJPASCII Encode::HanExtra Encode::JIS2K Encode::Locale File::Slurper IO::String IPC::Run3 LWP::Protocol::https LWP::UserAgent    Lingua::Translit List::AllUtils List::MoreUtils List::MoreUtils::XS Log::Log4perl Mozilla::CA    Parse::RecDescent PerlIO::utf8_strict Regexp::Common Sort::Key Text::BibTeX Text::CSV Text::CSV_XS Text::Roman URI Unicode::Collate Unicode::GCString Unicode::LineBreak    XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer     autovivification File::Which Test::Differences
            ./mycpan.sh PAR PAR::Packer
            ./mycpan.sh Test::More IPC::Cmd Unicode::Normalize PerlIO::utf8_strict Storable
+           #./mycpan.sh Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date File::Find::Rule IO::Socket::SSL DateTime  Encode::
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
@@ -54,7 +55,9 @@ jobs:
            sudo cp /usr/lib/x86_64-linux-gnu/libexslt.so.0 /usr/local/lib
            sudo cp /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/libssl.so.0.9.8
            sudo cp /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib/libcrypto.so.0.9.8
+           sudo ln -s /usr/local/perl/lib/5.32.0/x86_64-linux /usr/local/perl/lib/*/x86_64-linux-thread-multi
            cd ./dist/linux_x86_64
+           export PP_OPTS='-vvv'
            bash build.sh || true
            find .
            ./biber-linux_x86_64 --help
@@ -65,3 +68,4 @@ jobs:
            name: artifacts
            path: |
              biber/dist/linux_x86_64/biber-linux_x86_64
+
