@@ -47,6 +47,7 @@ jobs:
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
+           ./mycpan.sh PAR PAR::Packer
 
 #       - name: Artifacts
 #         uses: actions/upload-artifact@v4
