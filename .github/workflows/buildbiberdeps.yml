@@ -42,6 +42,7 @@ jobs:
            ./mycpan.sh Module::Build
            ./mycpan.sh Config::AutoConf ExtUtils::LibBuilder Business::ISBN Business::ISMN Business::ISSN    Class::Accessor Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder    Encode::EUCJPASCII Encode::HanExtra Encode::JIS2K Encode::Locale File::Slurper IO::String IPC::Run3 LWP::Protocol::https LWP::UserAgent    Lingua::Translit List::AllUtils List::MoreUtils List::MoreUtils::XS Log::Log4perl Mozilla::CA    Parse::RecDescent PerlIO::utf8_strict Regexp::Common Sort::Key Text::BibTeX Text::CSV Text::CSV_XS Text::Roman URI Unicode::Collate Unicode::GCString Unicode::LineBreak    XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer     autovivification File::Which Test::Differences
            ./mycpan.sh PAR PAR::Packer
+           ./mycpan.sh Test::More IPC::Cmd Unicode::Normalize PerlIO::utf8_strict Storabl
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
@@ -53,8 +54,9 @@ jobs:
            sudo cp /usr/lib/x86_64-linux-gnu/libexslt.so.0 /usr/local/lib
            sudo cp /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/libssl.so.0.9.8
            sudo cp /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib/libcrypto.so.0.9.8
-           cd ./dist/linux_x86_64 && bash build.sh || true
-           ls biber-linux_x86_64
+           cd ./dist/linux_x86_64
+           bash build.sh || true
+           find .
            ./biber-linux_x86_64 --help
 
        - name: Artifacts
@@ -63,6 +65,3 @@ jobs:
            name: artifacts
            path: |
              biber/dist/linux_x86_64/biber-linux_x86_64
-
-#       - name: Install Biber Dependencies Without Test from Build.PL
-#         run: cpan -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit 
