@@ -36,11 +36,19 @@ jobs:
        - name: Install Biber Dependencies Without Test
          run: |
            cd biber
-           echo 'echo MYCPAN:$@; cpan -T $@' > mycpan.sh; chmod +x mycpan.sh; cat mycpan.sh
+           echo $RUNNER_WORKSPACE/localperl/bin
+           echo 'echo MYCPAN:$@; cpan -T $@' > ./mycpan.sh; chmod +x ./mycpan.sh; cat ./mycpan.sh
            ./mycpan.sh Module::Build
-           perl Build.PL
-           perl ./Build installdeps --cpan_client ./mycpan.sh
-           perl ./Build test
+           $RUNNER_WORKSPACE/localperl/bin/perl Build.PL
+           $RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
+           $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
+
+      - name: Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: |
+            biber/Build
 
 #name: buildbiberdeps
 #on: workflow_dispatch
