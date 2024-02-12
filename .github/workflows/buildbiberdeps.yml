@@ -30,26 +30,28 @@ jobs:
 
        - name: Set ENV
          run: |
-           echo "$RUNNER_WORKSPACE/localperl/bin" >> $GITHUB_PATH
+           #echo "$RUNNER_WORKSPACE/localperl/bin" >> $GITHUB_PATH
            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RUNNER_WORKSPACE/localperl/lib" >> $GITHUB_ENV
 
        - name: Install Biber Dependencies Without Test
          run: |
+           find $RUNNER_WORKSPACE/localperl
+           # /home/runner/work/busyperl/localperl/bin
            cd biber
-           echo $RUNNER_WORKSPACE/localperl/bin
-           echo 'echo MYCPAN:$@; cpan -T $@' > ./mycpan.sh; chmod +x ./mycpan.sh; cat ./mycpan.sh
+           echo 'echo MYCPAN:$@; $RUNNER_WORKSPACE/localperl/bin/cpan -T $@' > ./mycpan.sh; chmod +x ./mycpan.sh; cat ./mycpan.sh
            ./mycpan.sh Module::Build
-           $RUNNER_WORKSPACE/localperl/bin/perl Build.PL
+           ./myspan.sh Config::AutoConf ExtUtils::LibBuilder Business::ISBN Business::ISMN Business::ISSN Class::Accessor Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder Encode::EUCJPASCII Encode::HanExtra Encode::JIS2K Encode::Locale File::Slurper IO::String IPC::Run3 LWP::Protocol::https LWP::UserAgent Lingua::Translit List::AllUtils List::MoreUtils List::MoreUtils::XS Log::Log4perl Mozilla::CA Parse::RecDescent PerlIO::utf8_strict Regexp::Common Sort::Key Text::BibTeX Text::CSV Text::CSV_XS Text::Roman URI Unicode::Collate Unicode::GCString Unicode::LineBreak XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer autovivification File::Which Test::Differences
+           $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
 
-       - name: Artifacts
-         uses: actions/upload-artifact@v2
-         with:
-           name: artifacts
-           path: |
-             biber/Build
-
+#       - name: Artifacts
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: artifacts
+#           path: |
+#             biber/Build
+#
 #name: buildbiberdeps
 #on: workflow_dispatch
 #jobs:
