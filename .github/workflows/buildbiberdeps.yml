@@ -30,26 +30,23 @@ jobs:
            make
            make install
            popd
-
-       - name: Set ENV
-         run: |
+           sudo rm -rf /usr/local/perl && sudo ln -s $RUNNER_WORKSPACE/localperl /usr/local/perl
            #echo "$RUNNER_WORKSPACE/localperl/bin" >> $GITHUB_PATH
            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RUNNER_WORKSPACE/localperl/lib" >> $GITHUB_ENV
 
        - name: Install Biber Dependencies Without Test
          run: |
-           find $RUNNER_WORKSPACE/localperl
            # /home/runner/work/busyperl/localperl/bin
            cd biber
            echo 'echo MYCPAN:$@; $RUNNER_WORKSPACE/localperl/bin/cpan -T $@' > ./mycpan.sh; chmod +x ./mycpan.sh; cat ./mycpan.sh
            ./mycpan.sh Module::Build
            ./mycpan.sh Config::AutoConf ExtUtils::LibBuilder Business::ISBN Business::ISMN Business::ISSN    Class::Accessor Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder    Encode::EUCJPASCII Encode::HanExtra Encode::JIS2K Encode::Locale File::Slurper IO::String IPC::Run3 LWP::Protocol::https LWP::UserAgent    Lingua::Translit List::AllUtils List::MoreUtils List::MoreUtils::XS Log::Log4perl Mozilla::CA    Parse::RecDescent PerlIO::utf8_strict Regexp::Common Sort::Key Text::BibTeX Text::CSV Text::CSV_XS Text::Roman URI Unicode::Collate Unicode::GCString Unicode::LineBreak    XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer     autovivification File::Which Test::Differences
-           $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
-           #$RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
-           $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
            ./mycpan.sh PAR PAR::Packer
-           sudo rm -rf /usr/local/perl
-           sudo ln -s $RUNNER_WORKSPACE/localperl /usr/local/perl
+           $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
+           $RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
+           $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
+           $RUNNER_WORKSPACE/localperl/bin/perl ./Build install
+           find $RUNNER_WORKSPACE/localperl
            bash ./dist/linux_x86_64/build.sh
 
 #       - name: Artifacts
@@ -58,16 +55,5 @@ jobs:
 #           name: artifacts
 #           path: |
 #             biber/Build
-#
-#name: buildbiberdeps
-#on: workflow_dispatch
-#jobs:
-#  buildbiberdeps:
-#    runs-on: ubuntu-22.04
-#    steps:
-#       - name: Install Package Dependencies
-#         run: sudo apt-get install -y libxml2-dev libxslt-dev libbtparse-dev
 #       - name: Install Biber Dependencies Without Test from Build.PL
-#         run: |
-#          cpan -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit 
-#          cpan -T PAR PAR::Packer
+#         run: cpan -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit 
