@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
        - name: Install Package Dependencies
-         run: sudo apt-get install -y libxml2-dev libxslt-dev libbtparse-dev
+         run: sudo apt install -y libxml2-dev libxslt-dev libbtparse-dev p7zip-full
 
        - name: Install Biber
          run: mkdir biber && wget $URLBIBER && tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
@@ -59,8 +59,9 @@ jobs:
            cd ./dist/linux_x86_64
            export PP_OPTS='-vvv'
            bash build.sh || true
-           find .
            ./biber-linux_x86_64 --help
+           unzip -o biber-linux_x86_64
+           find . -name '*.so*'
 
        - name: Artifacts
          uses: actions/upload-artifact@v4
