@@ -53,15 +53,16 @@ jobs:
            sudo cp /usr/lib/x86_64-linux-gnu/libexslt.so.0 /usr/local/lib
            sudo cp /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/libssl.so.0.9.8
            sudo cp /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib/libcrypto.so.0.9.8
-           bash ./dist/linux_x86_64/build.sh || true
+           cd ./dist/linux_x86_64 && bash build.sh || true
            ls biber-linux_x86_64
            ./biber-linux_x86_64 --help
 
-#       - name: Artifacts
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: artifacts
-#           path: |
-#             biber/Build
+       - name: Artifacts
+         uses: actions/upload-artifact@v4
+         with:
+           name: artifacts
+           path: |
+             biber/dist/linux_x86_64/biber-linux_x86_64
+
 #       - name: Install Biber Dependencies Without Test from Build.PL
 #         run: cpan -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit 
