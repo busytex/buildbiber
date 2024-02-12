@@ -50,7 +50,7 @@ jobs:
            ./mycpan.sh PAR PAR::Packer
            sudo rm -rf /usr/local/perl
            sudo ln -s $RUNNER_WORKSPACE/localperl /usr/local/perl
-           bash ./dev/dist/linux_x86_64/build.sh
+           bash ./dist/linux_x86_64/build.sh
 
 #       - name: Artifacts
 #         uses: actions/upload-artifact@v4
