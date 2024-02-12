@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
        - name: Install Biber
-         run: mkdir biber && wget $URLBIBER && tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
+         run: sudo apt install -y libxslt-dev && mkdir biber && wget $URLBIBER && tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
 
        - name: Install Perl
          run: |
@@ -42,10 +42,7 @@ jobs:
            ./mycpan.sh Module::Build
            ./mycpan.sh Config::AutoConf ExtUtils::LibBuilder Business::ISBN Business::ISMN Business::ISSN    Class::Accessor Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder    Encode::EUCJPASCII Encode::HanExtra Encode::JIS2K Encode::Locale File::Slurper IO::String IPC::Run3 LWP::Protocol::https LWP::UserAgent    Lingua::Translit List::AllUtils List::MoreUtils List::MoreUtils::XS Log::Log4perl Mozilla::CA    Parse::RecDescent PerlIO::utf8_strict Regexp::Common Sort::Key Text::BibTeX Text::CSV Text::CSV_XS Text::Roman URI Unicode::Collate Unicode::GCString Unicode::LineBreak 
            ./mycpan.sh autovivification File::Which Test::Differences
-           ./mycpan.sh XML::LibXML
-           ./mycpan.sh XML::LibXML::Simple 
-           ./mycpan.sh XML::LibXSLT 
-           ./mycpan.sh XML::Writer 
+           ./mycpan.sh XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer 
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
