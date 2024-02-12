@@ -12,6 +12,9 @@ jobs:
   buildbiberdeps:
     runs-on: ubuntu-22.04
     steps:
+       - name: Install Biber
+         run: mkdir biber && wget $URLBIBER && tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
+
        - name: Install Perl
          run: |
            mkdir perlsource
@@ -29,13 +32,6 @@ jobs:
          run: |
            echo "$RUNNER_WORKSPACE/localperl/bin" >> $GITHUB_PATH
            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RUNNER_WORKSPACE/localperl/lib" >> $GITHUB_ENV
-
-       - name: Install Biber
-         run: |
-           git clone https://github.com/plk/biber
-           #mkdir biber
-           #wget $URLBIBER
-           #tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
 
        - name: Install Biber Dependencies Without Test
          run: |
@@ -57,4 +53,3 @@ jobs:
 #         run: |
 #          cpan -T Test::More Test::Differences File::Which    Module::Build    Config::AutoConf ExtUtils::LibBuilder    autovivification Class::Accessor Data::Dump Data::Compare Data::Uniqid DateTime::Format::Builder DateTime::Calendar::Julian File::Slurper IPC::Cmd IPC::Run3 List::AllUtils List::MoreUtils List::MoreUtils::XS Mozilla::CA Regexp::Common Log::Log4perl Unicode::Collate Unicode::Normalize Unicode::LineBreak Unicode::GCString Encode::Locale Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra Parse::RecDescent PerlIO::utf8_strict XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer Sort::Key Storable Text::CSV Text::CSV_XS Text::Roman IO::String URI Text::BibTeX LWP::UserAgent LWP::Protocol::https Business::ISBN Business::ISSN Business::ISMN Lingua::Translit 
 #          cpan -T PAR PAR::Packer
-#          which pp
