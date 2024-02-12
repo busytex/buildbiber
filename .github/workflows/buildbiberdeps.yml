@@ -36,7 +36,7 @@ jobs:
        - name: Install Biber Dependencies Without Test
          run: |
            cd biber
-           echo 'echo $@; cpan -T $@' > mycpan.sh; chmod +x mycpan.sh; cat mycpan.sh
+           echo 'echo MYCPAN:$@; cpan -T $@' > mycpan.sh; chmod +x mycpan.sh; cat mycpan.sh
            ./mycpan.sh Module::Build
            perl Build.PL
            perl ./Build installdeps --cpan_client ./mycpan.sh
