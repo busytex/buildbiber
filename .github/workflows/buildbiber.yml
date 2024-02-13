@@ -36,7 +36,7 @@ jobs:
            wget -nc $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
            cd perlsourcestatic
-           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="POSIX" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd POSIX" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            make
            make install
 
@@ -71,7 +71,7 @@ jobs:
        - name: Show dependencies
          run: |
            mkdir -p biberunzip
-           unzip -o biber/dist/linux_x86_64/biber-linux_x86_64 -d biberunzip
+           unzip -qq -o biber/dist/linux_x86_64/biber-linux_x86_64 -d biberunzip
            find biberunzip -name '*.so*'
 
        - name: Artifacts
