@@ -26,7 +26,7 @@
 ./lib/auto/Net/SSLeay/SSLeay.so
 * ./lib/auto/Sub/Identify/Identify.so
 ./lib/auto/DateTime/DateTime.so
-./lib/auto/Storable/Storable.so
+* ./lib/auto/Storable/Storable.so
 * ./lib/auto/Variable/Magic/Magic.so
 - ./lib/auto/Math/BigInt/FastCalc/FastCalc.so
 - ./lib/auto/Class/XSAccessor/XSAccessor.so
