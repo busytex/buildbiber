@@ -18,6 +18,16 @@ jobs:
        - name: Install Biber
          run: mkdir biber && wget $URLBIBER && tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
 
+       - name: Install Perl static
+         run: |
+           mkdir perlsourcestatic
+           wget -nc $URLPERL
+           tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
+           cd perlsourcestatic
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           make
+           make install
+       
        - name: Install Perl dynamic
          run: |
            mkdir perlsourcedynamic
@@ -30,16 +40,6 @@ jobs:
            sudo rm -rf /usr/local/perl && sudo ln -s $RUNNER_WORKSPACE/localperldynamic /usr/local/perl
            echo "LD_LIBRARY_PATH=$RUNNER_WORKSPACE/localperldynamic/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
        
-       - name: Install Perl static
-         run: |
-           mkdir perlsourcestatic
-           wget -nc $URLPERL
-           tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
-           cd perlsourcestatic
-           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
-           make
-           make install
-
        - name: Install Biber Dependencies Without Test
          run: |
            # /home/runner/work/busyperl/localperldynamic/bin
