@@ -2,10 +2,9 @@ URL=$(wget -q -O - https://fastapi.metacpan.org/v1/download_url/$MOD | grep down
 PKG=${MOD//::/-}
 echo $PKG $URL
 
-mkdir -p source
-wget -nc $URL -P source
-mkdir -p myext
-tar -xf source/$(basename $URL) --strip-components=1 --directory myext/$PKG
+mkdir -p myextsource myext/$PKG
+wget -nc $URL -P myextsource
+tar -xf myextsource/$(basename $URL) --strip-components=1 --directory myext/$PKG
 cd myext/$PKG
 test -f Makefile.PL
 $PERLBIN Makefile.PL LINKTYPE=static
