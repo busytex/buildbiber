@@ -49,8 +49,8 @@
 + ./lib/auto/threads/shared/shared.so
 + ./lib/auto/threads/threads.so
 + ./lib/auto/Time/HiRes/HiRes.so
-./lib/auto/Sys/Syslog/Syslog.so
-./lib/auto/Sys/Hostname/Hostname.so
++ ./lib/auto/Sys/Syslog/Syslog.so
++ ./lib/auto/Sys/Hostname/Hostname.so
 + ./lib/auto/Opcode/Opcode.so
 + ./lib/auto/Data/Dumper/Dumper.so
 + ./lib/auto/attributes/attributes.so
