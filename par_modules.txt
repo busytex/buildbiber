@@ -18,9 +18,9 @@
 ./lib/auto/Encode/Symbol/Symbol.so
 ./lib/auto/Encode/EBCDIC/EBCDIC.so
 ./lib/auto/Encode/Byte/Byte.so
-./lib/auto/Encode/TW/TW.so
++ ./lib/auto/Encode/TW/TW.so
 ./lib/auto/Encode/HanExtra/HanExtra.so
-./lib/auto/Encode/JP/JP.so
++ ./lib/auto/Encode/JP/JP.so
 ./lib/auto/Encode/JIS2K/JIS2K.so
 ./lib/auto/autovivification/autovivification.so
 ./lib/auto/Devel/Caller/Caller.so
