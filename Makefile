@@ -1,6 +1,4 @@
-all: fmtutil.pl updmap.pl
-
-fmtutil.pl updmap.pl:
+fmtutil_inchook_old.pl updmap_inchook_old.pl:
 	echo 'BEGIN {' > $@
 	echo 'my %modules = (' >> $@
 	#
@@ -25,7 +23,7 @@ fmtutil.pl updmap.pl:
 	curl https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/$@ >> $@
 
 
-fmtutil_.pl updmap_.pl:
+fmtutil_incpatch_old.pl updmap_incpatch_old.pl:
 	echo 'BEGIN {' > $@
 	curl https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm >> $@
 	echo '$$INC{ ( __PACKAGE__ =~ s{::}{/}rg ) . ".pm" } = 1;' >> $@
