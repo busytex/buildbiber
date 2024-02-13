@@ -21,12 +21,12 @@
 ./lib/auto/IO/Compress/Brotli/Brotli.so
 ./lib/auto/List/MoreUtils/XS/XS.so
 ./lib/auto/List/SomeUtils/XS/XS.so
-./lib/auto/Filter/Util/Call/Call.so
+* ./lib/auto/Filter/Util/Call/Call.so
 ./lib/auto/DBI/DBI.so
 ./lib/auto/Net/SSLeay/SSLeay.so
 - ./lib/auto/Sub/Identify/Identify.so
 ./lib/auto/DateTime/DateTime.so
-* ./lib/auto/Storable/Storable.so
+- ./lib/auto/Storable/Storable.so
 - ./lib/auto/Variable/Magic/Magic.so
 - ./lib/auto/Math/BigInt/FastCalc/FastCalc.so
 - ./lib/auto/Class/XSAccessor/XSAccessor.so
