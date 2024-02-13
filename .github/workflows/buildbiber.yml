@@ -1,4 +1,4 @@
-name: buildbiberdeps
+name: buildbiber
 
 env:
   URLPERL: https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz
@@ -9,7 +9,7 @@ env:
 on: workflow_dispatch
 
 jobs:
-  buildbiberdeps:
+  buildbiber:
     runs-on: ubuntu-22.04
     steps:
        - name: Install Package Dependencies

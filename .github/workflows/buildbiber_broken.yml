@@ -1,4 +1,4 @@
-name: testbiber_with_perl_packer_par
+name: buildbiber_broken
 
 on: workflow_dispatch
 
@@ -23,7 +23,7 @@ env:
   PARMODULESBIBER: "Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml"
 
 jobs:
-  testbiber_with_perl_packer_par:
+  buildbiber_broken:
     runs-on: ubuntu-20.04
     steps:
        - name: Install Package Dependencies
@@ -49,11 +49,6 @@ jobs:
           $PERLCPAN -T PAR PAR::Packer
           which pp
        
-       - name: Search PAR
-         run: |
-           ls 
-           find ./prefix
-
        - name: Download and Compile Biber
          run: |
            mkdir biber
