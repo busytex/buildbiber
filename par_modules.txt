@@ -48,7 +48,7 @@
 + ./lib/auto/File/Glob/Glob.so
 ./lib/auto/threads/shared/shared.so
 ./lib/auto/threads/threads.so
-./lib/auto/Time/HiRes/HiRes.so
++ ./lib/auto/Time/HiRes/HiRes.so
 ./lib/auto/Sys/Syslog/Syslog.so
 ./lib/auto/Sys/Hostname/Hostname.so
 + ./lib/auto/Opcode/Opcode.so
@@ -62,7 +62,7 @@
 ./lib/auto/Filter/Util/Call/Call.so
 ./lib/auto/DBI/DBI.so
 ./lib/auto/Net/SSLeay/SSLeay.so
-./lib/auto/re/re.so
++ ./lib/auto/re/re.so
 + ./lib/auto/Fcntl/Fcntl.so
 ./lib/auto/Socket/Socket.so
 ./lib/auto/Sub/Identify/Identify.so
