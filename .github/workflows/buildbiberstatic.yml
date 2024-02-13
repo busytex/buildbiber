@@ -1,0 +1,45 @@
+name: buildbiberstatic
+
+env:
+  URLPERL: https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz
+  
+on: workflow_dispatch
+
+jobs:
+  buildbiberstatic:
+    runs-on: ubuntu-22.04
+    steps:
+       - name: Install Package Dependencies
+         run: sudo apt install -y libxml2-dev libxslt-dev libbtparse-dev p7zip-full
+       
+       - uses: actions/checkout@v2
+
+       - name: Install Perl static
+         run: |
+           mkdir perlsourcestatic
+           wget -nc $URLPERL
+           tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
+           cd perlsourcestatic
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Encode/CN Encode/KR Encode/TW Encode/JP  Encode/Symbol Encode/EBCDIC Encode/Byte Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re Socket  Unicode/Normalize Unicode/Collate Compress/Raw/Zlib Compress/Raw/Bzip2 threads threads/shared Sys/Syslog Sys/Hostname File/DosGlob Math/BigInt/FastCalc Hash/Util/FieldHash Filter/Util/Call IPC/SysV MIME/Base64" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           make
+           make install
+
+       - name: Install Perl static extra packages
+         run: |
+           export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
+           for MOD in DateTime Storable Clone PadWalker DBI autovivification  Sort::Key Encode::EUCJPASCII Devel::Caller Devel::LexAlias XML::LibXSLT XML::Parser::Expat Unicode::LineBreak PerlIO::utf8_strict HTML::Parser List::MoreUtils::XS List::SomeUtils::XS Net::SSLeay Sub::IdentifyVariable::Magic Class::XSAccessor Package::Stash::XS Params::Util; do bash build_static_perl_package.sh $MOD; done
+           echo FINDPERLDIR; find $RUNNER_WORKSPACE/localperlstatic
+           echo FINDEXTDIR ; find ./myext/
+       
+       - name: Install Perl static extra packages FAIL
+         run: |
+           export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
+           set +e
+           for MOD in DBD::SQLite XML::LibXML Encode::HanExtra Encode::JIS2K Text::BibTeX PerlIO::mmap Params::Validate::XS IO::Compress::Brotli; do bash build_static_perl_package.sh $MOD; echo $MOD $?; done
+
+       - name: Artifacts
+         uses: actions/upload-artifact@v4
+         with:
+           name: artifacts
+           path: |
+             ./myext/
