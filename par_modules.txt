@@ -33,8 +33,8 @@
 ./lib/auto/Hash/Util/FieldHash/FieldHash.so
 ./lib/auto/DBD/SQLite/SQLite.so
 ./lib/auto/Package/Stash/XS/XS.so
-./lib/auto/Params/Validate/XS/XS.so
-./lib/auto/Params/Util/Util.so
+- ./lib/auto/Params/Validate/XS/XS.so
+- ./lib/auto/Params/Util/Util.so
 
 + ./lib/auto/I18N/Langinfo/Langinfo.so
 + ./lib/auto/Digest/MD5/MD5.so
