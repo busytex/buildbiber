@@ -1,35 +1,35 @@
-./lib/auto/Sort/Key/Key.so
-./lib/auto/Encode/EUCJPASCII/EUCJPASCII.so
-./lib/auto/Encode/HanExtra/HanExtra.so
-./lib/auto/Encode/JIS2K/JIS2K.so
-./lib/auto/autovivification/autovivification.so
-./lib/auto/Devel/Caller/Caller.so
-./lib/auto/Devel/LexAlias/LexAlias.so
-./lib/auto/XML/LibXSLT/LibXSLT.so
-./lib/auto/XML/Parser/Expat/Expat.so
-./lib/auto/XML/LibXML/LibXML.so
-./lib/auto/Unicode/LineBreak/LineBreak.so
-./lib/auto/Clone/Clone.so
-./lib/auto/Text/BibTeX/BibTeX.so
-./lib/auto/PadWalker/PadWalker.so
-./lib/auto/PerlIO/utf8_strict/utf8_strict.so
-./lib/auto/PerlIO/mmap/mmap.so
-./lib/auto/HTML/Parser/Parser.so
-./lib/auto/IO/Compress/Brotli/Brotli.so
-./lib/auto/List/MoreUtils/XS/XS.so
-./lib/auto/List/SomeUtils/XS/XS.so
-./lib/auto/DBI/DBI.so
-./lib/auto/Net/SSLeay/SSLeay.so
-./lib/auto/Sub/Identify/Identify.so
-./lib/auto/DateTime/DateTime.so
-./lib/auto/Storable/Storable.so
-./lib/auto/Variable/Magic/Magic.so
-./lib/auto/Class/XSAccessor/XSAccessor.so
-./lib/auto/DBD/SQLite/SQLite.so
-./lib/auto/Package/Stash/XS/XS.so
-./lib/auto/Params/Validate/XS/XS.so
-./lib/auto/Params/Util/Util.so
+-- ./lib/auto/Encode/HanExtra/HanExtra.so
+-- ./lib/auto/Encode/JIS2K/JIS2K.so
+-- ./lib/auto/XML/LibXML/LibXML.so
+-- ./lib/auto/Text/BibTeX/BibTeX.so
+-- ./lib/auto/PerlIO/mmap/mmap.so
+-- ./lib/auto/IO/Compress/Brotli/Brotli.so
+-- ./lib/auto/DBD/SQLite/SQLite.so
+-- ./lib/auto/Params/Validate/XS/XS.so
 
+++ ./lib/auto/Sort/Key/Key.so
+++ ./lib/auto/Encode/EUCJPASCII/EUCJPASCII.so
+++ ./lib/auto/autovivification/autovivification.so
+++ ./lib/auto/Devel/Caller/Caller.so
+++ ./lib/auto/Devel/LexAlias/LexAlias.so
+++ ./lib/auto/XML/LibXSLT/LibXSLT.so
+++ ./lib/auto/XML/Parser/Expat/Expat.so
+++ ./lib/auto/Unicode/LineBreak/LineBreak.so
+++ ./lib/auto/Clone/Clone.so
+++ ./lib/auto/PadWalker/PadWalker.so
+++ ./lib/auto/PerlIO/utf8_strict/utf8_strict.so
+++ ./lib/auto/HTML/Parser/Parser.so
+++ ./lib/auto/List/MoreUtils/XS/XS.so
+++ ./lib/auto/List/SomeUtils/XS/XS.so
+++ ./lib/auto/DBI/DBI.so
+++ ./lib/auto/Net/SSLeay/SSLeay.so
+++ ./lib/auto/Sub/Identify/Identify.so
+++ ./lib/auto/DateTime/DateTime.so
+++ ./lib/auto/Storable/Storable.so
+++ ./lib/auto/Variable/Magic/Magic.so
+++ ./lib/auto/Class/XSAccessor/XSAccessor.so
+++ ./lib/auto/Package/Stash/XS/XS.so
+++ ./lib/auto/Params/Util/Util.so
 ++ ./lib/auto/Text/CSV_XS/CSV_XS.so
 
 + ./lib/auto/MIME/Base64/Base64.so
@@ -39,8 +39,8 @@
 + ./lib/auto/Math/BigInt/FastCalc/FastCalc.so
 + ./lib/auto/I18N/Langinfo/Langinfo.so
 + ./lib/auto/Digest/MD5/MD5.so
-+./lib/auto/Compress/Raw/Zlib/Zlib.so
-+./lib/auto/Compress/Raw/Bzip2/Bzip2.so
++ ./lib/auto/Compress/Raw/Zlib/Zlib.so
++ ./lib/auto/Compress/Raw/Bzip2/Bzip2.so
 + ./lib/auto/Encode/Encode.so
 + ./lib/auto/Encode/Unicode/Unicode.so
 + ./lib/auto/Encode/CN/CN.so
@@ -75,10 +75,10 @@
 + ./lib/auto/Cwd/Cwd.so
 + ./lib/auto/POSIX/POSIX.so
 
-./shlib/x86_64-linux/libcrypto.so.3
-./shlib/x86_64-linux/libexslt.so.0
-./shlib/x86_64-linux/libbtparse.so
-./shlib/x86_64-linux/libssl.so.3
-./shlib/x86_64-linux/libxslt.so.1
-./shlib/x86_64-linux/libz.so.1
-./shlib/x86_64-linux/libxml2.so.2
+# ./shlib/x86_64-linux/libcrypto.so.3
+# ./shlib/x86_64-linux/libexslt.so.0
+# ./shlib/x86_64-linux/libbtparse.so
+# ./shlib/x86_64-linux/libssl.so.3
+# ./shlib/x86_64-linux/libxslt.so.1
+# ./shlib/x86_64-linux/libz.so.1
+# ./shlib/x86_64-linux/libxml2.so.2
