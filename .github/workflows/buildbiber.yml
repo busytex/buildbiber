@@ -24,10 +24,10 @@ jobs:
            wget -nc $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
            cd perlsourcestatic
-           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re Socket" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Encode/CN Encode/KR Encode/EUCJPASCII Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re Socket" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            make
            make install
-       
+
 #       - name: Install Perl dynamic
 #         run: |
 #           mkdir perlsourcedynamic
@@ -39,7 +39,6 @@ jobs:
 #           make install
 #           sudo rm -rf /usr/local/perl && sudo ln -s $RUNNER_WORKSPACE/localperldynamic /usr/local/perl
 #           echo "LD_LIBRARY_PATH=$RUNNER_WORKSPACE/localperldynamic/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-#       
 #       - name: Install Biber Dependencies Without Test
 #         run: |
 #           # /home/runner/work/busyperl/localperldynamic/bin
@@ -67,13 +66,11 @@ jobs:
 #           PARADDFILE="../../data/biber-tool.conf;lib/Biber/biber-tool.conf ../../data/schemata/config.rnc;lib/Biber/config.rnc ../../data/schemata/config.rng;lib/Biber/config.rng ../../data/schemata/bcf.rnc;lib/Biber/bcf.rnc ../../data/schemata/bcf.rng;lib/Biber/bcf.rng ../../lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml ../../data/bcf.xsl;lib/Biber/bcf.xsl ${ucpath}/Locale;lib/Unicode/Collate/Locale ${ucpath}/CJK;lib/Unicode/Collate/CJK ${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt ${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt /usr/local/perl/lib/site_perl/${perlv}/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem /usr/local/perl/lib/${perlv}/x86_64-linux-thread-multi/PerlIO;lib/PerlIO /usr/local/perl/lib/${perlv}/x86_64-linux-thread-multi/auto/PerlIO;lib/auto/PerlIO /usr/local/perl/lib/site_perl/${perlv}/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
 #           PAR_VERBATIM=1 /usr/local/perl/bin/pp $(printf -- "--module=%s " $PARMODULE) $(printf -- "--link=%s " $PARLINK) $(printf -- "--addfile=%s " $PARADDFILE) --output=biber-linux_x86_64 /usr/local/perl/bin/biber
 #           ./biber-linux_x86_64 --help
-#
 #       - name: Show dependencies
 #         run: |
 #           mkdir -p biberunzip
 #           unzip -qq -o biber/dist/linux_x86_64/biber-linux_x86_64 -d biberunzip
 #           find biberunzip -name '*.so*'
-#
 #       - name: Artifacts
 #         uses: actions/upload-artifact@v4
 #         with:
