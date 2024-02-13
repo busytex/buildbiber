@@ -36,6 +36,9 @@ fmtutil_.pl updmap_.pl:
 	echo '}' >> $@
 	curl https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/$@ >> $@
 
+hi:
+	echo world
+
 # prefix/lib/5.35.4/Exporter.pm
 # prefix/lib/5.35.4/strict.pm
 # prefix/lib/5.35.4/vars.pm

@@ -60,34 +60,14 @@ jobs:
            # https://github.com/plk/biber/blob/master/dist/linux_x86_64/build.sh
 
            # Unicode::Collate has a site_perl version so has been updated since this perl was released
-           declare -r perlv='5.32.0'
-           declare ucpath="/usr/local/perl/lib/${perlv}/Unicode/Collate"
+           perlv='5.32.0'
+           ucpath="/usr/local/perl/lib/${perlv}/Unicode/Collate"
            if [ -d "/usr/local/perl/lib/site_perl/${perlv}/x86_64-linux-thread-multi/Unicode/Collate" ]; then ucpath="/usr/local/perl/lib/site_perl/${perlv}/x86_64-linux-thread-multi/Unicode/Collate"; fi
            echo "USING Unicode::Collate at: ${ucpath}"
            PARMODULE="deprecate Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::MoreUtils::XS List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date Encode:: File::Find::Rule IO::Socket::SSL IO::String PerlIO::utf8_strict Text::CSV_XS DateTime"
            PARLINK="/usr/local/perl/lib/libbtparse.so /usr/local/lib/libxml2.so.2 /usr/local/lib/libz.so.1 /usr/local/lib/libxslt.so.1 /usr/local/lib/libexslt.so.0 /usr/lib/libssl.so.0.9.8 /usr/lib/libcrypto.so.0.9.8"
-           PAR_VERBATIM=1 /usr/local/perl/bin/pp \
-             $(printf -- "--module=%s " $PARMODULE) \
-             $(printf -- "--link=%s " $PARLINK) \
-             --addfile="../../data/biber-tool.conf;lib/Biber/biber-tool.conf" \
-             --addfile="../../data/schemata/config.rnc;lib/Biber/config.rnc" \
-             --addfile="../../data/schemata/config.rng;lib/Biber/config.rng"\
-             --addfile="../../data/schemata/bcf.rnc;lib/Biber/bcf.rnc" \
-             --addfile="../../data/schemata/bcf.rng;lib/Biber/bcf.rng" \
-             --addfile="../../lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml" \
-             --addfile="../../data/bcf.xsl;lib/Biber/bcf.xsl" \
-             --addfile="${ucpath}/Locale;lib/Unicode/Collate/Locale" \
-             --addfile="${ucpath}/CJK;lib/Unicode/Collate/CJK" \
-             --addfile="${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt" \
-             --addfile="${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt" \
-             --addfile="/usr/local/perl/lib/site_perl/${perlv}/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem" \
-             --addfile="/usr/local/perl/lib/${perlv}/x86_64-linux-thread-multi/PerlIO;lib/PerlIO" \
-             --addfile="/usr/local/perl/lib/${perlv}/x86_64-linux-thread-multi/auto/PerlIO;lib/auto/PerlIO" \
-             --addfile="/usr/local/perl/lib/site_perl/${perlv}/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml" \
-             --cachedeps=scancache \
-             --output=biber-linux_x86_64 \
-             /usr/local/perl/bin/biber
-           
+           PARADDFILE="../../data/biber-tool.conf;lib/Biber/biber-tool.conf ../../data/schemata/config.rnc;lib/Biber/config.rnc ../../data/schemata/config.rng;lib/Biber/config.rng ../../data/schemata/bcf.rnc;lib/Biber/bcf.rnc ../../data/schemata/bcf.rng;lib/Biber/bcf.rng ../../lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml ../../data/bcf.xsl;lib/Biber/bcf.xsl ${ucpath}/Locale;lib/Unicode/Collate/Locale ${ucpath}/CJK;lib/Unicode/Collate/CJK ${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt ${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt /usr/local/perl/lib/site_perl/${perlv}/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem /usr/local/perl/lib/${perlv}/x86_64-linux-thread-multi/PerlIO;lib/PerlIO /usr/local/perl/lib/${perlv}/x86_64-linux-thread-multi/auto/PerlIO;lib/auto/PerlIO /usr/local/perl/lib/site_perl/${perlv}/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
+           PAR_VERBATIM=1 /usr/local/perl/bin/pp $(printf -- "--module=%s " $PARMODULE) $(printf -- "--link=%s " $PARLINK) $(printf -- "--addfile=%s " $PARADDFILE) --output=biber-linux_x86_64 /usr/local/perl/bin/biber
            #bash build.sh
            ./biber-linux_x86_64 --help
            unzip -o biber-linux_x86_64
