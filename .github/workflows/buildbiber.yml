@@ -28,6 +28,7 @@ jobs:
            make install
 
        - name: Install Perl static extra packages
+         run: |
            MOD="Text::CSV_XS" PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl bash build_static_perl_package.sh
        
 #       - name: Install Biber
