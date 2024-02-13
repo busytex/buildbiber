@@ -15,7 +15,6 @@
 ./lib/auto/PadWalker/PadWalker.so
 ./lib/auto/PerlIO/utf8_strict/utf8_strict.so
 ./lib/auto/PerlIO/mmap/mmap.so
-./lib/auto/MIME/Base64/Base64.so
 ./lib/auto/HTML/Parser/Parser.so
 ./lib/auto/IO/Compress/Brotli/Brotli.so
 ./lib/auto/List/MoreUtils/XS/XS.so
@@ -32,6 +31,7 @@
 - ./lib/auto/Params/Validate/XS/XS.so
 - ./lib/auto/Params/Util/Util.so
 
++ ./lib/auto/MIME/Base64/Base64.so
 + ./lib/auto/IPC/SysV/SysV.so
 + ./lib/auto/Filter/Util/Call/Call.so
 + ./lib/auto/Hash/Util/FieldHash/FieldHash.so
