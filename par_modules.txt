@@ -64,7 +64,7 @@
 ./lib/auto/Net/SSLeay/SSLeay.so
 + ./lib/auto/re/re.so
 + ./lib/auto/Fcntl/Fcntl.so
-./lib/auto/Socket/Socket.so
++ ./lib/auto/Socket/Socket.so
 ./lib/auto/Sub/Identify/Identify.so
 ./lib/auto/DateTime/DateTime.so
 + ./lib/auto/mro/mro.so
