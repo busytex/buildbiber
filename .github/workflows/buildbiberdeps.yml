@@ -57,7 +57,7 @@ jobs:
            sudo cp /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib/libcrypto.so.0.9.8
            sudo ln -s /usr/local/perl/lib/5.32.0/x86_64-linux /usr/local/perl/lib/5.32.0/x86_64-linux-thread-multi
            cd ./dist/linux_x86_64
-           export PP_OPTS='-vvv'
+           #export PP_OPTS='-vvv'
            bash build.sh
            ./biber-linux_x86_64 --help
            unzip -o biber-linux_x86_64
