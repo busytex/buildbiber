@@ -11,16 +11,16 @@
 ./lib/auto/Unicode/LineBreak/LineBreak.so
 ./lib/auto/IPC/SysV/SysV.so
 ./lib/auto/Clone/Clone.so
-* ./lib/auto/Text/CSV_XS/CSV_XS.so
+- ./lib/auto/Text/CSV_XS/CSV_XS.so
 ./lib/auto/Text/BibTeX/BibTeX.so
-./lib/auto/PadWalker/PadWalker.so
+- ./lib/auto/PadWalker/PadWalker.so
 ./lib/auto/PerlIO/utf8_strict/utf8_strict.so
-./lib/auto/PerlIO/mmap/mmap.so
-./lib/auto/MIME/Base64/Base64.so
+- ./lib/auto/PerlIO/mmap/mmap.so
+- ./lib/auto/MIME/Base64/Base64.so
 ./lib/auto/HTML/Parser/Parser.so
 ./lib/auto/IO/Compress/Brotli/Brotli.so
-* ./lib/auto/List/MoreUtils/XS/XS.so
-* ./lib/auto/List/SomeUtils/XS/XS.so
+- ./lib/auto/List/MoreUtils/XS/XS.so
+- ./lib/auto/List/SomeUtils/XS/XS.so
 - ./lib/auto/Filter/Util/Call/Call.so
 ./lib/auto/DBI/DBI.so
 ./lib/auto/Net/SSLeay/SSLeay.so
