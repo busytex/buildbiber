@@ -18,47 +18,45 @@ jobs:
        - name: Install Biber
          run: mkdir biber && wget $URLBIBER && tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber
 
-       - name: Install Perl
+       - name: Install Perl dynamic
          run: |
-           mkdir perlsource
+           mkdir perlsourcedynamic
            wget -nc $URLPERL
-           tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsource
-
-           pushd perlsource
-           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperl"
-           test -f Makefile
+           tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcedynamic
+           cd perlsourcedynamic
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperldynamic"
            make
            make install
-           popd
-           sudo rm -rf /usr/local/perl && sudo ln -s $RUNNER_WORKSPACE/localperl /usr/local/perl
-           #echo "$RUNNER_WORKSPACE/localperl/bin" >> $GITHUB_PATH
-           echo "LD_LIBRARY_PATH=$RUNNER_WORKSPACE/localperl/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+           sudo rm -rf /usr/local/perl && sudo ln -s $RUNNER_WORKSPACE/localperldynamic /usr/local/perl
+           echo "LD_LIBRARY_PATH=$RUNNER_WORKSPACE/localperldynamic/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+       
+       - name: Install Perl static
+         run: |
+           mkdir perlsourcestatic
+           wget -nc $URLPERL
+           tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
+           cd perlsourcestatic
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="POSIX" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           make
+           make install
 
        - name: Install Biber Dependencies Without Test
          run: |
-           # /home/runner/work/busyperl/localperl/bin
+           # /home/runner/work/busyperl/localperldynamic/bin
            cd biber
-           #echo 'echo MYCPAN:$@; $RUNNER_WORKSPACE/localperl/bin/cpan -T $@' > ./mycpan.sh; chmod +x ./mycpan.sh; cat ./mycpan.sh
-           $RUNNER_WORKSPACE/localperl/bin/cpan -T Module::Build
-           $RUNNER_WORKSPACE/localperl/bin/cpan -T Config::AutoConf ExtUtils::LibBuilder Business::ISBN Business::ISMN Business::ISSN    Class::Accessor Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder    Encode::EUCJPASCII Encode::HanExtra Encode::JIS2K Encode::Locale File::Slurper IO::String IPC::Run3 LWP::Protocol::https LWP::UserAgent    Lingua::Translit List::AllUtils List::MoreUtils List::MoreUtils::XS Log::Log4perl Mozilla::CA    Parse::RecDescent PerlIO::utf8_strict Regexp::Common Sort::Key Text::BibTeX Text::CSV Text::CSV_XS Text::Roman URI Unicode::Collate Unicode::GCString Unicode::LineBreak    XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer     autovivification File::Which Test::Differences
-           $RUNNER_WORKSPACE/localperl/bin/cpan -T Test::More IPC::Cmd Unicode::Normalize PerlIO::utf8_strict Storable
+           $RUNNER_WORKSPACE/localperldynamic/bin/cpan -T Module::Build
+           $RUNNER_WORKSPACE/localperldynamic/bin/cpan -T Config::AutoConf ExtUtils::LibBuilder Business::ISBN Business::ISMN Business::ISSN    Class::Accessor Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder    Encode::EUCJPASCII Encode::HanExtra Encode::JIS2K Encode::Locale File::Slurper IO::String IPC::Run3 LWP::Protocol::https LWP::UserAgent    Lingua::Translit List::AllUtils List::MoreUtils List::MoreUtils::XS Log::Log4perl Mozilla::CA    Parse::RecDescent PerlIO::utf8_strict Regexp::Common Sort::Key Text::BibTeX Text::CSV Text::CSV_XS Text::Roman URI Unicode::Collate Unicode::GCString Unicode::LineBreak    XML::LibXML XML::LibXML::Simple XML::LibXSLT XML::Writer     autovivification File::Which Test::Differences
+           $RUNNER_WORKSPACE/localperldynamic/bin/cpan -T Test::More IPC::Cmd Unicode::Normalize PerlIO::utf8_strict Storable
            #./mycpan.sh Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date File::Find::Rule IO::Socket::SSL DateTime  Encode::
-           $RUNNER_WORKSPACE/localperl/bin/cpan -T PAR PAR::Packer
-           $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
-           #$RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
-           $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
-           $RUNNER_WORKSPACE/localperl/bin/perl ./Build install
-           sudo cp  /usr/local/lib
-           sudo cp  /usr/local/lib
-           sudo cp  /usr/local/lib
-           sudo cp  /usr/local/lib
-           sudo cp  /usr/lib/libssl.so.0.9.8
-           sudo cp  /usr/lib/libcrypto.so.0.9.8
+           $RUNNER_WORKSPACE/localperldynamic/bin/cpan -T PAR PAR::Packer
+           $RUNNER_WORKSPACE/localperldynamic/bin/perl ./Build.PL
+           #$RUNNER_WORKSPACE/localperldynamic/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
+           $RUNNER_WORKSPACE/localperldynamic/bin/perl ./Build test
+           $RUNNER_WORKSPACE/localperldynamic/bin/perl ./Build install
            sudo ln -s /usr/local/perl/lib/5.32.0/x86_64-linux /usr/local/perl/lib/5.32.0/x86_64-linux-thread-multi
            cd ./dist/linux_x86_64
            #export PP_OPTS='-vvv'
            # https://github.com/plk/biber/blob/master/dist/linux_x86_64/build.sh
-
            # Unicode::Collate has a site_perl version so has been updated since this perl was released
            perlv='5.32.0'
            ucpath="/usr/local/perl/lib/${perlv}/Unicode/Collate"
