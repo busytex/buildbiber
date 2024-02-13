@@ -29,7 +29,7 @@
 - ./lib/auto/Variable/Magic/Magic.so
 - ./lib/auto/Class/XSAccessor/XSAccessor.so
 ./lib/auto/DBD/SQLite/SQLite.so
-./lib/auto/Package/Stash/XS/XS.so
+- ./lib/auto/Package/Stash/XS/XS.so
 - ./lib/auto/Params/Validate/XS/XS.so
 - ./lib/auto/Params/Util/Util.so
 
