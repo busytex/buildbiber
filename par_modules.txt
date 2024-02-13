@@ -4,14 +4,14 @@
 ./lib/auto/Encode/JIS2K/JIS2K.so
 ./lib/auto/autovivification/autovivification.so
 ./lib/auto/Devel/Caller/Caller.so
-./lib/auto/Devel/LexAlias/LexAlias.so
+* ./lib/auto/Devel/LexAlias/LexAlias.so
 ./lib/auto/XML/LibXSLT/LibXSLT.so
 ./lib/auto/XML/Parser/Expat/Expat.so
 ./lib/auto/XML/LibXML/LibXML.so
 ./lib/auto/Unicode/LineBreak/LineBreak.so
 ./lib/auto/IPC/SysV/SysV.so
 ./lib/auto/Clone/Clone.so
-./lib/auto/Text/CSV_XS/CSV_XS.so
+* ./lib/auto/Text/CSV_XS/CSV_XS.so
 ./lib/auto/Text/BibTeX/BibTeX.so
 ./lib/auto/PadWalker/PadWalker.so
 ./lib/auto/PerlIO/utf8_strict/utf8_strict.so
