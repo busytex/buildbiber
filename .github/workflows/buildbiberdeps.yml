@@ -32,7 +32,7 @@ jobs:
            popd
            sudo rm -rf /usr/local/perl && sudo ln -s $RUNNER_WORKSPACE/localperl /usr/local/perl
            #echo "$RUNNER_WORKSPACE/localperl/bin" >> $GITHUB_PATH
-           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RUNNER_WORKSPACE/localperl/lib" >> $GITHUB_ENV
+           echo "LD_LIBRARY_PATH=$RUNNER_WORKSPACE/localperl/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
        - name: Install Biber Dependencies Without Test
          run: |
@@ -45,10 +45,9 @@ jobs:
            ./mycpan.sh Test::More IPC::Cmd Unicode::Normalize PerlIO::utf8_strict Storable
            #./mycpan.sh Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date File::Find::Rule IO::Socket::SSL DateTime  Encode::
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build.PL
-           $RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
+           #$RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build install
-           #find $RUNNER_WORKSPACE/localperl/bin $RUNNER_WORKSPACE/localperl/lib
            sudo cp /usr/lib/x86_64-linux-gnu/libxml2.so.2 /usr/local/lib
            sudo cp /usr/lib/x86_64-linux-gnu/libz.so.1 /usr/local/lib
            sudo cp /usr/lib/x86_64-linux-gnu/libxslt.so.1 /usr/local/lib
