@@ -20,7 +20,7 @@
 ./lib/auto/HTML/Parser/Parser.so
 ./lib/auto/IO/Compress/Brotli/Brotli.so
 ./lib/auto/List/MoreUtils/XS/XS.so
-./lib/auto/List/SomeUtils/XS/XS.so
+- ./lib/auto/List/SomeUtils/XS/XS.so
 ./lib/auto/DBI/DBI.so
 ./lib/auto/Net/SSLeay/SSLeay.so
 - ./lib/auto/Sub/Identify/Identify.so
