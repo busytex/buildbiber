@@ -9,7 +9,6 @@
 ./lib/auto/XML/Parser/Expat/Expat.so
 ./lib/auto/XML/LibXML/LibXML.so
 ./lib/auto/Unicode/LineBreak/LineBreak.so
-./lib/auto/IPC/SysV/SysV.so
 ./lib/auto/Clone/Clone.so
 ./lib/auto/Text/CSV_XS/CSV_XS.so
 ./lib/auto/Text/BibTeX/BibTeX.so
@@ -33,6 +32,7 @@
 - ./lib/auto/Params/Validate/XS/XS.so
 - ./lib/auto/Params/Util/Util.so
 
++ ./lib/auto/IPC/SysV/SysV.so
 + ./lib/auto/Filter/Util/Call/Call.so
 + ./lib/auto/Hash/Util/FieldHash/FieldHash.so
 + ./lib/auto/Math/BigInt/FastCalc/FastCalc.so
