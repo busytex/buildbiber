@@ -64,6 +64,7 @@ jobs:
            declare ucpath="/usr/local/perl/lib/${perlv}/Unicode/Collate"
            if [ -d "/usr/local/perl/lib/site_perl/${perlv}/x86_64-linux-thread-multi/Unicode/Collate" ]; then ucpath="/usr/local/perl/lib/site_perl/${perlv}/x86_64-linux-thread-multi/Unicode/Collate"; fi
            echo "USING Unicode::Collate at: ${ucpath}"
+           PARLIBS="/usr/local/perl/lib/libbtparse.so /usr/local/lib/libxml2.so.2 /usr/local/lib/libz.so.1 /usr/local/lib/libxslt.so.1 /usr/local/lib/libexslt.so.0 /usr/lib/libssl.so.0.9.8 /usr/lib/libcrypto.so.0.9.8"
            PAR_VERBATIM=1 /usr/local/perl/bin/pp \
              --module=deprecate \
              --module=Biber::Input::file::bibtex \
@@ -87,13 +88,7 @@ jobs:
              --module=PerlIO::utf8_strict \
              --module=Text::CSV_XS \
              --module=DateTime \
-             --link=/usr/local/perl/lib/libbtparse.so \
-             --link=/usr/local/lib/libxml2.so.2 \
-             --link=/usr/local/lib/libz.so.1 \
-             --link=/usr/local/lib/libxslt.so.1 \
-             --link=/usr/local/lib/libexslt.so.0 \
-             --link=/usr/lib/libssl.so.0.9.8 \
-             --link=/usr/lib/libcrypto.so.0.9.8 \
+             $(printf -- "--link=%s " $PARLIBS) \
              --addfile="../../data/biber-tool.conf;lib/Biber/biber-tool.conf" \
              --addfile="../../data/schemata/config.rnc;lib/Biber/config.rnc" \
              --addfile="../../data/schemata/config.rng;lib/Biber/config.rng"\
