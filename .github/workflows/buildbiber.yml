@@ -29,7 +29,9 @@ jobs:
 
        - name: Install Perl static extra packages
          run: |
-           MOD="Text::CSV_XS" PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0 bash build_static_perl_package.sh
+           export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
+           set +e
+           for MOD in Sort::Key Encode::EUCJPASCII Encode::HanExtra Encode::JIS2K autovivification Devel::Caller Devel::LexAlias XML::LibXSLT XML::Parser::Expat XML::LibXML Unicode::LineBreak Clone Text::BibTeX PadWalker PerlIO::utf8_strict PerlIO::mmap HTML::Parser IO::Compress::Brotli List::MoreUtils::XS List::SomeUtils::XS DBI Net::SSLeay Sub::Identify DateTime Storable Variable::Magic Class::XSAccessor DBD::SQLite Package::Stash::XS Params::Validate::XS Params::Util; do bash build_static_perl_package.sh $MOD &> log.txt; echo $MOD $?; done
        
 #       - name: Install Biber
 #         run: mkdir biber && wget $URLBIBER && tar -xf $(basename $URLBIBER) --strip-components=1 --directory biber

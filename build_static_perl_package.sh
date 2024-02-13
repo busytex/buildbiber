@@ -1,3 +1,4 @@
+MOD="$1"
 URL=$(wget -q -O - https://fastapi.metacpan.org/v1/download_url/$MOD | grep download_url | cut -d'"' -f4)
 PKG=${MOD//::/-}
 echo $PKG $URL

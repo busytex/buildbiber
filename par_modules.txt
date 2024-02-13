@@ -4,13 +4,12 @@
 ./lib/auto/Encode/JIS2K/JIS2K.so
 ./lib/auto/autovivification/autovivification.so
 ./lib/auto/Devel/Caller/Caller.so
-- ./lib/auto/Devel/LexAlias/LexAlias.so
+./lib/auto/Devel/LexAlias/LexAlias.so
 ./lib/auto/XML/LibXSLT/LibXSLT.so
 ./lib/auto/XML/Parser/Expat/Expat.so
 ./lib/auto/XML/LibXML/LibXML.so
 ./lib/auto/Unicode/LineBreak/LineBreak.so
 ./lib/auto/Clone/Clone.so
-- ./lib/auto/Text/CSV_XS/CSV_XS.so
 ./lib/auto/Text/BibTeX/BibTeX.so
 ./lib/auto/PadWalker/PadWalker.so
 ./lib/auto/PerlIO/utf8_strict/utf8_strict.so
@@ -18,18 +17,20 @@
 ./lib/auto/HTML/Parser/Parser.so
 ./lib/auto/IO/Compress/Brotli/Brotli.so
 ./lib/auto/List/MoreUtils/XS/XS.so
-- ./lib/auto/List/SomeUtils/XS/XS.so
+./lib/auto/List/SomeUtils/XS/XS.so
 ./lib/auto/DBI/DBI.so
 ./lib/auto/Net/SSLeay/SSLeay.so
-- ./lib/auto/Sub/Identify/Identify.so
+./lib/auto/Sub/Identify/Identify.so
 ./lib/auto/DateTime/DateTime.so
 ./lib/auto/Storable/Storable.so
-- ./lib/auto/Variable/Magic/Magic.so
-- ./lib/auto/Class/XSAccessor/XSAccessor.so
+./lib/auto/Variable/Magic/Magic.so
+./lib/auto/Class/XSAccessor/XSAccessor.so
 ./lib/auto/DBD/SQLite/SQLite.so
-- ./lib/auto/Package/Stash/XS/XS.so
-- ./lib/auto/Params/Validate/XS/XS.so
-- ./lib/auto/Params/Util/Util.so
+./lib/auto/Package/Stash/XS/XS.so
+./lib/auto/Params/Validate/XS/XS.so
+./lib/auto/Params/Util/Util.so
+
+++ ./lib/auto/Text/CSV_XS/CSV_XS.so
 
 + ./lib/auto/MIME/Base64/Base64.so
 + ./lib/auto/IPC/SysV/SysV.so
