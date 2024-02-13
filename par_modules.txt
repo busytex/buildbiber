@@ -19,7 +19,7 @@
 ./lib/auto/MIME/Base64/Base64.so
 ./lib/auto/HTML/Parser/Parser.so
 ./lib/auto/IO/Compress/Brotli/Brotli.so
-./lib/auto/List/MoreUtils/XS/XS.so
+* ./lib/auto/List/MoreUtils/XS/XS.so
 * ./lib/auto/List/SomeUtils/XS/XS.so
 - ./lib/auto/Filter/Util/Call/Call.so
 ./lib/auto/DBI/DBI.so
