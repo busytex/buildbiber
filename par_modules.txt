@@ -46,8 +46,8 @@
 ./lib/auto/HTML/Parser/Parser.so
 ./lib/auto/File/DosGlob/DosGlob.so
 + ./lib/auto/File/Glob/Glob.so
-./lib/auto/threads/shared/shared.so
-./lib/auto/threads/threads.so
++ ./lib/auto/threads/shared/shared.so
++ ./lib/auto/threads/threads.so
 + ./lib/auto/Time/HiRes/HiRes.so
 ./lib/auto/Sys/Syslog/Syslog.so
 ./lib/auto/Sys/Hostname/Hostname.so
