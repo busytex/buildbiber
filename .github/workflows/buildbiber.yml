@@ -24,7 +24,7 @@ jobs:
            wget -nc $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
            cd perlsourcestatic
-           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Encode/CN Encode/KR Encode/TW Encode/JP  Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re Socket  Unicode/Normalize Unicode/Collate" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Encode/CN Encode/KR Encode/TW Encode/JP  Encode/Symbol  Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re Socket  Unicode/Normalize Unicode/Collate" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            make
            make install
 
