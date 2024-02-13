@@ -8,8 +8,8 @@
 + ./lib/auto/I18N/Langinfo/Langinfo.so
 + ./lib/auto/Digest/MD5/MD5.so
 ./lib/auto/Sort/Key/Key.so
-./lib/auto/Compress/Raw/Zlib/Zlib.so
-./lib/auto/Compress/Raw/Bzip2/Bzip2.so
++./lib/auto/Compress/Raw/Zlib/Zlib.so
++./lib/auto/Compress/Raw/Bzip2/Bzip2.so
 + ./lib/auto/Encode/Encode.so
 + ./lib/auto/Encode/Unicode/Unicode.so
 + ./lib/auto/Encode/CN/CN.so
