@@ -15,7 +15,7 @@
 + ./lib/auto/Encode/CN/CN.so
 + ./lib/auto/Encode/KR/KR.so
 ./lib/auto/Encode/EUCJPASCII/EUCJPASCII.so
-./lib/auto/Encode/Symbol/Symbol.so
++ ./lib/auto/Encode/Symbol/Symbol.so
 ./lib/auto/Encode/EBCDIC/EBCDIC.so
 ./lib/auto/Encode/Byte/Byte.so
 + ./lib/auto/Encode/TW/TW.so
