@@ -48,12 +48,12 @@ jobs:
            #$RUNNER_WORKSPACE/localperl/bin/perl ./Build installdeps --cpan_client ./mycpan.sh
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build test
            $RUNNER_WORKSPACE/localperl/bin/perl ./Build install
-           sudo cp /usr/lib/x86_64-linux-gnu/libxml2.so.2 /usr/local/lib
-           sudo cp /usr/lib/x86_64-linux-gnu/libz.so.1 /usr/local/lib
-           sudo cp /usr/lib/x86_64-linux-gnu/libxslt.so.1 /usr/local/lib
-           sudo cp /usr/lib/x86_64-linux-gnu/libexslt.so.0 /usr/local/lib
-           sudo cp /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/libssl.so.0.9.8
-           sudo cp /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib/libcrypto.so.0.9.8
+           sudo cp  /usr/local/lib
+           sudo cp  /usr/local/lib
+           sudo cp  /usr/local/lib
+           sudo cp  /usr/local/lib
+           sudo cp  /usr/lib/libssl.so.0.9.8
+           sudo cp  /usr/lib/libcrypto.so.0.9.8
            sudo ln -s /usr/local/perl/lib/5.32.0/x86_64-linux /usr/local/perl/lib/5.32.0/x86_64-linux-thread-multi
            cd ./dist/linux_x86_64
            #export PP_OPTS='-vvv'
@@ -65,13 +65,16 @@ jobs:
            if [ -d "/usr/local/perl/lib/site_perl/${perlv}/x86_64-linux-thread-multi/Unicode/Collate" ]; then ucpath="/usr/local/perl/lib/site_perl/${perlv}/x86_64-linux-thread-multi/Unicode/Collate"; fi
            echo "USING Unicode::Collate at: ${ucpath}"
            PARMODULE="deprecate Biber::Input::file::bibtex Biber::Input::file::biblatexml Biber::Output::dot Biber::Output::bbl Biber::Output::bblxml Biber::Output::bibtex Biber::Output::biblatexml Pod::Simple::TranscodeSmart Pod::Simple::TranscodeDumb List::MoreUtils::XS List::SomeUtils::XS List::MoreUtils::PP HTTP::Status HTTP::Date Encode:: File::Find::Rule IO::Socket::SSL IO::String PerlIO::utf8_strict Text::CSV_XS DateTime"
-           PARLINK="/usr/local/perl/lib/libbtparse.so /usr/local/lib/libxml2.so.2 /usr/local/lib/libz.so.1 /usr/local/lib/libxslt.so.1 /usr/local/lib/libexslt.so.0 /usr/lib/libssl.so.0.9.8 /usr/lib/libcrypto.so.0.9.8"
+           PARLINK="/usr/local/perl/lib/libbtparse.so /usr/lib/x86_64-linux-gnu/libxml2.so.2 /usr/lib/x86_64-linux-gnu/libz.so.1 /usr/lib/x86_64-linux-gnu/libxslt.so.1 /usr/lib/x86_64-linux-gnu/libexslt.so.0 /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so"
            PARADDFILE="../../data/biber-tool.conf;lib/Biber/biber-tool.conf ../../data/schemata/config.rnc;lib/Biber/config.rnc ../../data/schemata/config.rng;lib/Biber/config.rng ../../data/schemata/bcf.rnc;lib/Biber/bcf.rnc ../../data/schemata/bcf.rng;lib/Biber/bcf.rng ../../lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml ../../data/bcf.xsl;lib/Biber/bcf.xsl ${ucpath}/Locale;lib/Unicode/Collate/Locale ${ucpath}/CJK;lib/Unicode/Collate/CJK ${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt ${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt /usr/local/perl/lib/site_perl/${perlv}/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem /usr/local/perl/lib/${perlv}/x86_64-linux-thread-multi/PerlIO;lib/PerlIO /usr/local/perl/lib/${perlv}/x86_64-linux-thread-multi/auto/PerlIO;lib/auto/PerlIO /usr/local/perl/lib/site_perl/${perlv}/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml"
            PAR_VERBATIM=1 /usr/local/perl/bin/pp $(printf -- "--module=%s " $PARMODULE) $(printf -- "--link=%s " $PARLINK) $(printf -- "--addfile=%s " $PARADDFILE) --output=biber-linux_x86_64 /usr/local/perl/bin/biber
-           #bash build.sh
            ./biber-linux_x86_64 --help
-           unzip -o biber-linux_x86_64
-           find . -name '*.so*'
+
+       - name: Show dependencies
+         run: |
+           mkdir -p biberunzip
+           unzip -o biber/dist/linux_x86_64/biber-linux_x86_64 -d biberunzip
+           find biberunzip -name '*.so*'
 
        - name: Artifacts
          uses: actions/upload-artifact@v4
