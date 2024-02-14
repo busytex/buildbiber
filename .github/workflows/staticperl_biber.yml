@@ -37,14 +37,17 @@ jobs:
            export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
            set +e
            for MOD in DBD::SQLite XML::LibXML Encode::HanExtra Encode::JIS2K Text::BibTeX PerlIO::mmap Params::Validate::XS IO::Compress::Brotli; do bash build_static_perl_package.sh $MOD; echo $MOD $?; done
-
-       - name: Build Perl embedded
-         run: |
-           gcc -o staticperl_biber staticperl_biber.c fmtutil.o updmap.o -I$PWD/build/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.32.0/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         build/native/perl/prefix/lib/perl5/5.32.0/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.32.0/x86_64-linux/auto/IO/IO.a build/native/perl/prefix/lib/perl5/5.32.0/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
-
-
+       
        - name: Artifacts
          uses: actions/upload-artifact@v4
          with:
            name: artifacts
            path: myext.zip
+
+       - name: Build Perl embedded
+         run: |
+           find $PWD/localperlstatic -name '*.a'
+           gcc -o staticperl_biber staticperl_biber.c fmtutil.o updmap.o -I$PWD/perlsourcestatic -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/localperlstatic/lib/perl5/5.32.0/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         $PWD/localperlstatic/lib/perl5/5.32.0/x86_64-linux/auto/Fcntl/Fcntl.a $PWD/localperlstatic/lib/perl5/5.32.0/x86_64-linux/auto/IO/IO.a $PWD/localperlstatic/lib/perl5/5.32.0/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
+           ldd staticperl_biber
+           ./staticperl_biber
+
