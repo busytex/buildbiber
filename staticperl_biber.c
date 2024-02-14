@@ -29,8 +29,8 @@ void xs_init         (pTHX)
     dXSUB_SYS;
     PERL_UNUSED_CONTEXT;
 
-    newXS("Fcntl::bootstrap", boot_Fcntl, file);
-    newXS("IO::bootstrap", boot_IO, file);
+    //newXS("Fcntl::bootstrap", boot_Fcntl, file);
+    //newXS("IO::bootstrap", boot_IO, file);
     newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
 }
 ///////////////////////////////////////
