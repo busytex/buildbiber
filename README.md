@@ -5,29 +5,12 @@
 4. Compile dynamic Perl embedding `biber` https://github.com/plk/biber
 5. Compile static Perl embedding `biber`
 
-# Errors
-```
-Couldn't retrieve data from file scancache. Building new cache.
-USING Unicode::Collate at: /usr/local/perl/lib/5.32.0/Unicode/Collate
-# Use of runtime loader module Module::Runtime detected.  Results of static scanning may be incomplete.
-# Use of runtime loader module Module::Implementation detected.  Results of static scanning may be incomplete.
-/usr/local/perl/bin/pp: Cannot find file or directory ../../data/biber-tool.conf for packing
-/usr/local/perl/bin/pp: Cannot find file or directory ../../data/schemata/config.rnc for packing
-/usr/local/perl/bin/pp: Cannot find file or directory ../../data/schemata/config.rng for packing
-/usr/local/perl/bin/pp: Cannot find file or directory ../../data/schemata/bcf.rnc for packing
-/usr/local/perl/bin/pp: Cannot find file or directory ../../data/schemata/bcf.rng for packing
-/usr/local/perl/bin/pp: Cannot find file or directory ../../lib/Biber/LaTeX/recode_data.xml for packing
-/usr/local/perl/bin/pp: Cannot find file or directory ../../data/bcf.xsl for packing
-/usr/local/perl/bin/pp: Cannot find file or directory /usr/local/perl/lib/5.32.0/x86_64-linux-thread-multi/PerlIO for packing
-/usr/local/perl/bin/pp: Cannot find file or directory /usr/local/perl/lib/5.32.0/x86_64-linux-thread-multi/auto/PerlIO for packing
-biber-linux_x86_64
-```
-
 # References
 - https://stackoverflow.com/questions/4855909/perl-including-embedding-a-module-in-a-script
 - https://stackoverflow.com/questions/4158900/embedding-resources-in-executable-using-gcc
 - https://stackoverflow.com/questions/5479691/is-there-any-standard-way-of-embedding-resources-into-linux-executable-image/10692876#10692876
 - https://github.com/Perl/perl5/compare/blead...haukex:emperl_v5.30.0
+- https://github.com/gh0stwizard/staticperl-modules/tree/master
 
 # References from wipbiber
 - https://stackoverflow.com/questions/1114789/how-can-i-convert-perl-to-c
