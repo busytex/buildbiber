@@ -48,8 +48,9 @@ int main(int argc, char **argv)
     
     char *one_args[] = { "staticperl_biber", "-e", script, NULL };
     perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
-    /*
+    
     perl_run(my_perl);
+    /*
     perl_destruct(my_perl);
     perl_free(my_perl);
     PERL_SYS_TERM();
