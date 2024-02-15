@@ -43,7 +43,7 @@ jobs:
        
        - name: Install Brotli 
          run: |
-           mkdir myext/IO-Compress-Brotli/blib/arch/auto/IO/Compress/Brotli/Brotli.a
+           mkdir -p myext/IO-Compress-Brotli/blib/arch/auto/IO/Compress/Brotli/Brotli.a
            PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0 bash build_static_perl_package.sh IO::Compress::Brotli || true
            find $RUNNER_WORKSPACE -name libbrotlienc.a
        
