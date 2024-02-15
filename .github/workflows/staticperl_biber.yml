@@ -70,7 +70,7 @@ jobs:
          run: |
            export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
            #bash build_static_perl_package_textbibtex.sh Text::BibTeX 
-           URL=$(wget -q -O - https://fastapi.metacpan.org/v1/download_url/Text:BibTeX | grep download_url | cut -d'"' -f4)
+           URL=$(wget -q -O - https://fastapi.metacpan.org/v1/download_url/Text::BibTeX | grep download_url | cut -d'"' -f4)
            mkdir -p myextsource myext/Text-BibTeX
            wget -nc $URL -P myextsource
            tar -xf myextsource/$(basename $URL) --strip-components=1 --directory myext/Text-BibTeX
