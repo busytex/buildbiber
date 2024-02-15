@@ -20,7 +20,7 @@ jobs:
            wget -nc $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
            cd perlsourcestatic
-           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dextras="Alien::Base::Wrapper Alien::Build::MM Alien::cmake3" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Encode/CN Encode/KR Encode/TW Encode/JP  Encode/Symbol Encode/EBCDIC Encode/Byte Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re Socket  Unicode/Normalize Unicode/Collate Compress/Raw/Zlib Compress/Raw/Bzip2 threads threads/shared Sys/Syslog Sys/Hostname File/DosGlob Math/BigInt/FastCalc Hash/Util/FieldHash Filter/Util/Call IPC/SysV MIME/Base64" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Encode/CN Encode/KR Encode/TW Encode/JP  Encode/Symbol Encode/EBCDIC Encode/Byte Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX Time/HiRes re Socket  Unicode/Normalize Unicode/Collate Compress/Raw/Zlib Compress/Raw/Bzip2 threads threads/shared Sys/Syslog Sys/Hostname File/DosGlob Math/BigInt/FastCalc Hash/Util/FieldHash Filter/Util/Call IPC/SysV MIME/Base64" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            make
            make install
            $RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0 -e "print('hello world');"
@@ -29,6 +29,7 @@ jobs:
            #$RUNNER_WORKSPACE/localperlstatic/bin/cpan5.32.0 -T Alien::Base::Wrapper Alien::cmake3 inc::Module::Install
            echo "$RUNNER_WORKSPACE/localperlstatic/bin" >> $GITHUB_PATH
            echo "LD_LIBRARY_PATH=$RUNNER_WORKSPACE/localperlstatic/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+           $RUNNNER_WORKSPACE/localperlstatic/bin/cpan5.32.0 -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3
 
        - name: Install Perl static extra packages
          run: |
@@ -41,7 +42,6 @@ jobs:
        
        - name: Install Perl static extra packages FAIL
          run: |
-           echo WHICHENC2XS: $(which enc2xs)
            export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
            set +e
            for MOD in DBD::SQLite XML::LibXML Encode::HanExtra Text::BibTeX Params::Validate::XS IO::Compress::Brotli; do bash build_static_perl_package.sh $MOD; echo $MOD $?; done

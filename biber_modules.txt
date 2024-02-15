@@ -1,7 +1,6 @@
 -- ./lib/auto/XML/LibXML/LibXML.so            # Can't locate Alien/Base/Wrapper.pm in @INC (you may need to install the Alien::Base::Wrapper module)
 -- ./lib/auto/IO/Compress/Brotli/Brotli.so    # Can't locate Alien/cmake3.pm in @INC (you may need to install the Alien::cmake3 module)
 -- ./lib/auto/Encode/HanExtra/HanExtra.so     # Can't locate inc/Module/Install.pm in @INC (you may need to install the inc::Module::Install module)
--- ./lib/auto/Encode/JIS2K/JIS2K.so           # enc2xs not found!
 -- ./lib/auto/PerlIO/mmap/mmap.so             # where to download? ships in perl?
 -- ./lib/auto/DBD/SQLite/SQLite.so            # DBI 1.57 is required to configure this module; please install it or upgrade your CPAN/CPANPLUS shell.
 -- ./lib/auto/Params/Validate/XS/XS.so        # Build.PL
@@ -9,6 +8,7 @@
 
 ++ ./lib/auto/Sort/Key/Key.so
 ++ ./lib/auto/Encode/EUCJPASCII/EUCJPASCII.so
+++ ./lib/auto/Encode/JIS2K/JIS2K.so           # enc2xs not found!
 ++ ./lib/auto/autovivification/autovivification.so
 ++ ./lib/auto/Devel/Caller/Caller.so
 ++ ./lib/auto/Devel/LexAlias/LexAlias.so
