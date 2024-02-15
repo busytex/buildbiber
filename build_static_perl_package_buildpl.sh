@@ -8,6 +8,6 @@ wget -nc $URL -P myextsource
 tar -xf myextsource/$(basename $URL) --strip-components=1 --directory myext/$PKG
 cd myext/$PKG
 ls
-$PERLBIN ./Build.PL --extra_compiler_flags=-static
+$PERLBIN ./Build.PL --extra_compiler_flags=-static --extra_linker_flag=-static
 $PERLBIN ./Build
 $PERLBIN ./Build install
