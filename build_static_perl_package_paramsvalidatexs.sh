@@ -12,4 +12,5 @@ $PERLBIN ./Build.PL
 $PERLBIN ./Build
 $PERLBIN ./Build install
 
-ar crs blib/arch/auto/Params/Validate/XS/XS.a lib/Params/Validate/XS.o
+ls ../../
+ar crs ../../localperlstatic/lib/site_perl/5.32.0/x86_64-linux/auto/Params/Validate/XS/XS.a lib/Params/Validate/XS.o
