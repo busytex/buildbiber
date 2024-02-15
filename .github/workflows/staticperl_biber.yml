@@ -51,10 +51,10 @@ jobs:
            export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
            bash build_static_perl_package_paramsvalidatexs.sh Params::Validate::XS
        
-       #- name: Install Text/BibTeX
-       #  run: |
-       #    export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
-       #    bash build_static_perl_package_textbibtex.sh Text::BibTeX 
+       - name: Install Text/BibTeX
+         run: |
+           export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
+           bash build_static_perl_package_textbibtex.sh Text::BibTeX 
 
        - name: Build Perl embedded
          run: |
