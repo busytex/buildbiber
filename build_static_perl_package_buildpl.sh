@@ -7,5 +7,6 @@ mkdir -p myextsource myext/$PKG
 wget -nc $URL -P myextsource
 tar -xf myextsource/$(basename $URL) --strip-components=1 --directory myext/$PKG
 cd myext/$PKG
-./Build
-./Build install
+ls
+$PERLBIN ./Build.PL
+$PERLBIN ./Build.PL install
