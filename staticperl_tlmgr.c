@@ -38,11 +38,8 @@ void xs_init         (pTHX)
 
 static char script[1 << 20] = "print('hello world');";
 
-extern char _binary_fmtutil_pl_start[];
-extern char _binary_fmtutil_pl_end[];
-
-extern char _binary_updmap_pl_start[];
-extern char _binary_updmap_pl_end[];
+extern char _binary_tlmgr_pl_start[];
+extern char _binary_tlmgr_pl_end[];
 
 int main(int argc, char **argv)
 {
@@ -57,20 +54,14 @@ int main(int argc, char **argv)
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 
-    if(0 == strcmp("fmtutil.pl", argv[1]))
+    if(0 == strcmp("tlmgr.pl", argv[1]))
     {
-        int iSize = (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
-        strncpy(script,    _binary_fmtutil_pl_start, iSize);
-        script[iSize] = '\0';
-    }
-    if(0 == strcmp("updmap.pl", argv[1]))
-    {
-        int iSize = (int)(_binary_updmap_pl_end - _binary_updmap_pl_start);
-        strncpy(script,    _binary_updmap_pl_start, iSize);
+        int iSize = (int)(_binary_tlmgr_pl_end - _binary_tlmgr_pl_start);
+        strncpy(script,    _binary_tlmgr_pl_start, iSize);
         script[iSize] = '\0';
     }
 
-    char *one_args[] = { "staticperl_fmtutil_updmap", "-e", script, "--", argv[2], NULL };
+    char *one_args[] = { "staticperl_tlmgr", "-e", script, "--", argv[2], NULL };
     perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
     perl_run(my_perl);
     perl_destruct(my_perl);

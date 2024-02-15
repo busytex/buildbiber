@@ -13,4 +13,4 @@ python pack_perl_modules.py  --delete-comments-naive --comment-unshift-inc --met
   https://raw.githubusercontent.com/TeX-Live/installer/$TEXLIVEINSTALLERTAG/tlpkg/TeXLive/TLTREE.pm@TeXLive/TLTREE.pm \
   https://raw.githubusercontent.com/TeX-Live/installer/$TEXLIVEINSTALLERTAG/tlpkg/TeXLive/TLUtils.pm@TeXLive/TLUtils.pm \
   https://raw.githubusercontent.com/TeX-Live/installer/$TEXLIVEINSTALLERTAG/tlpkg/TeXLive/TeXCatalogue.pm@TeXLive/TeXCatalogue.pm \
-  https://raw.githubusercontent.com/TeX-Live/installer/$TEXLIVEINSTALLERTAG/tlpkg/TeXLive/trans.pl@TeXLive/trans.pl > tlmgr_inchook.pl
+  https://raw.githubusercontent.com/TeX-Live/installer/$TEXLIVEINSTALLERTAG/tlpkg/TeXLive/trans.pl@TeXLive/trans.pl > tlmgr.pl
