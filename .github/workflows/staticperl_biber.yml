@@ -41,12 +41,12 @@ jobs:
            echo FINDPERLDIR; find $RUNNER_WORKSPACE/localperlstatic
            echo FINDEXTDIR ; find ./myext/
        
-       - name: Install DBD/Sqlite
-         run: |
-           export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
-           export INC="-I$PWD/perlsourcestatic -I$RUNNER_WORKSPACE/localperlstatic/include"
-           $PERLBIN -MDBI -E 'say DBI->VERSION;'
-           bash build_static_perl_package.sh DBD::SQLite
+       #- name: Install DBD/Sqlite
+       #  run: |
+       #    export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
+       #    export INC="-I$PWD/perlsourcestatic -I$RUNNER_WORKSPACE/localperlstatic/include"
+       #    $PERLBIN -MDBI -E 'say DBI->VERSION;'
+       #    bash build_static_perl_package.sh DBD::SQLite
        
        - name: Install Perl static extra packages FAIL
          run: |
