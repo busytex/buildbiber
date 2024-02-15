@@ -37,8 +37,11 @@ jobs:
          run: |
            export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
            for MOD in Sort::Key Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra XML::LibXML autovivification Devel::Caller Devel::LexAlias XML::LibXSLT XML::Parser::Expat Unicode::LineBreak Clone PadWalker  PerlIO::utf8_strict HTML::Parser List::MoreUtils::XS List::SomeUtils::XS DBI Net::SSLeay Sub::Identify DateTime Storable Variable::Magic Class::XSAccessor Package::Stash::XS Params::Util DBD::SQLite; do bash build_static_perl_package.sh $MOD; done
-           #bash build_static_perl_package_brotli.sh IO::Compress::Brotli
 
+       - name: Install Brotli
+         run: |
+           export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
+           #bash build_static_perl_package_brotli.sh IO::Compress::Brotli
            URL=$(wget -q -O - https://fastapi.metacpan.org/v1/download_url/IO::Compress::Brotli | grep download_url | cut -d'"' -f4)
            mkdir -p myextsource myext/IO-Compress-Brotli
            wget -nc $URL -P myextsource
@@ -52,7 +55,16 @@ jobs:
        - name: Install Params/Validate/XS
          run: |
            export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
-           bash build_static_perl_package_paramsvalidatexs.sh Params::Validate::XS
+           #bash build_static_perl_package_paramsvalidatexs.sh Params::Validate::XS
+           URL=$(wget -q -O - https://fastapi.metacpan.org/v1/download_url/Params::Validate::XS | grep download_url | cut -d'"' -f4)
+           mkdir -p myextsource myext/Params-Validate-XS
+           wget -nc $URL -P myextsource
+           tar -xf myextsource/$(basename $URL) --strip-components=1 --directory myext/Params-Validate-XS
+           cd myext/Params-Validate-XS
+           $PERLBIN ./Build.PL
+           $PERLBIN ./Build
+           $PERLBIN ./Build install
+           ar crs ../../../localperlstatic/lib/site_perl/5.32.0/x86_64-linux/auto/Params/Validate/XS/XS.a lib/Params/Validate/XS.o
        
        - name: Install Text/BibTeX
          run: |
