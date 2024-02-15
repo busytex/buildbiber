@@ -43,7 +43,7 @@ jobs:
        
        - name: Install Perl static extra packages
          run: |
-           PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0 bash build_static_perl_package.sh IO::Compress::Brotli 
+           PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0 bash build_static_perl_package.sh IO::Compress::Brotli || true
            find $RUNNER_WORKSPACE -name libbrotlienc.a
        
        - name: Install Perl static extra packages FAIL
