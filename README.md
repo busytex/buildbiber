@@ -11,6 +11,7 @@
 - https://stackoverflow.com/questions/5479691/is-there-any-standard-way-of-embedding-resources-into-linux-executable-image/10692876#10692876
 - https://github.com/Perl/perl5/compare/blead...haukex:emperl_v5.30.0
 - https://github.com/gh0stwizard/staticperl-modules/tree/master
+- https://github.com/haukex/emperl5/blob/emperl_v5.30.0/hints/emscripten.sh
 
 # References from wipbiber
 - https://stackoverflow.com/questions/1114789/how-can-i-convert-perl-to-c
