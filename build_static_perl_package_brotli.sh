@@ -11,4 +11,4 @@ ls
 $PERLBIN Makefile.PL LINKTYPE=static
 sed -i 's/$(CP) $(MYEXTLIB) "$@"/$(CP) $(MYEXTLIB) "$(dir $@)"/' Makefile
 make
-make install || true
+make install

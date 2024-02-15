@@ -1,8 +1,8 @@
--- ./lib/auto/IO/Compress/Brotli/Brotli.so    # Brotli.a is not a directory
 -- ./lib/auto/DBD/SQLite/SQLite.so            # DBI 1.57 is required to configure this module; please install it or upgrade your CPAN/CPANPLUS shell.
 -- ./lib/auto/Params/Validate/XS/XS.so        # Build.PL
 -- ./lib/auto/Text/BibTeX/BibTeX.so           # Build.PL
 
+++ ./lib/auto/IO/Compress/Brotli/Brotli.so    # Brotli.a is not a directory
 ++ ./lib/auto/PerlIO/mmap/mmap.so             # where to download? ships in perl?
 ++ ./lib/auto/XML/LibXML/LibXML.so            # Can't locate Alien/Base/Wrapper.pm in @INC (you may need to install the Alien::Base::Wrapper module)
 ++ ./lib/auto/Sort/Key/Key.so
