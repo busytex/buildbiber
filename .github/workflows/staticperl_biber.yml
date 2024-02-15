@@ -20,7 +20,7 @@ jobs:
            wget -nc $URLPERL
            tar -xf $(basename $URLPERL) --strip-components=1 --directory=perlsourcestatic
            cd perlsourcestatic
-           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Encode/CN Encode/KR Encode/TW Encode/JP  Encode/Symbol Encode/EBCDIC Encode/Byte Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX PerlIO/mmap Time/HiRes re Socket  Unicode/Normalize Unicode/Collate Compress/Raw/Zlib Compress/Raw/Bzip2 threads threads/shared Sys/Syslog Sys/Hostname File/DosGlob Math/BigInt/FastCalc Hash/Util/FieldHash Filter/Util/Call IPC/SysV MIME/Base64 Params/Validate/XS" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
+           bash +x ./Configure -sde -Dprefix="$RUNNER_WORKSPACE/localperlstatic" -Dstatic_ext="attributes B Cwd Data/Dumper Devel/Peek Digest/MD5 Digest/SHA Encode Encode/Unicode Encode/CN Encode/KR Encode/TW Encode/JP  Encode/Symbol Encode/EBCDIC Encode/Byte Fcntl File/Glob Hash/Util I18N/Langinfo IO List/Util mro Opcode PerlIO/encoding PerlIO/scalar PerlIO/via POSIX PerlIO/mmap Time/HiRes re Socket  Unicode/Normalize Unicode/Collate Compress/Raw/Zlib Compress/Raw/Bzip2 threads threads/shared Sys/Syslog Sys/Hostname File/DosGlob Math/BigInt/FastCalc Hash/Util/FieldHash Filter/Util/Call IPC/SysV MIME/Base64" -Dusedevel -Accflags="-lm -ldl" -Aldflags="-lm -ldl" -Dlibs="-lpthread -ldl -lm -lutil -lc"
            make
            make install
            $RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0 -e "print('hello world');"
@@ -31,7 +31,7 @@ jobs:
            echo "LD_LIBRARY_PATH=$RUNNER_WORKSPACE/localperlstatic/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
        
        - name: Install build-time deps
-         run: $RUNNER_WORKSPACE/localperlstatic/bin/cpan5.32.0 -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3 Alien::Libxml2 inc::Module::Install Module::Implementation Config::AutoConf
+         run: $RUNNER_WORKSPACE/localperlstatic/bin/cpan5.32.0 -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3 Alien::Libxml2 inc::Module::Install Module::Implementation Config::AutoConf ExtUtils::LibBuilder
 
        - name: Install Perl static extra packages
          run: |
@@ -41,30 +41,34 @@ jobs:
            echo FINDPERLDIR; find $RUNNER_WORKSPACE/localperlstatic
            echo FINDEXTDIR ; find ./myext/
        
-       #- name: Install DBD/Sqlite
+       #- name: Install DBD/SQLite
        #  run: |
        #    export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
        #    export INC="-I$PWD/perlsourcestatic -I$RUNNER_WORKSPACE/localperlstatic/include"
        #    $PERLBIN -MDBI -E 'say DBI->VERSION;'
        #    bash build_static_perl_package.sh DBD::SQLite
        
-       - name: Install Perl static extra packages FAIL
+       - name: Install Params/Validate/XS
          run: |
            export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
-           bash build_static_perl_package_buildpl.sh Params::Validate::XS || true
-           bash build_static_perl_package_buildpl.sh Text::BibTeX || true
-           zip -r myext.zip ./myext/
+           bash build_static_perl_package_paramsvalidatexs.sh Params::Validate::XS
        
-       - name: Artifacts Brotli
-         uses: actions/upload-artifact@v4
-         with:
-           name: artifacts
-           path: myext.zip
-       
+       #- name: Install Text/BibTeX
+       #  run: |
+       #    export PERLBIN=$RUNNER_WORKSPACE/localperlstatic/bin/perl5.32.0
+       #    bash build_static_perl_package_textbibtex.sh Text::BibTeX 
+
        - name: Build Perl embedded
          run: |
            find $RUNNER_WORKSPACE/localperlstatic -name '*.a'
            gcc -o staticperl_biber staticperl_biber.c -I$PWD/perlsourcestatic -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$RUNNER_WORKSPACE/localperlstatic/lib/5.32.0/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         $RUNNER_WORKSPACE/localperlstatic/lib/5.32.0/x86_64-linux/auto/Fcntl/Fcntl.a $RUNNER_WORKSPACE/localperlstatic/lib/5.32.0/x86_64-linux/auto/IO/IO.a $RUNNER_WORKSPACE/localperlstatic/lib/5.32.0/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
            ldd staticperl_biber
            ./staticperl_biber
+           zip -r myext.zip ./myext/
 
+       - name: Artifacts Brotli
+         uses: actions/upload-artifact@v4
+         with:
+           name: artifacts
+           path: myext.zip
+       
