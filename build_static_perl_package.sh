@@ -9,5 +9,6 @@ tar -xf myextsource/$(basename $URL) --strip-components=1 --directory myext/$PKG
 cd myext/$PKG
 ls
 $PERLBIN Makefile.PL LINKTYPE=static
+sed -i 's@rm -f "blib/arch/auto/IO/Compress/Brotli/Brotli.a"@rm -f "blib/arch/auto/IO/Compress/Brotli/Brotli.bak"@' Makefile
 make
 make install
