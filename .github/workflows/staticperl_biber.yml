@@ -29,7 +29,9 @@ jobs:
            #$RUNNER_WORKSPACE/localperlstatic/bin/cpan5.32.0 -T Alien::Base::Wrapper Alien::cmake3 inc::Module::Install
            echo "$RUNNER_WORKSPACE/localperlstatic/bin" >> $GITHUB_PATH
            echo "LD_LIBRARY_PATH=$RUNNER_WORKSPACE/localperlstatic/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-           $RUNNNER_WORKSPACE/localperlstatic/bin/cpan5.32.0 -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3
+       
+       - name: Install build-time deps
+         run: $RUNNNER_WORKSPACE/localperlstatic/bin/cpan5.32.0 -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3
 
        - name: Install Perl static extra packages
          run: |
