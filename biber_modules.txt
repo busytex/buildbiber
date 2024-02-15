@@ -1,5 +1,5 @@
 -- ./lib/auto/XML/LibXML/LibXML.so            # Can't locate Alien/Base/Wrapper.pm in @INC (you may need to install the Alien::Base::Wrapper module)
--- ./lib/auto/IO/Compress/Brotli/Brotli.so    # Can't locate Alien/cmake3.pm in @INC (you may need to install the Alien::cmake3 module)
+-- ./lib/auto/IO/Compress/Brotli/Brotli.so    # Brotli.a is not a directory
 -- ./lib/auto/Encode/HanExtra/HanExtra.so     # Can't locate inc/Module/Install.pm in @INC (you may need to install the inc::Module::Install module)
 -- ./lib/auto/PerlIO/mmap/mmap.so             # where to download? ships in perl?
 -- ./lib/auto/DBD/SQLite/SQLite.so            # DBI 1.57 is required to configure this module; please install it or upgrade your CPAN/CPANPLUS shell.
