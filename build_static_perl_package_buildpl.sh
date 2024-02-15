@@ -9,4 +9,5 @@ tar -xf myextsource/$(basename $URL) --strip-components=1 --directory myext/$PKG
 cd myext/$PKG
 ls
 $PERLBIN ./Build.PL
-$PERLBIN ./Build.PL install
+$PERLBIN ./Build
+$PERLBIN ./Build install
