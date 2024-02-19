@@ -57,13 +57,13 @@ int main(int argc, char **argv)
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 
-    if(0 == strcmp("tlmgr.pl", argv[1]))
+    if(0 == strcmp("tlmgr", argv[1]))
     {
         int iSize = (int)(_binary_tlmgr_pl_end - _binary_tlmgr_pl_start);
         strncpy(script,    _binary_tlmgr_pl_start, iSize);
         script[iSize] = '\0';
     }
-    if(0 == strcmp("install-tl.pl", argv[1]))
+    if(0 == strcmp("install-tl", argv[1]))
     {
         int iSize = (int)(_binary_install_tl_pl_end - _binary_install_tl_pl_start);
         strncpy(script,    _binary_install_tl_pl_start, iSize);
