@@ -1,4 +1,4 @@
-name: staticperl_tlmgr
+name: staticperl_tlmgr_install-tl
 
 on: workflow_dispatch
 
@@ -7,7 +7,7 @@ env:
   MAKEFLAGS: -j2
 
 jobs:
-  staticperl_tlmgr:
+  staticperl_tlmgr_install-tl:
     runs-on: ubuntu-20.04
     container: alpine:3.14
     steps:
