@@ -1,3 +1,8 @@
+# TODO
+1. Fix-up `pack_tlmgr_install-tl.sh` to include missing dependencies from `tlmgr_modules.txt` and `install-tl_modules.txt`
+2. Test staticperl operation
+3. Explore polyfilling backtick/system perl calls, especially of kpsewhich (and maybe of tar/xz extraction) - can be done in process
+
 # Perl static/embedding experiments for busytex
 1. Compile static Perl embedding `updmap.pl` and `fmtutil.pl`
 2. Compile dynamic Perl embedding `tlmgr`
