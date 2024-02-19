@@ -1,0 +1,15 @@
+    require Digest::SHA;
+eval { require LWP; };
+  require LWP::UserAgent;
+  require HTTP::Status;
+  require Cwd;
+    require Data::Dumper;
+  eval { require JSON; };
+    require POSIX;
+    require Time::HiRes;
+  eval { require Tk; };
+        require Win32;
+        require TeXLive::TLPSRC; 
+  require("installer/ctan-mirrors.pl");
+  require("TeXLive/trans.pl");
+  require("tlmgrgui.pl"); 

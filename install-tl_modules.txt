@@ -1,0 +1,15 @@
+    require Digest::SHA;
+eval { require LWP; };
+  require LWP::UserAgent;
+  require HTTP::Status;
+  require Cwd;
+    require Data::Dumper;
+  eval { require JSON; };
+    require POSIX;
+  require Encode::Locale;
+  require TeXLive::TLWinGoo;
+
+  require("installer/ctan-mirrors.pl");
+require("TeXLive/trans.pl");
+    require("installer/install-menu-${opt_gui}.pl");
+    require("installer/install-menu-text.pl");
