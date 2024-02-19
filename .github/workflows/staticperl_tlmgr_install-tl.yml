@@ -1,4 +1,4 @@
-name: staticperl_install-tl
+name: staticperl_tlmgr
 
 on: workflow_dispatch
 
@@ -7,7 +7,7 @@ env:
   MAKEFLAGS: -j2
 
 jobs:
-  staticperl_install-tl:
+  staticperl_tlmgr:
     runs-on: ubuntu-20.04
     container: alpine:3.14
     steps:
@@ -37,9 +37,17 @@ jobs:
           find prefix -name config.h
           cd ../../..
 
+          ld -r -b binary -o tlmgr.o tlmgr.pl
           ld -r -b binary -o install-tl.o install-tl.pl
-          nm -D install-tl.o
 
-          gcc -o staticperl_install-tl staticperl_install-tl.c install-tl.o -I$PWD/build/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
-          ldd ./staticperl_install-tl || true
-          ./staticperl_install-tl install-tl.pl --help || true
+          #gcc -o staticperl_tlmgr_install-tl staticperl_tlmgr_install-tl.c tlmgr.o install-tl.o -I$PWD/build/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
+          #ldd ./staticperl_tlmgr_install-tl || true
+          #./staticperl_tlmgr_install-tl tlmgr.pl --help || true
+
+       - name: Artifacts
+         uses: actions/upload-artifact@v4
+         with:
+           name: artifacts
+           path: |
+             tlmgr.o
+             install-tl.o

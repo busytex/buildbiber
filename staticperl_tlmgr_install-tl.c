@@ -41,6 +41,9 @@ static char script[1 << 20] = "print('hello world');";
 extern char _binary_tlmgr_pl_start[];
 extern char _binary_tlmgr_pl_end[];
 
+extern char _binary_install_tl_pl_start[];
+extern char _binary_install_tl_pl_end[];
+
 int main(int argc, char **argv)
 {
     if(argc < 3)
@@ -58,6 +61,12 @@ int main(int argc, char **argv)
     {
         int iSize = (int)(_binary_tlmgr_pl_end - _binary_tlmgr_pl_start);
         strncpy(script,    _binary_tlmgr_pl_start, iSize);
+        script[iSize] = '\0';
+    }
+    if(0 == strcmp("install-tl.pl", argv[1]))
+    {
+        int iSize = (int)(_binary_install_tl_pl_end - _binary_install_tl_pl_start);
+        strncpy(script,    _binary_install_tl_pl_start, iSize);
         script[iSize] = '\0';
     }
 
