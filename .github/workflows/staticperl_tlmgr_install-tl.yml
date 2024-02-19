@@ -44,10 +44,10 @@ jobs:
           #ldd ./staticperl_tlmgr_install-tl || true
           #./staticperl_tlmgr_install-tl tlmgr.pl --help || true
 
-       - name: Artifacts
-         uses: actions/upload-artifact@v4
-         with:
-           name: artifacts
-           path: |
-             tlmgr.o
-             install-tl.o
+      - name: Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts
+          path: |
+            tlmgr.o
+            install-tl.o
