@@ -10,16 +10,16 @@ parser.add_argument('--comment-signature', default = 'PACKPERLMODULES')
 parser.add_argument('--encoding', default = 'utf-8')
 parser.add_argument('--method', default = 'inchook', choices = ['inchook', 'incpatch'], help = 'order of pm files is important for [incpatch] and not important for [inchook]')
 parser.add_argument('--delete-pod', nargs = '*', default = [
-    '=pod,=cut', 
-    '__END__,=cut', 
+    #'=pod,=cut', 
+    #'__END__,=cut', 
     #'=back,=cut', 
-    '=head1,=cut', 
-    '=head2,=cut',
-    '=head3,=cut', 
-    '=head4,=cut', 
-    '=head5,=cut', 
-    '=head6,=cut',  
-    '=item,=cut'
+    #'=head1,=cut', 
+    #'=head2,=cut',
+    #'=head3,=cut', 
+    #'=head4,=cut', 
+    #'=head5,=cut', 
+    #'=head6,=cut',  
+    #'=item,=cut'
 ])
 parser.add_argument('--delete-pod-sep', default = ',')
 parser.add_argument('--delete-comments-naive', action = 'store_true')

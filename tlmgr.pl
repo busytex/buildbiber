@@ -16,6 +16,68 @@ if ($svnrev =~ m/: ([0-9]+) /) {
 }
 sub module_revision { return $_modulerevision; }
 
+=pod
+
+=head1 NAME
+
+C<TeXLive::TLWinGoo> -- TeX Live Windows-specific support
+
+=head2 SYNOPSIS
+
+  use TeXLive::TLWinGoo;
+
+=head2 DIAGNOSTICS
+
+  TeXLive::TLWinGoo::admin;
+  TeXLive::TLWinGoo::non_admin;
+  TeXLive::TLWinGoo::reg_country;
+
+=head2 ENVIRONMENT AND REGISTRY
+
+  TeXLive::TLWinGoo::expand_string($s);
+  TeXLive::TLWinGoo::get_system_path;
+  TeXLive::TLWinGoo::get_user_path;
+  TeXLive::TLWinGoo::setenv_reg($env_var, $env_data);
+  TeXLive::TLWinGoo::unsetenv_reg($env_var);
+  TeXLive::TLWinGoo::adjust_reg_path_for_texlive($action, $texbindir, $mode);
+  TeXLive::TLWinGoo::add_to_progids($ext, $filetype);
+  TeXLive::TLWinGoo::remove_from_progids($ext, $filetype);
+  TeXLive::TLWinGoo::register_extension($mode, $extension, $file_type);
+  TeXLive::TLWinGoo::unregister_extension($mode, $extension);
+  TeXLive::TLWinGoo::register_file_type($file_type, $command);
+  TeXLive::TLWinGoo::unregister_file_type($file_type);
+
+=head2 ACTIVATING CHANGES IMMEDIATELY
+
+  TeXLive::TLWinGoo::broadcast_env;
+  TeXLive::TLWinGoo::update_assocs;
+
+=head2 SHORTCUTS
+
+  TeXLive::TLWinGoo::desktop_path;
+  TeXLive::TLWinGoo::add_desktop_shortcut($texdir, $name, $icon,
+    $prog, $args, $batgui);
+  TeXLive::TLWinGoo::add_menu_shortcut($place, $name, $icon,
+    $prog, $args, $batgui);
+  TeXLive::TLWinGoo::remove_desktop_shortcut($name);
+  TeXLive::TLWinGoo::remove_menu_shortcut($place, $name);
+
+=head2 UNINSTALLER
+
+  TeXLive::TLWinGoo::create_uninstaller;
+  TeXLive::TLWinGoo::unregister_uninstaller;
+
+=head2 ADMIN: MAKE INSTALLATION DIRECTORIES READ-ONLY
+
+  TeXLive::TLWinGoo::maybe_make_ro($dir);
+
+All exported functions return forward slashes.
+
+=head1 DESCRIPTION
+
+=over 4
+
+=cut
 
 BEGIN {
   use Exporter;
@@ -100,6 +162,13 @@ if ($is_win) {
   debug ("Import failure assoc_notify\n") unless $update_fu;
 }
 
+=pod
+
+=back
+
+=head2 DIAGNOSTICS
+
+=cut
 
 
 my $is_admin = 1;
@@ -126,10 +195,28 @@ sub get_user_env {
   return $Registry -> Open("CUser/Environment", {Access => KEY_FULL_ACCESS()});
 }
 
+=pod
+
+=item C<admin>
+
+Returns admin status, admin implying having full read-write access
+to the system environment.
+
+=cut
 
 
 sub admin { return $is_admin; }
 
+=pod
+
+=item C<non_admin>
+
+Pretend not to have admin privileges, to enforce a user- rather than
+a system install.
+
+Currently only used for testing.
+
+=cut
 
 sub non_admin {
   debug("TLWinGoo: switching to user mode\n");
@@ -141,6 +228,13 @@ sub admin_again {
   $is_admin = 1;
 }
 
+=pod
+
+=item C<reg_country>
+
+Two-letter country code representing the locale of the current user
+
+=cut
 
 sub reg_country {
   my $lm = cu_root()->{"Control Panel/international//localename"};
@@ -160,6 +254,35 @@ sub reg_country {
 }
 
 
+=pod
+
+=back
+
+=head2 ENVIRONMENT AND REGISTRY
+
+Most settings can be made for a user and for the system. User
+settings override system settings.
+
+For admin users, the functions below affect both user- and system
+settings. For non-admin users, only user settings are changed.
+
+An exception is the search path: the effective searchpath consists
+of the system searchpath in front concatenated with the user
+searchpath at the back.
+
+Note that in a roaming profile network setup, users take only user
+settings with them to other systems, not system settings. In this
+case, with a TeXLive on the network, a nonadmin install makes the
+most sense.
+
+=over 4
+
+=item C<expand_string($s)>
+
+This function replaces substrings C<%env_var%> with their current
+values as environment variable and returns the result.
+
+=cut
 
 sub expand_string {
   my ($s) = @_;
@@ -182,6 +305,13 @@ sub is_a_texdir {
   return 0;
 }
 
+=pod
+
+=item C<get_system_path>
+
+Returns unexpanded system path, as stored in the registry.
+
+=cut
 
 sub get_system_path {
   my $value = get_system_env() -> {'/Path'};
@@ -189,6 +319,14 @@ sub get_system_path {
   return $value;
 }
 
+=pod
+
+=item C<get_user_path>
+
+Returns unexpanded user path, as stored in the registry. The user
+path often does not exist, and is rarely expandable.
+
+=cut
 
 sub get_user_path {
   my $value = get_user_env() -> {'/Path'};
@@ -197,6 +335,16 @@ sub get_user_path {
   return $value;
 }
 
+=pod
+
+=item C<setenv_reg($env_var, $env_data[, $mode]);>
+
+Set an environment variable $env_var to $env_data.
+
+$mode="user": set for current user. $mode="system": set for all
+users. Default: both if admin, current user otherwise.
+
+=cut
 
 sub setenv_reg {
   my $env_var = shift;
@@ -221,6 +369,13 @@ sub setenv_reg {
   }
 }
 
+=pod
+
+=item C<unsetenv_reg($env_var[, $mode]);>
+
+Unset an environment variable $env_var
+
+=cut
 
 sub unsetenv_reg {
   my $env_var = shift;
@@ -234,6 +389,15 @@ sub unsetenv_reg {
   delete get_system_env()->{'/'.$env_var} if ($mode ne "user" and $is_admin);
 }
 
+=pod
+
+=item C<tex_dirs_on_path($path)>
+
+Returns tex directories found on the search path.
+A directory is a TeX directory if it contains tex.exe or
+pdftex.exe.
+
+=cut
 
 sub tex_dirs_on_path {
   my ($path) = @_;
@@ -248,6 +412,15 @@ sub tex_dirs_on_path {
   return @texdirs;
 }
 
+=pod
+
+=item C<adjust_reg_path_for_texlive($action, $tlbindir, $mode)>
+
+Edit system or user PATH variable in the registry.
+Adds or removes (depending on $action) $tlbindir directory
+to system or user PATH variable in the registry (depending on $mode).
+
+=cut
 
 
 sub short_name {
@@ -552,6 +725,14 @@ sub current_filetype {
 }
 
 
+=pod
+
+=item C<add_to_progids($ext, $filetype)>
+
+Add $filetype to the list of alternate progids/filetypes of extension $ext.
+The associated program shows up in the `open with' right-click menu.
+
+=cut
 
 sub add_to_progids {
   my $ext = shift;
@@ -560,6 +741,13 @@ sub add_to_progids {
       {"/$filetype" => ""});
 }
 
+=pod
+
+=item C<remove_from_progids($ext, $filetype)>
+
+Remove $filetype from the list of alternate filetypes for $ext
+
+=cut
 
 sub remove_from_progids {
   my $ext = shift;
@@ -567,6 +755,23 @@ sub remove_from_progids {
   do_remove_regkey("Software/Classes/$ext/OpenWithProgIds//$filetype");
 }
 
+=pod
+
+=item C<register_extension($mode, $extension, $file_type)>
+
+Add registry entry to associate $extension with $file_type. Slashes
+are flipped where necessary.
+
+If $mode is 0, nothing is actually done.
+
+For $mode 1, the filetype for the extension is preserved, but only
+if there is a registry key under Classes for it. For $mode>0,
+the new filetype is always added to the openwithprogids list.
+
+For $mode 2, the filetype is always overwritten. The old filetype
+moves to the openwithprogids list if necessary.
+
+=cut
 
 sub register_extension {
   my $mode = shift;
@@ -613,6 +818,13 @@ sub register_extension {
   }
 }
 
+=pod
+
+=item C<unregister_extension($mode, $extension, $file_type)>
+
+Reversal of register_extension.
+
+=cut
 
 sub unregister_extension {
   my $mode = shift;
@@ -631,6 +843,15 @@ sub unregister_extension {
   }
 }
 
+=pod
+
+=item C<register_file_type($file_type, $command)>
+
+Add registry entries to associate $file_type with $command. Slashes
+are flipped where necessary. Double quotes should be added by the
+caller if necessary.
+
+=cut
 
 sub register_file_type {
   my $file_type = shift;
@@ -650,6 +871,13 @@ sub register_file_type {
   do_write_regkey("Software/Classes/$file_type", $keyhash);
 }
 
+=pod
+
+=item C<unregister_file_type($file_type)>
+
+Reversal of register_file_type.
+
+=cut
 
 sub unregister_file_type {
   my $file_type = shift;
@@ -657,6 +885,21 @@ sub unregister_file_type {
   do_remove_regkey("Software/Classes/$file_type/");
 }
 
+=pod
+
+=back
+
+=head2 ACTIVATING CHANGES IMMEDIATELY
+
+=over 4
+
+=item C<broadcast_env>
+
+Broadcasts system message that enviroment has changed. This only has
+an effect on newly-started programs, not on running programs or the
+processes they spawn.
+
+=cut
 
 sub broadcast_env() {
   if ($SendMessage) {
@@ -672,6 +915,13 @@ sub broadcast_env() {
   }
 }
 
+=pod
+
+=item C<update_assocs>
+
+Notifies the system that filetypes have changed.
+
+=cut
 
 sub update_assocs() {
   use constant SHCNE_ASSOCCHANGED => 0x8000000;
@@ -689,6 +939,32 @@ sub update_assocs() {
   }
 }
 
+=pod
+
+=back
+
+=head2 SHORTCUTS
+
+=over 4
+
+=item C<add_shortcut($dir, $name, $icon, $prog, $args, $batgui)>
+
+Add a shortcut, with name $name and icon $icon, pointing to
+program $prog with parameters $args (a string).  Use a non-null
+batgui parameter if the shortcut starts a gui program via a
+batchfile. Then the inevitable command prompt will be hidden
+rightaway, leaving only the gui program visible.
+
+=item C<add_desktop_shortcut($name, $icon, $prog, $args, $batgui)>
+
+Add a shortcut on the desktop.
+
+=item C<add_menu_shortcut($place, $name, $icon,
+  $prog, $args, $batgui)>
+
+Add a menu shortcut at place $place, relative to Start/Programs.
+
+=cut
 
 sub add_shortcut {
   my ($dir, $name, $icon, $prog, $args, $batgui) = @_;
@@ -738,6 +1014,17 @@ sub add_menu_shortcut {
 }
 
 
+=pod
+
+=item C<remove_desktop_shortcut($name)>
+
+For uninstallation of an individual package.
+
+=item C<remove_menu_shortcut($place, $name)>
+
+For uninstallation of an individual package.
+
+=cut
 
 sub remove_desktop_shortcut {
   my $name = shift;
@@ -752,6 +1039,21 @@ sub remove_menu_shortcut {
   unlink menu_path().$place.'/'.$name.'.lnk';
 }
 
+=pod
+
+=back
+
+=head2 UNINSTALLER
+
+=over 4
+
+=item C<create_uninstaller>
+
+Writes registry entries for add/remove programs which  reference
+the uninstaller script and creates uninstaller batchfiles to finish
+the job.
+
+=cut
 
 sub create_uninstaller {
   &log("Creating uninstaller\n");
@@ -881,6 +1183,13 @@ UNEND3
   }
 }
 
+=pod
+
+=item C<unregister_uninstaller>
+
+Removes TeXLive from Add/Remove Programs.
+
+=cut
 
 sub unregister_uninstaller {
   my ($w32_multi_user) = @_;
@@ -895,6 +1204,24 @@ sub unregister_uninstaller {
     $regkey_uninst->{"TeXLive$::TeXLive::TLConfig::ReleaseYear/"};
 }
 
+=pod
+
+=back
+
+=head2 ADMIN
+
+=over 4
+
+=item C<TeXLive::TLWinGoo::maybe_make_ro($dir)>
+
+Write-protects a directory $dir recursively, using ACLs, but only if
+we are a multi-user install, and only if $dir is on an
+NTFS-formatted local fixed disk, and only on Windows Vista and
+later.  It writes a log message what it does and why.
+
+=back
+
+=cut
 
 sub maybe_make_ro {
   my $dir = shift;
@@ -946,15 +1273,6 @@ sub maybe_make_ro {
 }
 
 1;
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1432,15 +1750,163 @@ sub write_config_file {
 
 
 1;
+__END__
+
+
+=head1 NAME
+
+C<TeXLive::TLConfFile> -- TeX Live generic configuration files
+
+=head1 SYNOPSIS
+
+  use TeXLive::TLConfFile;
+
+  my $conffile = TeXLive::TLConfFile->new($file_name, $comment_char,
+                                          $separator, $type);
+  $conffile->file;
+  $conffile->cc;
+  $conffile->sep;
+  $conffile->type
+  $conffile->key_present($key);
+  $conffile->keys;
+  $conffile->value($key [, $value, ...]);
+  $conffile->is_changed;
+  $conffile->save;
+  $conffile->reparse;
+
+=head1 DESCRIPTION
+
+This module allows parsing, changing, saving of configuration files
+of a general style. It also supports three different paradigma 
+with respect to multiple occurrences of keys: C<first-win> specifies
+a configuration file where the first occurrence of a key specifies
+the value, C<last-win> specifies that the last wins, and
+C<multiple> that all keys are kept.
+
+The configuration files (henceforth conffiles) can contain comments
+initiated by the $comment_char defined at instantiation time.
+Everything after a $comment_char, as well as empty lines, will be ignored.
+
+The rest should consists of key/value pairs separated by the separator,
+defined as well at instantiation time.
+
+Whitespace around the separator, and before and after key and value 
+are allowed.
+
+Comments can be on the same line as key/value pairs and are also preserved
+over changes.
+
+Continuation lines (i.e., lines with last character being a backslash)
+are allowed after key/value pairs, but the key and
+the separator has to be on the same line.
+
+Continuations are not possible in comments, so a terminal backslash in 
+a comment will be ignored, and in fact not written out on save.
+
+=head2 Methods
+
+=over 4
+
+=item B<< $conffile = TeXLive::TLConfFile->new($file_name, $comment_char, $separator [, $type]) >>
+
+instantiates a new TLConfFile and returns the object. The file specified
+by C<$file_name> does not have to exist, it will be created at save time.
+
+The C<$comment_char> can actually be any regular expression, but 
+embedding grouping is a bad idea as it will break parsing.
+
+The C<$separator> can also be any regular expression.
+
+The C<$type>, if present, has to be one of C<last-win> (the default),
+C<first-win>, or C<multiple>.
+
+=item B<< $conffile->file >>
+
+Returns the location of the configuration file. Not changeable (at the moment).
+
+=item B<< $conffile->cc >>
+
+Returns the comment character.
+
+=item B<< $conffile->sep >>
+
+Returns the separator.
+
+=item B<< $conffile->type >>
+
+Returns the type.
+
+=item B<< $conffile->key_present($key) >>
+
+Returns true (1) if the given key is present in the config file, otherwise
+returns false (0).
+
+=item B<< $conffile->keys >>
+
+Returns the list of keys currently set in the config file.
+
+=item B<< $conffile->value($key [, $value, ...]) >>
+
+With one argument, returns the current setting of C<$key>, or undefined
+if the key is not set. If the configuration file is of C<multiple>
+type a list of keys ordered by occurrence in the file is returned.
+
+With two (or more) arguments changes (or adds) the key/value pair to 
+the config file and returns the I<new> value.
+In case of C<first-win> or C<last-win>, the respective occurrence
+of the key is changed, and the others left intact. In this case only
+the first C<$value> is used.
+
+In case of C<multiple> the C<$values> are assigned to the keys in the 
+order of occurrence in the file. If extra values are present, they
+are added. If on the contrary less values then already existing
+keys are passed, the remaining keys are deleted.
+
+=item B<< $conffile->rename_key($oldkey, $newkey) >>
+
+Renames a key from C<$oldkey> to C<$newkey>. It does not automatically
+save the new config file.
+
+=item B<< $conffile->is_changed >>
+
+Returns true (1) if some real change has happened in the configuration file,
+that is a value has been changed to something different, or a new
+setting has been added.
+
+Note that changing a setting back to the original one will not reset
+the changed flag.
+
+=item B<< $conffile->save >>
+
+Saves the config file, preserving as much structure and comments of 
+the original file as possible.
+
+=item B<< $conffile->reparse >>
+
+Reparses the configuration file.
 
 
+=back
 
+=head1 EXAMPLES
 
+For parsing a C<texmf.cnf> file you can use
 
+  $tmfcnf = TeXLive::TLConfFile->new(".../texmf-dist/web2c", "[#%]", "=");
 
+since the allowed comment characters for texmf.cnf files are # and %.
+After that you can query keys:
 
+  $tmfcnf->value("TEXMFMAIN");
+  $tmfcnf->value("trie_size", 900000);
+ 
+=head1 AUTHORS AND COPYRIGHT
 
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
 
+=cut
 
 
 
@@ -1669,15 +2135,118 @@ our $ChecksumExtension = "sha512";
 1;
 
 
+=head1 NAME
 
+C<TeXLive::TLConfig> -- TeX Live configuration parameters
 
+=head1 SYNOPSIS
 
+  use TeXLive::TLConfig;
 
+=head1 DESCRIPTION
 
+The L<TeXLive::TLConfig> module contains definitions of variables 
+configuring all of TeX Live.
 
+=head2 EXPORTED VARIABLES
 
+All of the following variables are pulled into the callers namespace,
+i.e., are declared with C<EXPORT> (and C<EXPORT_OK>).
 
+=over 4
 
+=item C<@TeXLive::TLConfig::MetaCategories>
+
+The list of meta categories, i.e., those categories whose packages only
+depend on other packages, but don't ship any files. Currently 
+C<Collection> and <Scheme>.
+
+=item C<@TeXLive::TLConfig::NormalCategories>
+
+The list of normal categories, i.e., those categories whose packages do
+ship files. Currently C<TLCore>, C<Package>, C<ConTeXt>.
+
+=item C<@TeXLive::TLConfig::Categories>
+
+The list of all categories, i.e., the union of the above.
+
+=item C<$TeXLive::TLConfig::CategoriesRegexp>
+
+A regexp matching any category.
+
+=item C<$TeXLive::TLConfig::DefaultCategory>
+
+The default category used when creating new packages.
+
+=item C<$TeXLive::TLConfig::InfraLocation>
+
+The subdirectory with various infrastructure files (C<texlive.tlpdb>,
+tlpobj files, ...) relative to the root of the installation; currently
+C<tlpkg>.
+
+=item C<$TeXLive::TLConfig::DatabaseName>
+
+The name of our so-called database file: C<texlive.tlpdb>. It's just a
+plain text file, not any kind of relational or other database.
+
+=item C<$TeXLive::TLConfig::DatabaseLocation>
+
+Concatenation of C<InfraLocation> "/" C<DatabaseName>, i.e.,
+C<tlpkg/texlive.tlpdb>.
+
+=item C<$TeXLive::TLConfig::BlockSize>
+
+The assumed block size, currently 4k.
+
+=item C<$TeXLive::TLConfig::Archive>
+=item C<$TeXLive::TLConfig::TeXLiveURL>
+
+These values specify where to find packages.
+
+=item C<$TeXLive::TLConfig::TeXLiveServerURL>
+=item C<$TeXLive::TLConfig::TeXLiveServerURLRegexp>
+=item C<$TeXLive::TLConfig::TeXLiveServerPath>
+
+C<TeXLiveURL> is concatenated from these values, with a string between.
+The defaults are respectively, C<https://mirror.ctan.org> and
+C<systems/texlive/tlnet/>.
+
+=item C<@TeXLive::TLConfig::CriticalPackagesList>
+=item C<@TeXLive::TLConfig::CriticalPackagesRegexp>
+
+A list of all those packages which we do not update regularly since they
+are too central, currently texlive.infra and (for Windows) tlperl.windows.
+
+=item C<@TeXLive::TLConfig::InstallExtraRequiredPackages>
+
+A list of packages that are required in addition to those from
+C<@CriticalPackagesList> for the installer to be able to conclude
+installation.
+
+=item C<$TeXLive::TLConfig::RelocTree>
+
+The texmf-tree name that can be relocated, defaults to C<texmf-dist>.
+
+=item C<$TeXLive::TLConfig::RelocPrefix>
+
+The string that replaces the C<RelocTree> in the tlpdb if a package is
+relocated, defaults to C<RELOC>".
+
+=back
+
+=head1 SEE ALSO
+
+All the other TeX Live modules and scripts, especially C<tlmgr> and
+C<install-tl>, and the documentation in the repository:
+C<Master/tlpkg/doc/>.
+
+=head1 AUTHORS AND COPYRIGHT
+
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
+
+=cut
 
 
 
@@ -1699,6 +2268,34 @@ my $svnrev = '$Revision$';
 my $_modulerevision = ($svnrev =~ m/: ([0-9]+) /) ? $1 : "unknown";
 sub module_revision { return $_modulerevision; }
 
+=pod
+
+=head1 NAME
+
+C<TeXLive::TLCrypto> -- TeX Live checksums and cryptographic signatures
+
+=head1 SYNOPSIS
+
+  use TeXLive::TLCrypto;  # requires Digest::MD5 and Digest::SHA
+
+=head2 Setup
+
+  TeXLive::TLCrypto::setup_checksum_method();
+
+=head2 Checksums
+
+  TeXLive::TLCrypto::tlchecksum($path);
+  TeXLive::TLCrypto::verify_checksum($file, $url);
+  TeXLive::TLCrypto::verify_checksum_and_check_return($file, $url);
+
+=head2 Signatures
+
+  TeXLive::TLCrypto::setup_gpg();
+  TeXLive::TLCrypto::verify_signature($file, $url);
+
+=head1 DESCRIPTION
+
+=cut
 
 BEGIN {
   use Exporter ();
@@ -1724,6 +2321,21 @@ BEGIN {
   );
 }
 
+=pod
+
+=over 4
+
+=item C<< setup_checksum_method() >>
+
+Tries to find a checksum method: check usability of C<Digest::SHA>,
+then the programs C<openssl>, C<sha512sum>, and C<shasum>, in that
+order.  On old-enough Macs, C<openssl> is present but does not have
+the option C<-sha512>, while the separate program C<shasum> does suffice.
+
+Returns the checksum method as a string, and also sets
+C<<$::checksum_method>>, or false if none found.
+
+=cut
 
 sub setup_checksum_method {
   return ($::checksum_method) if defined($::checksum_method);
@@ -1760,6 +2372,13 @@ sub setup_checksum_method {
 }
 
 
+=pod
+
+=item C<< tlchecksum($file) >>
+
+Return checksum of C<$file>.
+
+=cut
 
 sub tlchecksum {
   my ($file) = @_;
@@ -1818,9 +2437,29 @@ sub tlchecksum {
 }
 
 
+=pod
+
+=item C<< tl_short_digest($str) >>
+
+Return short digest (MD5) of C<$str>.
+
+=cut
 
 sub tl_short_digest { return (Digest::MD5::md5_hex(shift)); }
 
+=pod
+
+=item C<< verify_checksum_and_check_return($file, $tlpdburl [, $is_main, $localcopymode ]) >>
+
+Calls C<<verify_checksum>> and checks the various return values
+for critical errors, and dies if necessary.
+
+If C<$is_main> is given and true, an unsigned tlpdb is considered
+fatal. If C<$localcopymode> is given and true, do not die for 
+checksum and connection errors, thus allowing for re-downloading
+of a copy.
+
+=cut
 
 sub verify_checksum_and_check_return {
   my ($file, $path, $is_main, $localcopymode) = @_;
@@ -1866,6 +2505,26 @@ sub verify_checksum_and_check_return {
 
 
 
+=pod
+
+=item C<< verify_checksum($file, $checksum_url) >>
+
+Verifies that C<$file> has checksum C<$checksum_url>, and if gpg is
+available also verifies that the checksum is signed.
+
+Returns 
+C<$VS_VERIFIED> on success, 
+C<$VS_CONNECTION_ERROR> on connection error,
+C<$VS_UNSIGNED> on missing signature file, 
+C<$VS_GPG_UNAVAILABLE> if no gpg program is available,
+C<$VS_PUBKEY_MISSING> if the pubkey is not available, 
+C<$VS_CHECKSUM_ERROR> on checksum errors, 
+C<$VS_EXPKEYSIG> if the signature is good but was made with an expired key,
+C<$VS_REVKEYSIG> if the signature is good but was made with a revoked key,
+and C<$VS_SIGNATURE_ERROR> on signature errors.
+In case of errors returns an informal message as second argument.
+
+=cut
 
 sub verify_checksum {
   my ($file, $checksum_url) = @_;
@@ -1913,6 +2572,22 @@ sub verify_checksum {
   return($VS_VERIFIED);
 }
 
+=pod
+
+=item C<< setup_gpg() >>
+
+Tries to set up gpg command line C<$::gpg> used for verification of
+downloads. Checks for the environment variable C<TL_GNUPG>; if that
+envvar is not set, first C<gpg>, then C<gpg2>, then, on Windows only,
+C<tlpkg/installer/gpg/gpg.exe> is looked for.  Further adaptation of the
+invocation of C<gpg> can be done using the two enviroment variables
+C<TL_GNUPGHOME>, which is passed to C<gpg> with C<--homedir>, and
+C<TL_GNUPGARGS>, which replaces the default arguments
+C<--no-secmem-warning --no-permission-warning>.
+
+Returns 1/0 on success/failure.
+
+=cut
 
 sub setup_gpg {
   my $master = shift;
@@ -1987,6 +2662,24 @@ sub test_one_gpg {
   }
 }
 
+=pod
+
+=item C<< verify_signature($file, $url) >>
+
+Verifies a download of C<$url> into C<$file> by cheking the 
+gpg signature in C<$url.asc>.
+
+Returns 
+$VS_VERIFIED on success, 
+$VS_REVKEYSIG on good signature but from revoked key,
+$VS_EXPKEYSIG on good signature but from expired key,
+$VS_UNSIGNED on missing signature file, 
+$VS_SIGNATURE_ERROR on signature error,
+$VS_GPG_UNAVAILABLE if no gpg is available, and 
+$VS_PUBKEY_MISSING if a pubkey is missing.
+In case of errors returns an informal message as second argument.
+
+=cut
 
 sub verify_signature {
   my ($file, $url) = @_;
@@ -2046,6 +2739,13 @@ GPGERROR
   return ($VS_UNKNOWN);
 }
 
+=pod
+
+=item C<< gpg_verify_signature($file, $sig) >>
+
+Internal routine running gpg to verify signature C<$sig> of C<$file>.
+
+=cut
 
 sub gpg_verify_signature {
   my ($file, $sig) = @_;
@@ -2086,6 +2786,13 @@ sub gpg_verify_signature {
   }
 }
 
+=pod
+
+=item C<< %VerificationStatusDescription >>
+
+Provides a textual representation for the verification status values.
+
+=cut
 
 our $VS_VERIFIED = 0;
 our $VS_CHECKSUM_ERROR = 1;
@@ -2116,15 +2823,21 @@ our %VerificationStatusDescription = (
 =cut
 
 1;
+__END__
 
+=head1 SEE ALSO
 
+The modules L<TeXLive::Config>, L<TeXLive::TLUtils>, etc.,
+and the documentation in the repository: C<Master/tlpkg/doc/>.
+Also the standard modules L<Digest::MD5> and L<Digest::SHA>.
 
+=head1 AUTHORS AND COPYRIGHT
 
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
 
-
-
-
-
+=cut
 
 
 
@@ -2286,15 +2999,63 @@ sub get_file {
 
 
 1;
+__END__
+
 
+=head1 NAME
 
+C<TeXLive::TLDownload> -- TeX Live persistent downloads via LWP
 
+=head1 SYNOPSIS
 
+  use TeXLive::TLDownload;
 
+  $TeXLive::TLDownload::net_lib_avail
+  my $dl = TeXLive::TLDownload->new();
+  $dl->get_file($relpath, $output [, $expected_size ]);
+  if ($dl->enabled) ...
+  if ($dl->disabled) ...
+  $dl->enable;
+  $dl->disable;
+  $dl->errorcount([n]);
+  $dl->incr_errorcount;
+  $dl->decr_errorcount;
+  $dl->reset_errorcount;
 
+=head1 DESCRIPTION
 
+The C<TeXLive::TLDownload> is a wrapper around the LWP modules that
+allows for persistent connections and different protocols.  At load
+time it checks for the existence of the LWP module(s), and sets
+C<$TeXLive::TLDownload::net_lib_avail> accordingly.
 
+=head2 Using proxies
 
+Please see C<LWP::UserAgent> for details, in a nut shell one can
+specify proxies by setting C<I<protocol>_proxy> variables.
+
+=head2 Automatic disabling
+
+The TLDownload module implements some automatic disabling feature. 
+Every time a download did not succeed an internal counter (errorcount)
+is increased, everytime it did succeed it is decreased (to a minimum of 0).
+If the number of error goes above the maximal error count, the download
+object will be disabled and get_file always returns undef.
+
+In this cases the download can be reset with the reset_errorcount and
+enable function.
+
+=head1 SEE ALSO
+
+LWP
+
+=head1 AUTHORS AND COPYRIGHT
+
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
+
+=cut
 
 
 
@@ -2311,6 +3072,85 @@ my $svnrev = '$Revision$';
 my $_modulerevision = ($svnrev =~ m/: ([0-9]+) /) ? $1 : "unknown";
 sub module_revision { return $_modulerevision; }
 
+=pod
+
+=head1 NAME
+
+C<TeXLive::TLPDB> -- TeX Live Package Database (C<texlive.tlpdb>) module
+
+=head1 SYNOPSIS
+
+  use TeXLive::TLPDB;
+
+  TeXLive::TLPDB->new ();
+  TeXLive::TLPDB->new (root => "/path/to/texlive/installation/root");
+
+  $tlpdb->root("/path/to/root/of/texlive/installation");
+  $tlpdb->copy;
+  $tlpdb->from_file($filename);
+  $tlpdb->writeout;
+  $tlpdb->writeout(FILEHANDLE);
+  $tlpdb->as_json;
+  $tlpdb->save;
+  $tlpdb->media;
+  $tlpdb->available_architectures();
+  $tlpdb->add_tlpobj($tlpobj);
+  $tlpdb->needed_by($pkg);
+  $tlpdb->remove_tlpobj($pkg);
+  $tlpdb->get_package("packagename");
+  $tlpdb->list_packages ( [$tag] );
+  $tlpdb->expand_dependencies(["-only-arch",] $totlpdb, @list);
+  $tlpdb->expand_dependencies(["-no-collections",] $totlpdb, @list);
+  $tlpdb->find_file("filename");
+  $tlpdb->collections;
+  $tlpdb->schemes;
+  $tlpdb->updmap_cfg_lines;
+  $tlpdb->fmtutil_cnf_lines;
+  $tlpdb->language_dat_lines;
+  $tlpdb->language_def_lines;
+  $tlpdb->language_lua_lines;
+  $tlpdb->package_revision("packagename");
+  $tlpdb->location;
+  $tlpdb->platform;
+  $tlpdb->is_verified;
+  $tlpdb->verification_status;
+  $tlpdb->config_src_container;
+  $tlpdb->config_doc_container;
+  $tlpdb->config_container_format;
+  $tlpdb->config_release;
+  $tlpdb->config_minrelease;
+  $tlpdb->config_revision;
+  $tlpdb->config_frozen;
+  $tlpdb->options;
+  $tlpdb->option($key, [$value]);
+  $tlpdb->reset_options();
+  $tlpdb->add_default_options();
+  $tlpdb->settings;
+  $tlpdb->setting($key, [$value]);
+  $tlpdb->setting([-clear], $key, [$value]);
+  $tlpdb->sizes_of_packages($opt_src, $opt_doc, $ref_arch_list [, @packs ]);
+  $tlpdb->sizes_of_packages_with_deps($opt_src, $opt_doc, $ref_arch_list [, @packs ]);
+  $tlpdb->install_package($pkg, $dest_tlpdb);
+  $tlpdb->remove_package($pkg, %options);
+  $tlpdb->install_package_files($file [, $file ]);
+
+  TeXLive::TLPDB->listdir([$dir]);
+  $tlpdb->generate_listfiles([$destdir]);
+
+  $tlpdb->make_virtual;
+  $tlpdb->is_virtual;
+  $tlpdb->virtual_add_tlpdb($tlpdb, $tag);
+  $tlpdb->virtual_remove_tlpdb($tag);
+  $tlpdb->virtual_get_tags();
+  $tlpdb->virtual_get_tlpdb($tag);
+  $tlpdb->virtual_get_package($pkg, $tag);
+  $tlpdb->candidates($pkg);
+  $tlpdb->virtual_candidate($pkg);
+  $tlpdb->virtual_pinning( [ $pin_file_TLConfFile ] );
+
+=head1 DESCRIPTION
+
+=cut
 
 use TeXLive::TLConfig qw($CategoriesRegexp $DefaultCategory $InfraLocation
       $DatabaseName $DatabaseLocation $MetaCategoriesRegexp $Archive
@@ -2328,6 +3168,25 @@ use Cwd 'abs_path';
 
 my $_listdir;
 
+=pod
+
+=over 4
+
+=item C<< TeXLive::TLPDB->new >>
+
+=item C<< TeXLive::TLPDB->new( [root => "$path"] ) >>
+
+C<< TeXLive::TLPDB->new >> creates a new C<TLPDB> object. If the
+argument C<root> is given it will be initialized from the respective
+location starting at $path. If C<$path> begins with C<http://>, C<https://>,
+C<ftp://>, C<scp://>, C<ssh://> or C<I<user>@I<host>:>, the respective file
+is downloaded.  The C<$path> can also start with C<file:/> in which case it
+is treated as a file on the filesystem in the usual way.
+
+Returns an object of type C<TeXLive::TLPDB>, or undef if the root was
+given but no package could be read from that location.
+
+=cut
 
 sub new { 
   my $class = shift;
@@ -2369,6 +3228,13 @@ sub copy {
   return $bla;
 }
 
+=pod
+
+=item C<< $tlpdb->add_tlpobj($tlpobj) >>
+
+The C<add_tlpobj> adds an object of the type TLPOBJ to the TLPDB.
+
+=cut
 
 sub add_tlpobj {
   my ($self,$tlp) = @_;
@@ -2379,6 +3245,13 @@ sub add_tlpobj {
   $self->{'tlps'}{$tlp->name} = $tlp;
 }
 
+=pod
+
+=item C<< $tlpdb->needed_by($pkg) >>
+
+Returns an array of package names depending on $pkg.
+
+=cut
 
 sub needed_by {
   my ($self,$pkg) = @_;
@@ -2404,6 +3277,14 @@ sub needed_by {
   return @ret;
 }
 
+=pod
+
+=item C<< $tlpdb->remove_tlpobj($pkg) >>
+
+Remove the package named C<$pkg> from the tlpdb. Gives a warning if the
+package is not present
+
+=cut
 
 sub remove_tlpobj {
   my ($self,$pkg) = @_;
@@ -2418,6 +3299,17 @@ sub remove_tlpobj {
   }
 }
 
+=pod
+
+=item C<< $tlpdb->from_file($filename, @args) >>
+
+The C<from_file> function initializes the C<TLPDB> if the root was not
+given at generation time.  See L<TLPDB::new> for more information.
+
+It returns the actual number of packages (TLPOBJs) read from
+C<$filename>, and zero if there are problems (and gives warnings).
+
+=cut
 
 sub from_file {
   my ($self, $path, @args) = @_;
@@ -2549,6 +3441,16 @@ sub from_file {
   return($found);
 }
 
+=pod
+
+=item C<< $tlpdb->writeout >>
+
+=item C<< $tlpdb->writeout(FILEHANDLE) >>
+
+The C<writeout> function writes the database to C<STDOUT>, or 
+the file handle given as argument.
+
+=cut
 
 sub writeout {
   my $self = shift;
@@ -2565,6 +3467,16 @@ sub writeout {
   }
 }
 
+=pod
+
+=item C<< $tlpdb->as_json >>
+
+The C<as_json> function returns a JSON UTF8 encoded representation of the
+database, that is a JSON array of packages. If the database is virtual,
+a JSON array where each element is a hash with two keys, C<tag> giving
+the tag of the sub-database, and C<tlpdb> giving the JSON of the database.
+
+=cut
 
 sub as_json {
   my $self = shift;
@@ -2657,6 +3569,14 @@ sub _as_json {
   return($ret);
 }
 
+=pod
+
+=item C<< $tlpdb->save >>
+
+The C<save> functions saves the C<TLPDB> to the file which has been set
+as location. If the location is undefined, die.
+
+=cut
 
 sub save {
   my $self = shift;
@@ -2674,6 +3594,13 @@ sub save {
   unlink ($tmppath) or tlwarn ("TLPDB: cannot unlink $tmppath: $!\n");
 }
 
+=pod
+
+=item C<< $tlpdb->media >>
+
+Returns the media code the respective installation resides on.
+
+=cut
 
 sub media { 
   my $self = shift ; 
@@ -2683,6 +3610,15 @@ sub media {
   return $self->{'media'};
 }
 
+=pod
+
+=item C<< $tlpdb->available_architectures >>
+
+The C<available_architectures> functions returns the list of available 
+architectures as set in the options section 
+(i.e., using setting("available_architectures"))
+
+=cut
 
 sub available_architectures {
   my $self = shift;
@@ -2707,6 +3643,14 @@ sub _available_architectures {
   return @archs;
 }
 
+=pod
+
+=item C<< $tlpdb->get_package("pkgname") >> 
+
+The C<get_package> function returns a reference to the C<TLPOBJ> object
+corresponding to the I<pkgname>, or undef.
+
+=cut
 
 sub get_package {
   my ($self,$pkg,$tag) = @_;
@@ -2742,6 +3686,15 @@ sub _get_package {
   }
 }
 
+=pod
+
+=item C<< $tlpdb->media_of_package($pkg [, $tag]) >>
+
+returns the media type of the package. In the virtual case a tag can
+be given and the media of that repository is used, otherwise the
+media of the virtual candidate is given.
+
+=cut
 
 sub media_of_package {
   my ($self, $pkg, $tag) = @_;
@@ -2762,6 +3715,22 @@ sub media_of_package {
   }
 }
 
+=pod
+
+=item C<< $tlpdb->list_packages >>
+
+The C<list_packages> function returns the list of all included packages.
+
+By default, for virtual tlpdbs only packages that are installable
+are listed. That means, packages that are only in subsidiary repositories
+but are not specifically pinned to it cannot be installed and are thus
+not listed. Adding "-all" argument lists also these packages.
+
+Finally, if there is another argument, the tlpdb must be virtual,
+and the argument must specify a tag/name of a sub-tlpdb. In this
+case all packages (without exceptions) from this repository are returned.
+
+=cut
 
 sub list_packages {
   my $self = shift;
@@ -2802,6 +3771,32 @@ sub _list_packages {
   return (sort keys %{$self->{'tlps'}});
 }
 
+=pod
+
+=item C<< $tlpdb->expand_dependencies(["control",] $tlpdb, ($pkgs)) >>
+
+If the first argument is the string C<"-only-arch">, expands only
+dependencies of the form C<.>I<ARCH>.
+
+If the first argument is C<"-no-collections">, then dependencies between
+"same-level" packages (scheme onto scheme, collection onto collection,
+package onto package) are ignored.
+
+C<-only-arch> and C<-no-collections> cannot be specified together; has
+to be one or the other.
+
+The next (or first) argument is the target TLPDB, then a list of
+packages.
+
+In the virtual case, if a package name is tagged with C<@repository-tag>
+then all the dependencies will still be expanded between all included
+databases.  Only in case of C<.>I<ARCH> dependencies the repository-tag
+is sticky.
+
+We return a list of package names, the closure of the package list with
+respect to the depends operator. (Sorry, that was for mathematicians.)
+
+=cut
 
 sub expand_dependencies {
   my $self = shift;
@@ -2872,6 +3867,14 @@ sub expand_dependencies {
   return map { $install{$_} eq "0"?$_:"$_\@" . $install{$_} } keys %install;
 }
 
+=pod
+
+=item C<< $tlpdb->find_file("filename") >>
+
+The C<find_file> returns a list of packages:filename
+containing a file named C<filename>.
+
+=cut
 
 sub find_file {
   my ($self,$fn) = @_;
@@ -2884,6 +3887,13 @@ sub find_file {
   return @ret;
 }
 
+=pod
+
+=item C<< $tlpdb->collections >>
+
+The C<collections> function returns a list of all collection names.
+
+=cut
 
 sub collections {
   my $self = shift;
@@ -2896,6 +3906,13 @@ sub collections {
   return @ret;
 }
 
+=pod
+
+=item C<< $tlpdb->schemes >>
+
+The C<schemes> function returns a list of all scheme names.
+
+=cut
 
 sub schemes {
   my $self = shift;
@@ -2910,6 +3927,14 @@ sub schemes {
 
 
 
+=pod
+
+=item C<< $tlpdb->package_revision("packagename") >>
+
+The C<package_revision> function returns the revision number of the
+package named in the first argument.
+
+=cut
 
 sub package_revision {
   my ($self,$pkg) = @_;
@@ -2921,6 +3946,16 @@ sub package_revision {
   }
 }
 
+=pod
+
+=item C<< $tlpdb->generate_packagelist >>
+
+The C<generate_packagelist> prints TeX Live package names in the object
+database, together with their revisions, to the file handle given in the
+first (optional) argument, or C<STDOUT> by default.  It also outputs all
+available architectures as packages with revision number -1.
+
+=cut
 
 sub generate_packagelist {
   my $self = shift;
@@ -2934,6 +3969,16 @@ sub generate_packagelist {
   }
 }
 
+=pod
+
+=item C<< $tlpdb->generate_listfiles >>
+
+=item C<< $tlpdb->generate_listfiles($destdir) >>
+
+The C<generate_listfiles> generates the list files for the old 
+installers. This function will probably go away.
+
+=cut
 
 sub generate_listfiles {
   my ($self,$destdir) = @_;
@@ -3025,6 +4070,14 @@ sub _generate_listfile {
   close(TMP);
 }
 
+=pod
+
+=item C<< $tlpdb->root([ "/path/to/installation" ]) >>
+
+The function C<root> allows to read and set the root of the
+installation. 
+
+=cut
 
 sub root {
   my $self = shift;
@@ -3036,6 +4089,18 @@ sub root {
   return $self->{'root'};
 }
 
+=pod
+
+=item C<< $tlpdb->location >>
+
+Return the location of the actual C<texlive.tlpdb> file used. This is a
+read-only function; you cannot change the root of the TLPDB using this
+function.
+
+See C<00texlive.installation.tlpsrc> for a description of the
+special value C<__MASTER>.
+
+=cut
 
 sub location {
   my $self = shift;
@@ -3046,6 +4111,13 @@ sub location {
   return "$self->{'root'}/$DatabaseLocation";
 }
 
+=pod
+
+=item C<< $tlpdb->platform >>
+
+returns the platform of this installation.
+
+=cut
 
 sub platform {
   my $self = shift;
@@ -3054,6 +4126,14 @@ sub platform {
   return TeXLive::TLUtils::platform();
 }
 
+=pod
+
+=item C<< $tlpdb->is_verified >>
+
+Returns 0/1 depending on whether the tlpdb was verified by checking
+the cryptographic signature.
+
+=cut
 
 sub is_verified {
   my $self = shift;
@@ -3064,6 +4144,14 @@ sub is_verified {
   if (@_) { $self->{'verified'} = shift }
   return $self->{'verified'};
 }
+=pod
+
+=item C<< $tlpdb->verification_status >>
+
+Returns the id of the verification status. To obtain a textual representation
+us %TLCrypto::VerificationStatusDescription.
+
+=cut
 
 sub verification_status {
   my $self = shift;
@@ -3075,6 +4163,14 @@ sub verification_status {
   return $self->{'verification_status'};
 }
 
+=pod
+
+=item C<< $tlpdb->listdir >>
+
+The function C<listdir> allows to read and set the packages variable
+specifying where generated list files are created.
+
+=cut
 
 sub listdir {
   my $self = shift;
@@ -3082,6 +4178,14 @@ sub listdir {
   return $_listdir;
 }
 
+=pod
+
+=item C<< $tlpdb->config_src_container >>
+
+Returns 1 if the texlive config option for src files splitting on 
+container level is set. See Options below.
+
+=cut
 
 sub config_src_container {
   my $self = shift;
@@ -3101,6 +4205,14 @@ sub config_src_container {
   return 0;
 }
 
+=pod
+
+=item C<< $tlpdb->config_doc_container >>
+
+Returns 1 if the texlive config option for doc files splitting on 
+container level is set. See Options below.
+
+=cut
 
 sub config_doc_container {
   my $self = shift;
@@ -3120,6 +4232,13 @@ sub config_doc_container {
   return 0;
 }
 
+=pod
+
+=item C<< $tlpdb->config_container_format >>
+
+Returns the currently set default container format. See Options below.
+
+=cut
 
 sub config_container_format {
   my $self = shift;
@@ -3139,6 +4258,13 @@ sub config_container_format {
   return "";
 }
 
+=pod
+
+=item C<< $tlpdb->config_release >>
+
+Returns the currently set release. See Options below.
+
+=cut
 
 sub config_release {
   my $self = shift;
@@ -3158,6 +4284,13 @@ sub config_release {
   return "";
 }
 
+=pod
+
+=item C<< $tlpdb->config_minrelease >>
+
+Returns the currently allowed minimal release. See Options below.
+
+=cut
 
 sub config_minrelease {
   my $self = shift;
@@ -3177,6 +4310,13 @@ sub config_minrelease {
   return;
 }
 
+=pod
+
+=item C<< $tlpdb->config_frozen >>
+
+Returns true if the location is frozen.
+
+=cut
 
 sub config_frozen {
   my $self = shift;
@@ -3197,6 +4337,13 @@ sub config_frozen {
 }
 
 
+=pod
+
+=item C<< $tlpdb->config_revision >>
+
+Returns the currently set revision. See Options below.
+
+=cut
 
 sub config_revision {
   my $self = shift;
@@ -3216,6 +4363,29 @@ sub config_revision {
   return "";
 }
 
+=pod
+
+=item C<< $tlpdb->sizes_of_packages_with_deps ( $opt_src, $opt_doc, $ref_arch_list, [ @packs ] ) >>
+
+=item C<< $tlpdb->sizes_of_packages ( $opt_src, $opt_doc, $ref_arch_list, [ @packs ] ) >>
+
+These functions return a reference to a hash with package names as keys
+and the sizes in bytes as values. The sizes are computed for the list of
+package names given as the fourth argument, or all packages if not
+specified. The difference between the two functions is that the C<_with_deps>
+gives the size of packages including the size of all depending sizes.
+
+If anything has been computed one additional key is synthesized,
+C<__TOTAL__>, which contains the total size of all packages under
+consideration. In the case of C<_with_deps> this total computation
+does B<not> count packages multiple times, even if they appear
+multiple times as dependencies.
+
+If the third argument is a reference to a list of architectures, then
+only the sizes for the binary packages for these architectures are used,
+otherwise all sizes for all architectures are summed.
+
+=cut
 
 sub sizes_of_packages {
   my ($self, $opt_src, $opt_doc, $arch_list_ref, @packs) = @_;
@@ -3333,6 +4503,14 @@ sub size_of_one_package {
   return $size;
 }
 
+=pod
+
+=item C<< $tlpdb->install_package_files($f [, $f]) >>
+
+Install a package from a package file, i.e. a .tar.xz.
+Returns the number of packages actually installed successfully.
+
+=cut
 
 sub install_package_files {
   my ($self, @files) = @_;
@@ -3386,6 +4564,17 @@ sub install_package_files {
 }
 
 
+=pod
+
+=item C<< $tlpdb->install_package($pkg, $dest_tlpdb [, $tag]) >>
+
+Installs the package $pkg into $dest_tlpdb. Returns a reference to the
+package, or undef if failure.
+
+If C<$tag> is present and the tlpdb is virtual, tries to install $pkg
+from the repository tagged with $tag.
+
+=cut
 
 sub install_package {
   my ($self, $pkg, $totlpdb, $tag) = @_;
@@ -3613,6 +4802,14 @@ sub _install_data {
 }
 
 
+=pod
+
+=item << $tlpdb->remove_package($pkg, %options) >>
+
+Removes a single package with all the files and the entry in the db;
+warns if the package does not exist.
+
+=cut
 
 sub remove_package {
   my ($self, $pkg, %opts) = @_;
@@ -3731,6 +4928,14 @@ sub remove_package {
 }
 
 
+=pod
+
+=item C<< $tlpdb->option($key [, $val]) >>
+=item C<< $tlpdb->setting($key [, $val]) >>
+
+Need to be documented
+
+=cut
 
 sub _set_option_value {
   my $self = shift;
@@ -3929,6 +5134,13 @@ sub add_default_options {
   }
 }
 
+=pod
+
+=item C<< $tlpdb->options >>
+
+Returns a reference to a hash with option names.
+
+=cut
 
 sub _keyshash {
   my ($self, $pre, $hr) = @_;
@@ -3963,6 +5175,14 @@ sub settings {
   return ($self->_keyshash('setting_', \%TLPDBSettings));
 }
 
+=pod
+
+=item C<< $tlpdb->format_definitions >>
+
+This function returns a list of references to hashes where each hash
+represents a parsed AddFormat line.
+
+=cut
 
 sub format_definitions {
   my $self = shift;
@@ -3975,6 +5195,15 @@ sub format_definitions {
   return(@ret);
 }
 
+=item C<< $tlpdb->fmtutil_cnf_lines >>
+
+The function C<fmtutil_cnf_lines> returns the list of a fmtutil.cnf file
+containing only those formats present in the installation.
+
+Every format listed in the tlpdb but listed in the arguments
+will not be included in the list of lines returned.
+
+=cut
 sub fmtutil_cnf_lines {
   my $self = shift;
   my @lines;
@@ -3986,6 +5215,15 @@ sub fmtutil_cnf_lines {
   return(@lines);
 }
 
+=item C<< $tlpdb->updmap_cfg_lines ( [@disabled_maps] ) >>
+
+The function C<updmap_cfg_lines> returns the list of a updmap.cfg file
+containing only those maps present in the installation.
+
+A map file mentioned in the tlpdb but listed in the arguments will not 
+be included in the list of lines returned.
+
+=cut
 sub updmap_cfg_lines {
   my $self = shift;
   my @lines;
@@ -3997,6 +5235,15 @@ sub updmap_cfg_lines {
   return(@lines);
 }
 
+=item C<< $tlpdb->language_dat_lines ( [@disabled_hyphen_names] ) >>
+
+The function C<language_dat_lines> returns the list of all
+lines for language.dat that can be generated from the tlpdb.
+
+Every hyphenation pattern listed in the tlpdb but listed in the arguments
+will not be included in the list of lines returned.
+
+=cut
 
 sub language_dat_lines {
   my $self = shift;
@@ -4009,6 +5256,15 @@ sub language_dat_lines {
   return(@lines);
 }
 
+=item C<< $tlpdb->language_def_lines ( [@disabled_hyphen_names] ) >>
+
+The function C<language_def_lines> returns the list of all
+lines for language.def that can be generated from the tlpdb.
+
+Every hyphenation pattern listed in the tlpdb but listed in the arguments
+will not be included in the list of lines returned.
+
+=cut
 
 sub language_def_lines {
   my $self = shift;
@@ -4021,6 +5277,15 @@ sub language_def_lines {
   return(@lines);
 }
 
+=item C<< $tlpdb->language_lua_lines ( [@disabled_hyphen_names] ) >>
+
+The function C<language_lua_lines> returns the list of all
+lines for language.dat.lua that can be generated from the tlpdb.
+
+Every hyphenation pattern listed in the tlpdb but listed in the arguments
+will not be included in the list of lines returned.
+
+=cut
 
 sub language_lua_lines {
   my $self = shift;
@@ -4035,6 +5300,17 @@ sub language_lua_lines {
 
 =back
 
+=head1 VIRTUAL DATABASES
+
+The purpose of virtual databases is to collect several data sources
+and present them in one way. The normal functions will always return
+the best candidate for the set of functions.
+
+More docs to be written if there is any demand.
+
+=over 4
+
+=cut
 
 
 sub is_virtual {
@@ -4119,6 +5395,28 @@ sub virtual_get_package {
   }
 }
 
+=item C<< $tlpdb->candidates ( $pkg ) >>
+
+Returns the list of candidates for the given package in the
+format
+
+  tag/revision
+
+If the returned list is empty, then the database was not virtual and
+no install candidate was found.
+
+If the returned list contains undef as first element, the database
+is virtual, and no install candidate was found.
+
+The remaining elements in the list are all repositories that provide
+that package.
+
+Note that there might not be an install candidate, but still the
+package is provided by a sub-repository. This can happen if a package
+is present only in the sub-repository and there is no explicit pin
+for that package in the pinning file.
+
+=cut
 
 sub is_repository {
   my $self = shift;
@@ -4158,6 +5456,15 @@ sub candidates {
   return @ret;
 }
 
+=item C<< $tlpdb->candidate ( ) >>
+
+Returns either a list of four undef, if no install candidate is found,
+or the following information on the install candidate as list: the tag
+name of the repository, the revision number of the package in the
+candidate repository, the tlpobj of the package in the candidate
+repository, and the candidate repository's TLPDB itself.
+
+=cut
 
 sub virtual_candidate {
   my ($self, $pkg) = @_;
@@ -4169,6 +5476,11 @@ sub virtual_candidate {
   return(undef,undef,undef,undef);
 }
 
+=item C<< $tlpdb->virtual_pinning ( [ $pinfile_TLConfFile] ) >>
+
+Sets or returns the C<TLConfFile> object for the pinning data.
+
+=cut
 
 sub virtual_pindata {
   my $self = shift;
@@ -4330,17 +5642,62 @@ sub match_glob {
     grep { $_ =~ $regex } @_;
 }
 
+=pod
+
+=back
+
+=head1 OPTIONS
+
+Options regarding the full TeX Live installation to be described are saved
+in a package C<00texlive.config> as values of C<depend> lines. This special
+package C<00texlive.config> does not contain any files, only depend lines
+which set one or more of the following options:
+
+=over 4
+
+=item C<container_split_src_files/[01]>
+
+=item C<container_split_doc_files/[01]>
+
+These options specify that at container generation time the source and
+documentation files for a package have been put into a separate container
+named C<package.source.extension> and C<package.doc.extension>.
+
+=item C<container_format/I<format>>
+
+This option specifies a format for containers. The currently supported 
+formats are C<xz> and C<zip>. But note that C<zip> is untested.
+
+=item C<release/I<relspec>>
+
+This option specifies the current release. The first four characters must
+be a year.
+
+=item C<minrelease/I<relspec>>
+
+This option specifies the minimum release for which this repository is
+valid.
+
+=back
+
+To set these options the respective lines should be added to
+C<00texlive.config.tlpsrc>.
+
+=head1 SEE ALSO
+
+The modules L<TeXLive::TLPSRC>, L<TeXLive::TLPOBJ>, L<TeXLive::TLTREE>,
+L<TeXLive::TLUtils>, etc., and the documentation in the repository:
+C<Master/tlpkg/doc/>.
+
+=head1 AUTHORS AND COPYRIGHT
+
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
+
+=cut
 
 1;
-
-
-
-
-
-
-
-
-
 
 
 
@@ -5651,15 +7008,394 @@ $_tmp
 .
 
 1;
+__END__
+
 
+=head1 NAME
 
+C<TeXLive::TLPOBJ> -- TeX Live Package Object (C<.tlpobj>) module
 
+=head1 SYNOPSIS
 
+  use TeXLive::TLPOBJ;
 
+  my $tlpobj = TeXLive::TLPOBJ->new(name => "foobar");
 
+=head1 DESCRIPTION
 
+The L<TeXLive::TLPOBJ> module provide access to TeX Live Package Object
+(C<.tlpobj>) files, which describe a self-contained TL package.
 
+=head1 FILE SPECIFICATION
 
+See L<TeXLive::TLPSRC> documentation for the general syntax and
+specification. The differences are:
+
+=over 4
+
+=item The various C<*pattern> keys are invalid.
+
+=item Instead, there are respective C<*files> keys described below.
+All the C<*files> keys are followed by a list of files in the given
+category, one per line, each line I<indented> by one space.
+
+=item Several new keys beginning with C<catalogue-> specify information
+automatically taken from the TeX Catalogue.
+
+=item A new key C<revision> is defined (automatically computed),
+which specifies the maximum of all the last-changed revisions of files
+contained in the package, plus possible other changes. By default,
+Catalogue-only changes do not change the revision.
+
+=item A new key C<relocated>, either 0 or 1, which indicates that this
+packages has been relocated, i.e., in the containers the initial
+C<texmf-dist> directory has been stripped off and replaced with static
+string C<RELOC>.
+
+=back
+
+=over 4
+
+=item C<srcfiles>, C<runfiles>, C<binfiles>, C<docfiles>
+each of these items contains addition the sum of sizes of the single
+files (in units of C<TeXLive::TLConfig::BlockSize> blocks, currently 4k).
+
+  srcfiles size=NNNNNN
+  runfiles size=NNNNNN
+
+=item C<docfiles>
+
+The docfiles line itself is similar to the C<srcfiles> and C<runfiles> lines
+above:
+
+  docfiles size=NNNNNN
+
+But the lines listing the files are allowed to have additional tags,
+(which in practice come from the TeX Catalogue)
+
+  /------- excerpt from achemso.tlpobj
+  |...
+  |docfiles size=220
+  | texmf-dist/doc/latex/achemso/achemso.pdf details="Package documentation" language="en"
+  |...
+
+Currently only the tags C<details> and C<language> are supported. These
+additional information can be accessed via the C<docfiledata> function
+returning a hash with the respective files (including path) as key.
+
+=item C<binfiles>
+
+Since C<binfiles> can be different for different architectures, a single
+C<tlpobj> file can, and typically does, contain C<binfiles> lines for
+all available architectures. The architecture is specified on the
+C<binfiles> using the C<arch=>I<XXX> tag. Thus, C<binfiles> lines look
+like
+
+  binfiles arch=XXXX size=NNNNN
+
+=back
+
+Here is an excerpt from the representation of the C<dvipsk> package,
+with C<|> characters inserted to show the indentation:
+
+  |name dvipsk
+  |category TLCore
+  |revision 52851
+  |docfiles size=285
+  | texmf-dist/doc/dvips/dvips.html
+  | ...
+  |runfiles size=93
+  | texmf-dist/dvips/base/color.pro
+  | ...
+  | texmf-dist/scripts/pkfix/pkfix.pl
+  |binfiles arch=i386-solaris size=87
+  | bin/i386-solaris/afm2tfm
+  | bin/i386-solaris/dvips
+  |binfiles arch=windows size=51
+  | bin/windows/afm2tfm.exe
+  | bin/windows/dvips.exe
+  |...
+
+=head1 PACKAGE VARIABLES
+
+TeXLive::TLPOBJ has one package-wide variable, C<containerdir>, which is
+where generated container files are saved (if not otherwise specified).
+
+  TeXLive::TLPOBJ->containerdir("path/to/container/dir");
+
+=head1 MEMBER ACCESS FUNCTIONS
+
+For any of the I<keys> a function
+
+  $tlpobj->key
+
+is available, which returns the current value when called without an argument,
+and sets the respective value when called with an argument. For the
+TeX Catalogue Data the function
+
+  $tlpobj->cataloguedata
+
+returns and takes as argument a hash.
+
+Arguments and return values for C<name>, C<category>, C<shortdesc>,
+C<longdesc>, C<catalogue>, C<revision> are single scalars.
+
+Arguments and return values for C<depends>, C<executes> are lists.
+
+Arguments and return values for C<docfiles>, C<runfiles>, C<srcfiles>
+are lists.
+
+Arguments and return values for C<binfiles> is a hash with the
+architectures as keys.
+
+Arguments and return values for C<docfiledata> is a hash with the
+full file names of docfiles as key, and the value is again a hash.
+
+The size values are handled with these functions:
+
+  $tlpobj->docsize
+  $tlpobj->runsize
+  $tlpobj->srcsize
+  $tlpobj->binsize("arch1" => size1, "arch2" => size2, ...)
+
+which set or get the current value of the respective sizes. Note that also
+the C<binsize> function returns (and takes as argument) a hash with the
+architectures as keys, similar to the C<runfiles> functions (see above).
+
+Futhermore, if the tlpobj is contained ina tlpdb which describes a media
+where the files are distributed in packed format (usually as .tar.xz),
+there are 6 more possible keys:
+
+  $tlpobj->containersize
+  $tlpobj->doccontainersize
+  $tlpobj->srccontainersize
+  $tlpobj->containerchecksum
+  $tlpobj->doccontainerchecksum
+  $tlpobj->srccontainerchecksum
+
+describing the respective sizes and checksums in bytes and as hex string, resp.
+The latter two are only present if src/doc file container splitting is
+activated for that install medium.
+
+=head1 OTHER FUNCTIONS
+
+The following functions can be called for a C<TLPOBJ> object:
+
+=over 4
+
+=item C<new>
+
+The constructor C<new> returns a new C<TLPSRC> object. The arguments
+to the C<new> constructor can be in the usual hash representation for
+the different keys above:
+
+  $tlpobj=TLPOBJ->new(name => "foobar", shortdesc => "The foobar package");
+
+=item C<from_file("filename")>
+
+reads a C<tlpobj> file.
+
+  $tlpobj = new TLPOBJ;
+  $tlpobj->from_file("path/to/the/tlpobj/file");
+
+=item C<from_fh($filehandle[, $multi])>
+
+read the textual representation of a TLPOBJ from an already opened
+file handle.  If C<$multi> is undef (i.e., not given) then multiple
+tlpobj in the same file are treated as errors. If C<$multi> is defined,
+then returns after reading one tlpobj.
+
+Returns C<1> if it found a C<tlpobj>, otherwise C<0>.
+
+=item C<writeout>
+
+writes the textual representation of a C<TLPOBJ> object to C<stdout>,
+or the filehandle if given:
+
+  $tlpsrc->writeout;
+  $tlpsrc->writeout(\*FILEHANDLE);
+
+=item C<writeout_simple>
+
+debugging function for comparison with C<tpm>/C<tlps>, will go away.
+
+=item C<as_json>
+
+returns the representation of the C<TLPOBJ> in JSON format.
+
+=item C<common_texmf_tree>
+
+if all files of the package are from the same texmf tree, this tree 
+is returned, otherwise an undefined value. That is also a check
+whether a package is relocatable.
+
+=item C<make_container($type,$instroot, [ destdir => $destdir, containername => $containername, relative => 0|1, user => 0|1 ])>
+
+creates a container file of the all files in the C<TLPOBJ>
+in C<$destdir> (if not defined then C<< TLPOBJ->containerdir >> is used).
+
+The C<$type> variable specifies the type of container to be used.
+Currently only C<zip> or C<xz> are allowed, and generate
+zip files and tar.xz files, respectively.
+
+The file name of the created container file is C<$containername.extension>,
+where extension is either C<.zip> or C<.tar.xz>, depending on the
+setting of C<$type>. If no C<$containername> is specified the package name
+is used.
+
+All container files B<also> contain the respective
+C<TLPOBJ> file in C<tlpkg/tlpobj/$name.tlpobj>.
+
+The argument C<$instroot> specifies the root of the installation from
+which the files should be taken.
+
+If the argument C<$relative> is passed and true (perlish true) AND the
+packages does not span multiple texmf trees (i.e., all the first path
+components of all files are the same) then a relative packages is created,
+i.e., the first path component is stripped. In this case the tlpobj file
+is placed into the root of the installation.
+
+This is used to distribute packages which can be installed in any arbitrary
+texmf tree (of other distributions, too).
+
+If user is present and true, no extra arguments for container generation are
+passed to tar (to make sure that user tar doesn't break).
+
+Return values are the size, the checksum, and the full name of the container.
+
+=item C<recompute_sizes($tltree)>
+
+recomputes the sizes based on the information present in C<$tltree>.
+
+=item C<recompute_revision($tltree [, $revtlpsrc ])>
+
+recomputes the revision based on the information present in C<$tltree>.
+The optional argument C<$rectlpsrc> can be an additional revision number
+which is taken into account. C<$tlpsrc->make_tlpobj> adds the revision
+number of the C<tlpsrc> file here so that collections (which do not
+contain files) also have revision number.
+
+=item C<update_from_catalogue($texcatalogue)>
+
+adds information from a C<TeXCatalogue> object
+(currently license, version, url, and updates docfiles with details and
+languages tags if present in the Catalogue).
+
+=item C<split_bin_package>
+
+splits off the binfiles of C<TLPOBJ> into new independent C<TLPOBJ> with
+the original name plus ".arch" for every arch for which binfiles are present.
+The original package is changed in two respects: the binfiles are removed
+(since they are now in the single name.arch packages), and an additional
+depend on "name.ARCH" is added. Note that the ARCH is a placeholder.
+
+=item C<srcfiles_package>
+
+=item C<docfiles_package>
+
+splits off the srcfiles or docfiles of C<TLPOBJ> into new independent
+C<TLPOBJ> with
+the original name plus ".sources". The source/doc files are
+B<not> removed from the original package, since these functions are only
+used for the creation of split containers.
+
+=item C<is_arch_dependent>
+
+returns C<1> if there are C<binfiles>, otherwise C<0>.
+
+=item C<total_size>
+
+If no argument is given returns the sum of C<srcsize>, C<docsize>,
+C<runsize>.
+
+If arguments are given, they are assumed to be architecture names, and
+it returns the above plus the sum of sizes of C<binsize> for those
+architectures.
+
+=item C<is_meta_package>
+
+Returns true if the package is a meta package as defined in TLConfig
+(Currently Collection and Scheme).
+
+=item C<clear_{src,run,doc,bin}files>
+
+Removes all the src/run/doc/binfiles from the C<TLPOBJ>.
+
+=item C<{add,remove}_{src,run,doc}files(@files)>
+
+adds or removes files to the respective list of files.
+
+=item C<{add,remove}_binfiles($arch, @files)>
+
+adds or removes files from the list of C<binfiles> for the given architecture.
+
+=item C<{add,remove}_files($type, $files)>
+
+adds or removes files for the given type (only for C<run>, C<src>, C<doc>).
+
+=item C<contains_file($filename)>
+
+returns the list of files matching $filename which are contained in
+the package. If $filename contains a / the matching is only anchored
+at the end with $. Otherwise it is prefix with a / and anchored at the end.
+
+=item C<all_files>
+
+returns a list of all files of all types.  However, binary files won't
+be found until dependencies have been expanded via (most likely)
+L<TeXLive::TLPDB::expand_dependencies>.  For a more or less standalone
+example, see the C<find_old_files> function in the
+script C<Master/tlpkg/libexec/place>.
+
+=item C<allbinfiles>
+
+returns a list of all binary files.
+
+=item C<< $tlpobj->format_definitions  >>
+
+The function C<format_definitions> returns a list of references to hashes
+where each hash is a format definition.
+
+=item C<< $tlpobj->fmtutil_cnf_lines >>
+
+The function C<fmtutil_cnf_lines> returns the lines for fmtutil.cnf 
+for this package.
+
+=item C<< $tlpobj->updmap_cfg_lines >>
+
+The function C<updmap_cfg_lines> returns the list lines for updmap.cfg
+for the given package.
+
+=item C<< $tlpobj->language_dat_lines >>
+
+The function C<language_dat_lines> returns the list of all
+lines for language.dat that can be generated from the tlpobj
+
+=item C<< $tlpobj->language_def_lines >>
+
+The function C<language_def_lines> returns the list of all
+lines for language.def that can be generated from the tlpobj.
+
+=item C<< $tlpobj->language_lua_lines >>
+
+The function C<language_lua_lines> returns the list of all
+lines for language.dat.lua that can be generated from the tlpobj.
+
+=back
+
+=head1 SEE ALSO
+
+The other modules in C<Master/tlpkg/TeXLive/> (L<TeXLive::TLConfig> and
+the rest), and the scripts in C<Master/tlpkg/bin/> (especially
+C<tl-update-tlpdb>), the documentation in C<Master/tlpkg/doc/>, etc.
+
+=head1 AUTHORS AND COPYRIGHT
+
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
+
+=cut
 
 
 
@@ -5683,6 +7419,34 @@ my $svnrev = '$Revision$';
 my $_modulerevision = ($svnrev =~ m/: ([0-9]+) /) ? $1 : "unknown";
 sub module_revision { return $_modulerevision; }
 
+=pod
+
+=head1 NAME
+
+C<TeXLive::TLPSRC> -- TeX Live Package Source (C<.tlpsrc>) module
+
+=head1 SYNOPSIS
+
+  use TeXLive::TLPSRC;
+
+  my $tlpsrc = TeXLive::TLPSRC->new(name => "foobar");
+  $tlpsrc->from_file("/some/tlpsrc/package.tlpsrc");
+  $tlpsrc->from_file("package");
+  $tlpsrc->writeout;
+  $tlpsrc->writeout(\*FILEHANDLE);
+
+=head1 DESCRIPTION
+
+The C<TeXLive::TLPSRC> module handles TeX Live Package Source
+(C<.tlpsrc>) files, which contain all (and only) the information which
+cannot be automatically derived from other sources, notably the TeX Live
+directory tree and the TeX Catalogue.  In other words, C<.tlpsrc> files
+are hand-maintained.
+
+Often they are empty, when all information can be derived from the
+package name, which is (by default) the base name of the C<.tlpsrc> file.
+
+=cut
 
 my $_tmp; # sorry
 my %autopatterns;  # computed once internally
@@ -6282,15 +8046,558 @@ sub postactions {
 }
 
 1;
+__END__
+
 
+=head1 FILE SPECIFICATION
 
+A C<tlpsrc> file consists of lines of the form:
 
+I<key> I<value>
 
+where I<key> can be one of: C<name> C<category> C<catalogue>
+C<shortdesc> C<longdesc> C<depend> C<execute> C<postaction> C<tlpsetvar>
+C<runpattern> C<srcpattern> C<docpattern> C<binpattern>.
 
+Continuation lines are supported via a trailing backslash.  That is, if
+the C<.tlpsrc> file contains two physical lines like this:
+  
+  foo\
+  bar
 
+they are concatenated into C<foobar>.  The backslash and the newline are
+removed; no other whitespace is added or removed.
 
+Comment lines begin with a # and continue to the end of the line.
+Within a line, a # that is preceded by whitespace is also a comment.
 
+Blank lines are ignored.
 
+The I<key>s are described in the following sections.
+
+=head2 C<name>
+
+identifies the package; C<value> must consist only of C<[-_a-zA-Z0-9]>,
+i.e., with what Perl considers a C<\w>. It is optional; if not
+specified, the name of the C<.tlpsrc> file will be used (with the
+C<.tlpsrc> removed).
+
+There are three exceptions to this rule:
+
+=over 4
+
+=item B<name.ARCH>
+
+where B<ARCH> is a supported architecture-os combination.  This has two
+uses.  First, packages are split (automatically) into containers for the
+different architectures to make possible installations including only
+the necessary binaries.  Second, one can add 'one-arch-only' packages,
+often used to deal with Windows peculiarities.
+
+=item B<texlive>I<some.thing>
+
+(notice the dot in the package name) These packages are core TeX Live
+packages. They are treated as usual packages in almost all respects, but
+have that extra dot to be sure they will never clash with any package
+that can possibly appear on CTAN. The only such package currently is
+C<texlive.infra>, which contains L<tlmgr> and other basic infrastructure
+functionality.
+
+=item B<00texlive>I<something>
+
+These packages are used for internal operation and storage containers
+for settings.  I<00texlive> packages are never be split into separate
+arch-packages, and containers are never generated for these packages.
+
+The full list of currently used packages of this type is:
+
+=over 8
+
+=item B<00texlive.config>
+
+This package contains configuration options for the TeX Live archive.
+If container_split_{doc,src}_files occurs in the depend lines the
+{doc,src} files are split into separate containers (.tar.xz) 
+during container build time. Note that this has NO effect on the
+appearance within the texlive.tlpdb. It is only on container level.
+The container_format/XXXXX specifies the format, currently allowed
+is only "xz", which generates .tar.xz files. zip can be supported.
+release/NNNN specifies the release number as used in the installer.
+
+=item B<00texlive.installation>
+
+This package serves a double purpose:
+
+1. at installation time the present values are taken as default for
+the installer
+
+2. on an installed system it serves as configuration file. Since
+we have to remember these settings for additional package
+installation, removal, etc.
+
+=item B<00texlive.image>
+
+This package collects some files which are not caught by any of the
+other TL packages. Its primary purpose is to make the file coverage
+check happy.  The files here are not copied by the installer
+and containers are not built; they exist only in the
+TeX Live Master tree.
+
+=item B<00texlive.installer>
+
+This package defines the files to go into the installer
+archives (install-tl-unx.tar.gz, install-tl.zip) built
+by the tl-make-installer script.  Most of what's here is also
+included in the texlive.infra package -- ordinarily duplicates
+are not allowed, but in this case, 00texlive.installer is never
+used *except* to build the installer archives, so it's ok.
+
+=back
+
+=back
+
+=head2 C<category>
+
+identifies the category into which this package belongs. This determines
+the default patterns applied. Possible categories are defined in
+C<TeXLive::TLConfig>, currently C<Collection>, C<Scheme>, C<TLCore>,
+C<Package>, C<ConTeXt>. Most packages fall into the C<Package> category,
+and this is the default if not specified.
+
+=head2 C<catalogue>
+
+identifies the name under which this package can be found in the TeX
+Catalogue. If not specified, the package name is used.
+
+=head2 C<shortdesc>
+
+gives a one line description of the package. Later lines overwrite
+earlier, so there's no use in giving it more than once. If not
+specified, the default is taken from the TeX Catalogue, which suffices
+for almost all normal packages. Thus, in TeX Live, primarily used for
+collections and schemes.
+
+=head2 C<longdesc>
+
+gives a long description of the package. Later lines are appended to
+earlier ones. As with C<shortdesc>, if not specified, the default is
+taken from the TeX Catalogue, which suffices for almost all normal
+packages.
+
+=head2 C<depend>
+
+specifies the list of dependencies, which are just other package names.
+All the C<depend> lines contribute to the dependencies of the package.
+For example, C<latex.tlpsrc> contains (among others):
+  
+  depend latexconfig
+  depend latex-fonts
+  depend pdftex
+
+to ensure these packages are installed if the C<latex> package is.  The
+directive C<hard> is an alias for C<depend>, since that's we specified
+for the C<DEPENDS.txt> files package authors can provide; see
+L<https://www.tug.org/texlive/pkgcontrib.html#deps>.
+
+=head2 C<execute>
+
+specifies an install-time action to be executed. The following actions
+are supported:
+
+=over 4
+
+=item C<execute addMap> I<font>C<.map>
+
+enables the font map file I<font>C<.map> in the C<updmap.cfg> file.
+
+=item C<execute addMixedMap> I<font>C<.map>
+
+enables the font map file I<font>C<.map> for Mixed mode in the
+C<updmap.cfg> file.
+
+=item C<execute AddHyphen name=I<texlang> file=I<file> [I<var>...]>
+
+activates the hyphenation pattern with name I<texlang> and load the file
+I<file> for that language.  The additional variables I<var> are:
+C<lefthyphenmin>, C<righthyphenmin> (both integers), C<synonyms> (a
+comma-separated list of alias names for that hyphenation), C<databases>
+(a comma-separated list of databases the entry should go in; currently
+recognized are: C<dat> (C<language.dat>), C<def> (C<language.def>) and
+C<lua> (C<language.dat.lua>)), C<file_patterns> and C<file_exceptions>
+(files with the patterns (resp. exceptions) in plain txt), and
+C<luaspecial> (string).
+
+The variable C<databases> defaults to C<dat,def>, or C<dat,def,lua> if
+one of the keys C<file_patterns>, C<file_exceptions> or C<luaspecial> is
+used.
+
+=item C<execute AddFormat name=I<fmt> engine=I<eng> [I<var>...]>
+
+activates the format with name I<fmt> based on the engine I<eng>. The 
+additional variables I<var> are:
+C<mode> which can only be equal to C<disable> in which case the format
+will only be mentioned but disabled (prefixed with C<#!>;
+C<patterns> which gives the patterns file, if not present C<-> is used;
+C<options> which gives the additional options for the C<fmtutil.cnf> file.
+
+=back
+
+=head2 C<postaction>
+
+specifies a post-install or post-removal action to be
+executed. The difference to the C<execute> statement is that 
+C<postaction> is concerned with system integration, i.e., adjusting
+things outside the installation directory, while C<execute> touches
+only things within the installation.
+
+The following actions are supported:
+
+=over 4
+
+=item C<postaction shortcut name=I<name> type=menu|desktop icon=I<path> cmd=I<cmd> args=I<args> hide=0|1>
+
+On W32 creates a shortcut either in the main TeX Live menu or on the
+desktop. See the documentation of L<TeXLive::TLWinGoo> for details.
+
+=item C<postaction filetype name=I<name> cmd=I<cmd>>
+
+On W32 associates the file type I<name> with the command I<cmd>.
+
+=item C<postaction fileassoc extension=I<.ext> filetype=I<name>>
+
+On W32 declares files with the extenstion I<.ext> of file type I<name>.
+
+=item C<postaction script file=I<file> [filew32=I<filew32>]>
+
+This postaction executes the given I<file> with two arguments, the first
+being either the string C<install> or C<remove>, the second being the
+root of the installation.
+
+If the C<filew32> argument is given this script is run on Windows systems
+instead of the one given via C<file>.
+
+=back
+
+=head2 C<tlpsetvar> I<var> I<val>
+
+sets variable I<var> to I<val>. Order matters: the variable can be
+expanded with C<${>I<var>C<}>, only after it is defined. Characters
+allowed in the I<var> name are C<-_a-zA-Z0-9>.
+
+For example, the Xindy program is not supported on all platforms, so we
+define a variable:
+
+  tlpsetvar no_xindy_platforms i386-solaris,x86_64-linuxmusl,x86_64-solaris
+
+that can then by used in each C<binpattern> needed:
+
+  binpattern f/!${no_xindy_platforms} bin/${ARCH}/texindy
+  binpattern f/!${no_xindy_platforms} bin/${ARCH}/tex2xindy
+  ...
+
+(The C<binpattern> details are below; here, just notice the variable
+definition and expansion.)
+
+Ordinarily, variables can be used only within the C<.tlpsrc> file where
+they are defined. There is one exception: global tlpsrc variables can be
+defined in the C<00texlive.autopatterns.tlpsrc> file (mentioned below);
+their names must start with C<global_>,
+and can only be used in C<depend>, C<execute>, and C<...pattern>
+directives, another C<tlpsetvar>. For example, our
+C<autopatterns.tlpsrc> defines:
+
+  tlpsetvar global_latex_deps babel,cm,hyphen-base,latex-fonts
+
+And then any other C<.tlpsrc> files can use it as
+C<${global_latex_deps}>; in this case, C<latex-bin.tlpsrc>,
+C<latex-bin-dev.tlpsrc>, C<platex.tlpsrc>, and others (in C<execute
+AddFormat> directives).
+
+=head2 C<(src|run|doc|bin)pattern> I<pattern>
+
+adds I<pattern> (next section) to the respective list of patterns.
+
+=head1 PATTERNS
+
+Patterns specify which files are to be included into a C<tlpobj> at
+expansion time. Patterns are of the form
+
+  [PREFIX]TYPE[/[!]ARCHSPEC] PAT
+
+where
+
+  PREFIX = + | +! | !
+  TYPE = t | f | d | r
+  ARCHSPEC = <list of architectures separated by comma>
+
+Simple patterns without PREFIX and ARCHSPEC specifications are explained
+first.
+
+=over 4
+
+=item C<f> I<path>
+
+includes all files which match C<path> where B<only> the last component
+of C<path> can contain the usual glob characters C<*> and C<?> (but no
+others!). The special string C<ignore> for I<path> means to ignore this
+pattern (used to eliminate the auto-pattern matching).
+
+=item C<d> I<path>
+
+includes all the files in and below the directory specified as C<path>.
+
+=item C<r> I<regexp>
+
+includes all files matching the regexp C</^regexp$/>.
+
+=item C<a> I<name1> [<name2> ...]
+
+includes auto-generated patterns for each I<nameN> as if the package
+itself would be named I<nameN>. That is useful if a package (such as
+C<venturisadf>) contains top-level directories named after different
+fonts.
+
+=item C<t> I<word1 ... wordN wordL>
+
+includes all the files in and below all directories of the form
+
+  word1/word2/.../wordN/.../any/dirs/.../wordL/
+
+i.e., all the first words but the last form the prefix of the path, then
+there can be an arbitrary number of subdirectories, followed by C<wordL>
+as the final directory. This is primarily used in
+C<00texlive.autopatterns.tlpsrc> in a custom way, but here is the one
+real life example from a standard package, C<omega.tlpsrc>:
+
+  runpattern t texmf-dist fonts omega
+
+matches C<texmf-dist/fonts/**/omega>, where C<**> matches any number of
+intervening subdirectories, e.g.:
+
+  texmf-dist/fonts/ofm/public/omega
+  texmf-dist/fonts/tfm/public/omega
+  texmf-dist/fonts/type1/public/omega
+
+=back
+
+=head2 Special patterns
+
+=head3 Prefix characters: C<+> and C<!>
+
+If the C<PREFIX> contains the symbol C<!> the meaning of the pattern is
+reversed, i.e., files matching this pattern are removed from the list of
+included files.
+
+The prefix C<+> means to append to the list of automatically synthesized
+patterns, instead of replacing them.
+
+The C<+> and C<!> prefixes can be combined.  This is useful to exclude
+directories from the automatic pattern list.  For example,
+C<graphics.tlpsrc> contains this line:
+
+  docpattern +!d texmf-dist/doc/latex/tufte-latex/graphics
+
+so that the subdirectory of the C<tufte-latex> package that happens to
+be named "graphics" is not mistakenly included in the C<graphics>
+package.
+
+=head2 Auto-generated patterns (C<00texlive.autopatterns>)
+
+If a given pattern section is empty or I<all> the provided patterns have
+the prefix C<+> (e.g., C<+f ...>), then patterns such as the following,
+listed by type, are I<automatically> added at expansion time. The list
+here contains examples, rather than being definitive; the added patterns
+are actually taken from C<00texlive.autopatterns.tlpsrc>. (That file
+also defines any global tlpsrc variables, as described above under
+L</tlpsetvar>).
+
+=over 4
+
+=item C<runpattern>
+
+For category C<Package>:
+
+  t texmf-dist I<topdir> %NAME%
+
+where C<%NAME%> means the current package name, and I<topdir> is one of:
+C<bibtex> C<context> C<dvips> C<fonts> C<makeindex> C<metafont>
+C<metapost> C<mft> C<omega> C<scripts> C<tex>.
+
+For category C<ConTeXt>:
+
+  d texmf-dist/tex/context/third/%context-:NAME%
+  d texmf-dist/metapost/context/third/%context-:NAME%
+  f texmf-dist/tex/context/interface/third/*%context-:NAME%.xml
+
+(where C<%context-:NAME%> is replaced by the package name with an initial
+C<context-> is removed. E.g., if the package is called C<context-foobar>
+the replacement in the above rules will be C<foobar>.)
+
+For other categories I<no> patterns are automatically added to the 
+list of C<runpattern>s.
+
+=item C<docpattern>
+
+for category C<TLCore>:
+
+  t texmf-dist doc %NAME%
+  f texmf-dist/doc/man/man1/%NAME%.*
+
+for category C<Package>:
+
+  t texmf-dist doc %NAME%
+  f texmf-dist/doc/man/man1/%NAME%.*
+
+for category C<ConTeXt>:
+
+  d texmf-dist/doc/context/third/%context-:NAME%
+
+=item C<srcpattern>
+
+for category C<Package>:
+
+  t texmf-dist source %NAME%
+
+for category C<ConTeXt>:
+
+  d texmf-dist/source/context/third/%context-:NAME%
+
+(see above for the C<$NAME%> construct)
+
+=item C<binpattern>
+
+No C<binpattern>s are ever automatically added.
+
+=back
+
+=head3 Special treatment of binpatterns
+
+The binpatterns have to deal with all the different architectures. To
+ease the writing of patterns, we have the following features:
+
+=over 4
+
+=item Architecture expansion
+
+Within a binpattern, the string C<${ARCH}> is automatically expanded to
+all available architectures.
+
+=item C<bat/exe/dll/texlua> for Windows
+
+C<binpattern>s that match Windows, e.g., C<f bin/windows/foobar> or C<f
+bin/${ARCH}/foobar>, also match the files C<foobar.bat>, C<foobar.cmd>,
+C<foobar.dll>, C<foobar.exe>, and C<foobar.texlua>.
+
+In addition, C<foobar.exe.manifest> and C<foobar.dll.manifest> are matched.
+
+The above two properties allows to capture the binaries for all
+architectures in one binpattern
+
+  binpattern f bin/${ARCH}/dvips
+
+and would get C<bin/windows/dvips.exe> into the runfiles for C<arch=windows>.
+
+This C<bat>/C<exe>/etc. expansion I<only> works for patterns of the C<f>
+type.
+
+=item ARCHSPEC specification of a pattern
+
+Sometimes files should be included into the list of binfiles of a
+package only for some architectures, or for all but some architectures.
+This can be done by specifying the list of architectures for which this
+pattern should be matched after the pattern specifier using a C</>:
+
+  binpattern f/windows tlpkg/bin/perl.exe
+
+will include the file C<tlpkg/bin/perl.exe> only in the binfiles for
+the architecture C<windows>. Another example:
+
+  binpattern f/arch1,arch2,arch3 path/$ARCH/foo/bar
+
+This will only try to match this pattern for arch1, arch2, and arch3.
+
+Normally, a binpattern is matched against all possible architectures. If
+you want to exclude some architectures, instead of listing all the ones
+you want to include as above, you can prefix the list of architectures
+with a ! and these architectures will not be tested. Example:
+
+  binpattern f/!arch1,arch2 path/$ARCH/foo/bar
+
+will be matched against all architectures I<except> arch1 and arch2.
+
+=back
+
+=head1 MEMBER ACCESS FUNCTIONS
+
+For any of the above I<key>s a function
+
+  $tlpsrc->key
+
+is available, which returns the current value when called without an argument,
+and sets the respective value when called with an argument.
+
+Arguments and return values for C<name>, C<category>, C<shortdesc>,
+C<longdesc>, C<catalogue> are single scalars. Arguments and return values
+for C<depends>, C<executes>, and the various C<patterns> are lists.
+
+In addition, the C<_srcfile> member refers to the filename for this
+C<TLPSRC> object, if set (normally by C<from_file>).
+
+=head1 OTHER FUNCTIONS
+
+The following functions can be called for a C<TLPSRC> object:
+
+=over 4
+
+=item C<new>
+
+The constructor C<new> returns a new C<TLPSRC> object. The arguments
+to the C<new> constructor can be in the usual hash representation for
+the different keys above:
+
+  $tlpsrc = TLPSRC->new(name => "foobar",
+                        shortdesc => "The foobar package");
+
+=item C<from_file("filename")>
+
+Reads a C<tlpsrc> file from disk.  C<filename> can either be a full path
+(if it's readable, it's used), or just a package identifier such as
+C<plain>.  In the latter case, the directory searched is the C<tlpsrc>
+sibling of the C<TeXLive> package directory where C<TLPSRC.pm> was found.
+
+  $tlpsrc=new TeXLive::TLPSRC;
+  $tlpsrc->from_file("/path/to/the/tlpsrc/somepkg.tlpsrc");
+  $tlpsrc->from_file("somepkg");
+
+=item C<writeout>
+
+writes the textual representation of a C<TLPSRC> object to stdout, or the
+filehandle if given:
+
+  $tlpsrc->writeout;
+  $tlpsrc->writeout(\*FILEHANDLE);
+
+=item C<make_tlpobj($tltree)>
+
+creates a C<TLPOBJ> object from a C<TLPSRC> object and a C<TLTREE> object.
+This function does the necessary work to expand the manual data and
+enrich it with the content from C<$tltree> to a C<TLPOBJ> object.
+
+=back
+
+=head1 SEE ALSO
+
+The other modules in C<Master/tlpkg/TeXLive/> (L<TeXLive::TLConfig> and
+the rest), and the scripts in C<Master/tlpkg/bin/> (especially
+C<tl-update-tlpdb>), the documentation in C<Master/tlpkg/doc/>, etc.
+
+=head1 AUTHORS AND COPYRIGHT
+
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
+
+=cut
 
 
 
@@ -6328,6 +8635,21 @@ BEGIN {
 
 my $prg = ($::prg ? $::prg : TeXLive::TLUtils::basename($0));
 
+=pod
+
+=head1 NAME
+
+C<TeXLive::TLPaper> -- TeX Live paper size module
+
+=head1 SYNOPSIS
+
+  use TeXLive::TLPaper;
+
+=head1 DESCRIPTION
+
+=over 4
+
+=cut
 
 use TeXLive::TLUtils qw(:DEFAULT dirname merge_into mkdirhier);
 use TeXLive::TLConfig;
@@ -6475,18 +8797,37 @@ my %psutils_papersize = ( "a4" => 1, "letter" => 1, );
 
 
 
+=item C<get_paper_list($prog)>
+
+Returns the list of supported paper sizes with the first entry being
+the currently selected one.
+
+=cut
 
 sub get_paper_list {
   my $prog = shift;
   return ( &{$paper{$prog}{'sub'}} ( "/dummy", "--returnlist" ) );
 }
 
+=item C<get_paper($prog)>
+
+Returns the currently selected paper size for program C<$prog>.
+
+=cut
 
 sub get_paper {
   my $pps = get_paper_list(shift);
   return $pps->[0];
 }
 
+=item C<do_paper($prog,$texmfsysconfig,@args)>
+
+Call the paper subroutine for C<$prog>, passing args.
+
+Returns a reference to a list of papers if called with C<--returnlist>, 
+otherwise one of the standard flags (see TeXLive::TLConfig).
+
+=cut
 
 sub do_paper {
   my ($prog,$texmfsysconfig,@args) = @_;
@@ -6501,6 +8842,13 @@ sub do_paper {
 }
 
 
+=item C<paper_all($texmfsysconfig, $newpaper)>
+
+Pass all C<@args> to each paper subroutine in turn, thus setting the
+paper size for all supported programs. Returns the bit-mapped return
+values of the single subroutine returns.
+
+=cut
 
 sub paper_all {
   my $ret = $F_OK;
@@ -7110,15 +9458,6 @@ sub paper_do_simple {
 
 
 
-
-
-
-
-
-
-
-
-
 1;
 __EOI__
 # PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPaper.pm
@@ -7133,6 +9472,40 @@ my $svnrev = '$Revision$';
 my $_modulerevision = ($svnrev =~ m/: ([0-9]+) /) ? $1 : "unknown";
 sub module_revision { return $_modulerevision; }
 
+=pod
+
+=head1 NAME
+
+C<TeXLive::TLTREE> -- TeX Live tree of all files
+
+=head1 SYNOPSIS
+
+  use TeXLive::TLTREE;
+  my $tltree = TeXLive::TLTREE->new();
+  
+  $tltree->init_from_svn();
+  $tltree->init_from_statusfile();
+  $tltree->init_from_files();
+  $tltree->init_from_git();
+  $tltree->init_from_gitsvn();
+  $tltree->print();
+  $tltree->find_alldirs();
+  $tltree->print_node();
+  $tltree->walk_tree();
+  $tltree->add_path_to_tree();
+  $tltree->file_svn_lastrevision();
+  $tltree->size_of();
+  $tltree->get_matching_files();
+  $tltree->files_under_path();
+  $tltree->svnroot();
+  $tltree->revision();
+  $tltree->architectures();
+
+=head1 DESCRIPTION
+
+DOCUMENTATION MISSING, SORRY!!!
+
+=cut
 
 use TeXLive::TLUtils;
 
@@ -7405,6 +9778,15 @@ sub size_of {
   }
 }
 
+=pod
+
+The function B<get_matching_files> takes as arguments the type of the pattern
+(bin, src, doc, run), the pattern itself, the package name (without
+.ARCH specifications), and an optional architecture.
+It returns a list of files matching that pattern (in the case
+of bin patterns for that arch).
+
+=cut
 
 sub get_matching_files {
   my ($self, $type, $p, $pkg, $arch) = @_;
@@ -7574,15 +9956,21 @@ sub architectures {
 }
 
 1;
+__END__
 
+=head1 SEE ALSO
 
+The modules L<TeXLive::TLPSRC>, L<TeXLive::TLPOBJ>, L<TeXLive::TLPDB>,
+L<TeXLive::TLUtils>, etc., and the documentation in the repository:
+C<Master/tlpkg/doc/>.
 
+=head1 AUTHORS AND COPYRIGHT
 
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
 
-
-
-
-
+=cut
 
 
 
@@ -7600,6 +9988,134 @@ my $svnrev = '$Revision$';
 my $_modulerevision = ($svnrev =~ m/: ([0-9]+) /) ? $1 : "unknown";
 sub module_revision { return $_modulerevision; }
 
+=pod
+
+=head1 NAME
+
+C<TeXLive::TLUtils> - TeX Live infrastructure miscellany
+
+=head1 SYNOPSIS
+
+  use TeXLive::TLUtils;
+
+=head2 Platform detection
+
+  TeXLive::TLUtils::platform();
+  TeXLive::TLUtils::platform_name($canonical_host);
+  TeXLive::TLUtils::platform_desc($platform);
+  TeXLive::TLUtils::wndws();
+  TeXLive::TLUtils::unix();
+
+=head2 System tools
+
+  TeXLive::TLUtils::getenv($string);
+  TeXLive::TLUtils::which($string);
+  TeXLive::TLUtils::initialize_global_tmpdir();
+  TeXLive::TLUtils::tl_tmpdir();
+  TeXLive::TLUtils::tl_tmpfile();
+  TeXLive::TLUtils::xchdir($dir);
+  TeXLive::TLUtils::wsystem($msg,@args);
+  TeXLive::TLUtils::xsystem(@args);
+  TeXLive::TLUtils::run_cmd($cmd [, @envvars ]);
+  TeXLive::TLUtils::run_cmd_with_log($cmd, $logfn);
+  TeXLive::TLUtils::system_pipe($prog, $infile, $outfile, $removeIn, @args);
+  TeXLive::TLUtils::diskfree($path);
+  TeXLive::TLUtils::get_user_home();
+  TeXLive::TLUtils::expand_tilde($str);
+
+=head2 File utilities
+
+  TeXLive::TLUtils::dirname($path);
+  TeXLive::TLUtils::basename($path);
+  TeXLive::TLUtils::dirname_and_basename($path);
+  TeXLive::TLUtils::tl_abs_path($path);
+  TeXLive::TLUtils::dir_writable($path);
+  TeXLive::TLUtils::dir_creatable($path);
+  TeXLive::TLUtils::mkdirhier($path);
+  TeXLive::TLUtils::rmtree($root, $verbose, $safe);
+  TeXLive::TLUtils::copy($file, $target_dir);
+  TeXLive::TLUtils::touch(@files);
+  TeXLive::TLUtils::collapse_dirs(@files);
+  TeXLive::TLUtils::all_dirs_and_removed_dirs(@files);
+  TeXLive::TLUtils::dirs_of_files(@files);
+  TeXLive::TLUtils::removed_dirs(@files);
+  TeXLive::TLUtils::download_file($path, $destination);
+  TeXLive::TLUtils::setup_programs($bindir, $platform);
+  TeXLive::TLUtils::tlcmp($file, $file);
+  TeXLive::TLUtils::nulldev();
+  TeXLive::TLUtils::get_full_line($fh);
+
+=head2 Installer functions
+
+  TeXLive::TLUtils::make_var_skeleton($path);
+  TeXLive::TLUtils::make_local_skeleton($path);
+  TeXLive::TLUtils::create_fmtutil($tlpdb,$dest);
+  TeXLive::TLUtils::create_updmap($tlpdb,$dest);
+  TeXLive::TLUtils::create_language_dat($tlpdb,$dest,$localconf);
+  TeXLive::TLUtils::create_language_def($tlpdb,$dest,$localconf);
+  TeXLive::TLUtils::create_language_lua($tlpdb,$dest,$localconf);
+  TeXLive::TLUtils::time_estimate($totalsize, $donesize, $starttime)
+  TeXLive::TLUtils::install_packages($from_tlpdb,$media,$to_tlpdb,$what,$opt_src, $opt_doc, $retry, $continue);
+  TeXLive::TLUtils::do_postaction($how, $tlpobj, $do_fileassocs, $do_menu, $do_desktop, $do_script);
+  TeXLive::TLUtils::update_context_cache($plat_bindir);
+  TeXLive::TLUtils::announce_execute_actions($how, @executes, $what);
+  TeXLive::TLUtils::add_symlinks($root, $arch, $sys_bin, $sys_man, $sys_info);
+  TeXLive::TLUtils::remove_symlinks($root, $arch, $sys_bin, $sys_man, $sys_info);
+  TeXLive::TLUtils::w32_add_to_path($bindir, $multiuser);
+  TeXLive::TLUtils::w32_remove_from_path($bindir, $multiuser);
+  TeXLive::TLUtils::setup_persistent_downloads();
+
+=head2 Logging and debugging
+
+  TeXLive::TLUtils::info($str1, ...);    # output unless -q
+  TeXLive::TLUtils::debug($str1, ...);   # output if -v
+  TeXLive::TLUtils::ddebug($str1, ...);  # output if -vv
+  TeXLive::TLUtils::dddebug($str1, ...); # output if -vvv
+  TeXLive::TLUtils::log($str1, ...);     # only to log file
+  TeXLive::TLUtils::tlwarn($str1, ...);  # warn on stderr and log
+  TeXLive::TLUtils::tldie($str1, ...);   # tlwarn and die
+  TeXLive::TLUtils::debug_hash_str($label, HASH); # stringified HASH
+  TeXLive::TLUtils::debug_hash($label, HASH);   # warn stringified HASH
+  TeXLive::TLUtils::backtrace();                # return call stack as string
+  TeXLive::TLUtils::process_logging_options($texdir); # handle -q -v* -logfile
+
+=head2 Miscellaneous
+
+  TeXLive::TLUtils::sort_uniq(@list);
+  TeXLive::TLUtils::push_uniq(\@list, @items);
+  TeXLive::TLUtils::member($item, @list);
+  TeXLive::TLUtils::merge_into(\%to, \%from);
+  TeXLive::TLUtils::texdir_check($texdir);
+  TeXLive::TLUtils::compare_tlpobjs($tlpA, $tlpB);
+  TeXLive::TLUtils::compare_tlpdbs($tlpdbA, $tlpdbB);
+  TeXLive::TLUtils::report_tlpdb_differences(\%ret);
+  TeXLive::TLUtils::tlnet_disabled_packages($root);
+  TeXLive::TLUtils::mktexupd();
+  TeXLive::TLUtils::setup_sys_user_mode($prg,$optsref,$tmfc,$tmfsc,$tmfv,$tmfsv);
+  TeXLive::TLUtils::prepend_own_path();
+  TeXLive::TLUtils::repository_to_array($str);
+
+=head2 Windows and paths
+
+  TeXLive::TLUtils::quotify_path_with_spaces($path);
+  TeXLive::TLUtils::conv_to_w32_path($path);
+  TeXLive::TLUtils::native_slashify($internal_path);
+  TeXLive::TLUtils::forward_slashify($path_from_user);
+
+=head2 CTAN
+
+  TeXLive::TLUtils::give_ctan_mirror();
+  TeXLive::TLUtils::give_ctan_mirror_base();
+
+=head2 JSON
+
+  TeXLive::TLUtils::encode_json($ref);
+  TeXLive::TLUtils::True();
+  TeXLive::TLUtils::False();
+
+=head1 DESCRIPTION
+
+=cut
 
 our $PERL_SINGLE_QUOTE; # we steal code from Text::ParseWords
 
@@ -7727,6 +10243,29 @@ $::opt_verbosity = 0;  # see process_logging_options
 
 our $SshURIRegex = '^((ssh|scp)://([^@]*)@([^/]*)/|([^@]*)@([^:]*):).*$';
 
+=head2 Platform detection
+
+=over 4
+
+=item C<platform>
+
+If C<$^O =~ /MSWin/i> is true we know that we're on
+Windows and we set the global variable C<$::_platform_> to C<windows>.
+Otherwise we call C<platform_name> with the output of C<config.guess>
+as argument.
+
+The result is stored in a global variable C<$::_platform_>, and
+subsequent calls just return that value.
+
+As of 2021, C<config.guess> unfortunately requires a shell that
+understands the C<$(...)> construct. This means that on old-enough
+systems, such as Solaris, we have to look for a shell. We use the value
+of the C<CONFIG_SHELL> environment variable if it is set, else
+C</bin/ksh> if it exists, else C</bin/bash> if it exists, else give up.
+Happily, C<config.guess> later reverted this change, but we keep our
+shell-finding code anyway to defend against future mistakes of the same ilk.
+
+=cut
 
 sub platform {
   if (! defined $::_platform_) {
@@ -7775,6 +10314,27 @@ END_NO_PAREN_CMDS_SHELL
 }
 
 
+=item C<platform_name($canonical_host)>
+
+Convert the C<$canonical_host> argument, a system description as
+returned by C<config.guess>, into a TeX Live platform name, that is, a
+name used as a subdirectory of our C<bin/> dir. Our names have the
+form CPU-OS, for example, C<x86_64-linux>.
+
+We need this because what's returned from C<config.,guess> does not
+match our historical names, e.g., C<config.guess> returns C<linux-gnu>
+but we need C<linux>.
+
+The C<CPU> part of our name is always taken from the argument, with
+various transformation.
+
+For the C<OS> part, if the environment variable C<TEXLIVE_OS_NAME> is
+set, it is used as-is. Otherwise we do our best to figure it out.
+
+This function still handles old systems which are no longer supported,
+just in case.
+
+=cut
 
 sub platform_name {
   my ($orig_platform) = @_;
@@ -7848,6 +10408,12 @@ sub platform_name {
   return "$CPU-$OS";
 }
 
+=item C<platform_desc($platform)>
+
+Return a string which describes a particular platform identifier, e.g.,
+given C<i386-linux> we return C<Intel x86 with GNU/Linux>.
+
+=cut
 
 sub platform_desc {
   my ($platform) = @_;
@@ -7900,6 +10466,12 @@ sub platform_desc {
 }
 
 
+=item C<wndws>
+
+Return C<1> if platform is Windows and C<0> otherwise.  The test is
+currently based on the value of Perl's C<$^O> variable.
+
+=cut
 
 sub wndws {
   if ($^O =~ /^MSWin/i) {
@@ -7910,6 +10482,11 @@ sub wndws {
 }
 
 
+=item C<unix>
+
+Return C<1> if platform is UNIX and C<0> otherwise.
+
+=cut
 
 sub unix {
   return (&platform eq "windows")? 0:1;
@@ -7918,6 +10495,19 @@ sub unix {
 
 =back
 
+=head2 System Tools
+
+=over 4
+
+=item C<getenv($string)>
+
+Get an environment variable.  It is assumed that the environment
+variable contains a path.  On Windows all backslashes are replaced by
+forward slashes as required by Perl.  If this behavior is not desired,
+use C<$ENV{"$variable"}> instead.  C<0> is returned if the
+environment variable is not set.
+
+=cut
 
 sub getenv {
   my $envvar=shift;
@@ -7930,6 +10520,15 @@ sub getenv {
 }
 
 
+=item C<which($string)>
+
+C<which> does the same as the UNIX command C<which(1)>, but it is
+supposed to work on Windows too.  On Windows we have to try all the
+extensions given in the C<PATHEXT> environment variable.  We also try
+without appending an extension because if C<$string> comes from an
+environment variable, an extension might already be present.
+
+=cut
 
 sub which {
   my ($prog) = @_;
@@ -7959,6 +10558,12 @@ sub which {
   return 0;
 }
 
+=item C<initialize_global_tmpdir();>
+
+Initializes a directory for all temporary files. This uses C<File::Temp>
+and thus honors various env variables like  C<TMPDIR>, C<TMP>, and C<TEMP>.
+
+=cut
 
 sub initialize_global_tmpdir {
   $::tl_tmpdir = File::Temp::tempdir(CLEANUP => 1);
@@ -7966,6 +10571,12 @@ sub initialize_global_tmpdir {
   return ($::tl_tmpdir);
 }
 
+=item C<tl_tmpdir>
+
+Create a temporary directory which is removed when the program
+is terminated.
+
+=cut
 
 sub tl_tmpdir {
   initialize_global_tmpdir() if (!defined($::tl_tmpdir));
@@ -7974,6 +10585,13 @@ sub tl_tmpdir {
   return ($tmp);
 }
 
+=item C<tl_tmpfile>
+
+Create a temporary file which is removed when the program
+is terminated. Returns file handle and file name.
+Arguments are passed on to C<File::Temp::tempfile>.
+
+=cut
 
 sub tl_tmpfile {
   initialize_global_tmpdir() if (!defined($::tl_tmpdir));
@@ -7983,6 +10601,11 @@ sub tl_tmpfile {
 }
 
 
+=item C<xchdir($dir)>
+
+C<chdir($dir)> or die.
+
+=cut
 
 sub xchdir {
   my ($dir) = @_;
@@ -7990,6 +10613,12 @@ sub xchdir {
   ddebug("xchdir($dir) ok\n");
 }
 
+=item C<system_ok($cmdline)>
+
+Run C<system($cmdline)> and return true if return status was zero, false
+if status was nonzero. Throw away stdout and stderr.
+
+=cut
 
 sub system_ok {
   my $nulldev = nulldev();
@@ -7998,6 +10627,12 @@ sub system_ok {
   return $? == 0;
 }
 
+=item C<wsystem($msg, @args)>
+
+Call C<info> about what is being done starting with C<$msg>, then run
+C<system(@args)>; C<tlwarn> if unsuccessful and return the exit status.
+
+=cut
 
 sub wsystem {
   my ($msg,@args) = @_;
@@ -8011,6 +10646,12 @@ sub wsystem {
 }
 
 
+=item C<xsystem(@args)>
+
+Call C<ddebug> about what is being done, then run C<system(@args)>, and
+die if unsuccessful.
+
+=cut
 
 sub xsystem {
   my (@args) = @_;
@@ -8024,6 +10665,17 @@ sub xsystem {
   return $retval;
 }
 
+=item C<run_cmd($cmd, @envvars)>
+
+Run shell command C<$cmd> and captures its standard output (not standard
+error). Returns a list with CMD's output as the first element and its
+return value (exit code) as second.
+
+If given, C<@envvars> is a list of environment variable name / value
+pairs set in C<%ENV> for the call and reset to their original value (or
+unset if not defined initially).
+
+=cut
 
 sub run_cmd {
   my $cmd = shift;
@@ -8053,6 +10705,17 @@ sub run_cmd {
   return ($output,$retval);
 }
 
+=item C<run_cmd_with_log($cmd, $logfn)>
+
+Run shell command C<$cmd> and captures both standard output and standard
+error (as one string), passing them to C<$logfn>. The return value is
+the exit status of C<$cmd>. Environment variable overrides cannot be
+passed. (This is used for running special post-installation commands in
+install-tl and tlmgr.)
+
+The C<info> function is called to report what is happening.
+
+=cut
 
 sub run_cmd_with_log {
   my ($cmd,$logfn) = @_;
@@ -8072,6 +10735,12 @@ sub run_cmd_with_log {
 } # run_cmd_with_log
 
 
+=item C<system_pipe($prog, $infile, $outfile, $removeIn, @extraargs)>
+
+Runs C<$prog> with C<@extraargs> redirecting stdin from C<$infile>,
+stdout to C<$outfile>. Removes C<$infile> if C<$removeIn> is true.
+
+=cut
 
 sub system_pipe {
   my ($prog, $infile, $outfile, $removeIn, @extraargs) = @_;
@@ -8098,6 +10767,14 @@ sub system_pipe {
   }
 }
 
+=item C<diskfree($path)>
+
+If a POSIX compliant C<df> program is found, returns the number of Mb
+free at C<$path>, otherwise C<-1>. If C<$path> does not exist, check
+upwards for two levels for an existing parent, and if found, use it for
+computing the disk space.
+
+=cut
 
 sub diskfree {
   my $td = shift;
@@ -8160,6 +10837,13 @@ sub diskfree {
   }
 }
 
+=item C<get_user_home()>
+
+Returns the current user's home directory (C<$HOME> on Unix,
+C<$USERPROFILE> on Windows, and C<~> if none of the two are
+set. Save in package variable C<$user_home_dir> after computing.
+
+=cut
 
 my $user_home_dir;
 
@@ -8169,6 +10853,12 @@ sub get_user_home {
   return $user_home_dir;
 }
 
+=item C<expand_tilde($str)>
+
+Expands initial C<~> with the user's home directory in C<$str> if
+available, else leave C<~> in place.
+
+=cut
 
 sub expand_tilde {
   my $str = shift;
@@ -8179,6 +10869,17 @@ sub expand_tilde {
 
 =back
 
+=head2 File utilities
+
+=over 4
+
+=item C<dirname_and_basename($path)>
+
+Return both C<dirname> and C<basename>.  Example:
+
+  ($dirpart,$filepart) = dirname_and_basename ($path);
+
+=cut
 
 sub dirname_and_basename {
   my $path=shift;
@@ -8211,6 +10912,11 @@ sub dirname_and_basename {
 }
 
 
+=item C<dirname($path)>
+
+Return C<$path> with its trailing C</component> removed.
+
+=cut
 
 sub dirname {
   my $path = shift;
@@ -8219,6 +10925,11 @@ sub dirname {
 }
 
 
+=item C<basename($path)>
+
+Return C<$path> with any leading directory components removed.
+
+=cut
 
 sub basename {
   my $path = shift;
@@ -8227,6 +10938,10 @@ sub basename {
 }
 
 
+=item C<tl_abs_path($path)>
+
+
+=cut
 
 sub tl_abs_path {
   my $path = shift;
@@ -8260,6 +10975,11 @@ sub tl_abs_path {
 }
 
 
+=item C<dir_creatable($path)>
+
+Tests whether its argument is a directory where we can create a directory.
+
+=cut
 
 sub dir_slash {
   my $d = shift;
@@ -8289,6 +11009,15 @@ sub dir_creatable {
 }
 
 
+=item C<dir_writable($path)>
+
+Tests whether its argument is writable by trying to write to
+it. This function is necessary because the built-in C<-w> test just
+looks at mode and uid/gid, which on Windows always returns true and
+even on Unix is not always good enough for directories mounted from
+a fileserver.
+
+=cut
 
 
 sub dir_writable {
@@ -8316,6 +11045,17 @@ sub dir_writable {
 }
 
 
+=item C<mkdirhier($path, [$mode])>
+
+The function C<mkdirhier> does the same as the UNIX command C<mkdir -p>.
+It behaves differently depending on the context in which it is called:
+If called in void context it will die on failure. If called in
+scalar context, it will return 1/0 on sucess/failure. If called in
+list context, it returns 1/0 as first element and an error message
+as second, if an error occurred (and no second element in case of
+success). The optional parameter sets the permission bits.
+
+=cut
 
 sub mkdirhier {
   my ($tree,$mode) = @_;
@@ -8362,6 +11102,59 @@ sub mkdirhier {
 }
 
 
+=item C<rmtree($root, $verbose, $safe)>
+
+The C<rmtree> function provides a convenient way to delete a
+subtree from the directory structure, much like the Unix command C<rm -r>.
+C<rmtree> takes three arguments:
+
+=over 4
+
+=item *
+
+the root of the subtree to delete, or a reference to
+a list of roots.  All of the files and directories
+below each root, as well as the roots themselves,
+will be deleted.
+
+=item *
+
+a boolean value, which if TRUE will cause C<rmtree> to
+print a message each time it examines a file, giving the
+name of the file, and indicating whether it's using C<rmdir>
+or C<unlink> to remove it, or that it's skipping it.
+(defaults to FALSE)
+
+=item *
+
+a boolean value, which if TRUE will cause C<rmtree> to
+skip any files to which you do not have delete access
+(if running under VMS) or write access (if running
+under another OS).  This will change in the future when
+a criterion for 'delete permission' under OSs other
+than VMS is settled.  (defaults to FALSE)
+
+=back
+
+It returns the number of files successfully deleted.  Symlinks are
+simply deleted and not followed.
+
+B<NOTE:> There are race conditions internal to the implementation of
+C<rmtree> making it unsafe to use on directory trees which may be
+altered or moved while C<rmtree> is running, and in particular on any
+directory trees with any path components or subdirectories potentially
+writable by untrusted users.
+
+Additionally, if the third parameter is not TRUE and C<rmtree> is
+interrupted, it may leave files and directories with permissions altered
+to allow deletion (and older versions of this module would even set
+files and directories to world-read/writable!)
+
+Note also that the occurrence of errors in C<rmtree> can be determined I<only>
+by trapping diagnostic messages using C<$SIG{__WARN__}>; it is not apparent
+from the return value.
+
+=cut
 
 my $Is_VMS = $^O eq 'VMS';
 my $Is_MacOS = $^O eq 'MacOS';
@@ -8466,6 +11259,36 @@ sub rmtree {
 }
 
 
+=item C<copy($file, $target_dir)>
+
+=item C<copy("-f", $file, $destfile)>
+
+=item C<copy("-L", $file, $destfile)>
+
+Copy file C<$file> to directory C<$target_dir>, or to the C<$destfile>
+if the first argument is C<"-f">. No external programs are involved.
+Since we need C<sysopen()>, the Perl module C<Fcntl.pm> is required. The
+time stamps are preserved and symlinks are created on Unix systems. On
+Windows, C<(-l $file)> will never return 'C<true>' and so symlinks will
+be (uselessly) copied as regular files.
+
+If the first argument is C<"-L"> and C<$file> is a symlink, the link is
+dereferenced before the copying is done. (If both C<"-f"> and C<"-L">
+are desired, they must be given in that order, although the codebase
+currently has no need to do this.)
+
+C<copy> invokes C<mkdirhier> if target directories do not exist. Files
+start with mode C<0777> if they are executable and C<0666> otherwise,
+with the set bits in I<umask> cleared in each case.
+
+C<$file> can begin with a C<file:/> prefix.
+
+If C<$file> is not readable, we return without copying anything.  (This
+can happen when the database and files are not in perfect sync.)  On the
+other file, if the destination is not writable, or the writing fails,
+that is a fatal error.
+
+=cut
 
 sub copy {
   my $infile = shift;
@@ -8553,6 +11376,12 @@ sub copy {
 }
 
 
+=item C<touch(@files)>
+
+Update modification and access time of C<@files>.  Non-existent files
+are created.
+
+=cut
 
 sub touch {
   my @files=@_;
@@ -8571,6 +11400,36 @@ sub touch {
 }
 
 
+=item C<collapse_dirs(@files)>
+
+Return a (more or less) minimal list of directories and files, given an
+original list of files C<@files>.  That is, if every file within a given
+directory is included in C<@files>, replace all of those files with the
+absolute directory name in the return list.  Any files which have
+sibling files not included are retained and made absolute.
+
+We try to walk up the tree so that the highest-level directory
+containing only directories or files that are in C<@files> is returned.
+(This logic may not be perfect, though.)
+
+This is not just a string function; we check for other directory entries
+existing on disk within the directories of C<@files>.  Therefore, if the
+entries are relative pathnames, the current directory must be set by the
+caller so that file tests work.
+
+As mentioned above, the returned list is absolute paths to directories
+and files.
+
+For example, suppose the input list is
+
+  dir1/subdir1/file1
+  dir1/subdir2/file2
+  dir1/file3
+
+If there are no other entries under C<dir1/>, the result will be
+C</absolute/path/to/dir1>.
+
+=cut
 
 sub collapse_dirs {
   my (@files) = @_;
@@ -8616,6 +11475,11 @@ sub collapse_dirs {
   return @ret;
 }
 
+=item C<dirs_of_files(@files)>
+
+Returns all the directories in which at least one of the given
+files reside.
+=cut
 
 sub dirs_of_files {
   my (@files) = @_;
@@ -8638,6 +11502,12 @@ sub dirs_of_files {
   return %by_dir;
 }
 
+=item C<all_dirs_and_removed_dirs(@files)>
+
+Returns all the directories for files and those from which all
+content will be removed.
+
+=cut
 
 sub all_dirs_and_removed_dirs {
   my (@files) = @_;
@@ -8674,6 +11544,26 @@ sub all_dirs_and_removed_dirs {
   return (%by_dir, %removed_dirs);
 }
 
+=item C<removed_dirs(@files)>
+
+Returns all the directories from which all content will be removed.
+
+Here is the idea:
+
+=over 4
+
+=item create a hashes by_dir listing all files that should be removed
+   by directory, i.e., key = dir, value is list of files
+
+=item for each of the dirs (keys of by_dir and ordered deepest first)
+   check that all actually contained files are removed
+   and all the contained dirs are in the removal list. If this is the
+   case put that directory into the removal list
+
+=item return this removal list
+
+=back
+=cut
 
 sub removed_dirs {
   my (@files) = @_;
@@ -8682,6 +11572,12 @@ sub removed_dirs {
 }
 
 
+=item C<time_estimate($totalsize, $donesize, $starttime)>
+
+Returns the current running time and the estimated total time
+based on the total size, the already done size, and the start time.
+
+=cut
 
 sub time_estimate {
   my ($totalsize, $donesize, $starttime) = @_;
@@ -8718,6 +11614,24 @@ sub time_estimate {
 }
 
 
+=item C<install_packages($from_tlpdb, $media, $to_tlpdb, $what, $opt_src, $opt_doc, $retry, $continue)>
+
+Installs the list of packages found in C<@$what> (a ref to a list) into
+the TLPDB given by C<$to_tlpdb>. Information on files are taken from
+the TLPDB C<$from_tlpdb>.
+
+C<$opt_src> and C<$opt_doc> specify whether srcfiles and docfiles should
+be installed (currently implemented only for installation from
+uncompressed media).
+
+If C<$retry> is trueish, retry failed packages a second time.
+
+If C<$continue> is trueish, installation failure of non-critical packages
+will be ignored (success is returned).
+
+Returns 1 on success and 0 on error.
+
+=cut
 
 sub install_packages {
   my ($fromtlpdb,$media,$totlpdb,$what,
@@ -8807,6 +11721,16 @@ sub install_packages {
   return 1;
 }
 
+=item C<do_postaction($how, $tlpobj, $do_fileassocs, $do_menu, $do_desktop, $do_script)>
+
+Evaluates the C<postaction> fields in the C<$tlpobj>. The first parameter
+can be either C<install> or C<remove>. The second gives the TLPOBJ whos
+postactions should be evaluated, and the last four arguments specify
+what type of postactions should (or shouldn't) be evaluated.
+
+Returns 1 on success, and 0 on failure.
+
+=cut
 
 sub do_postaction {
   my ($how, $tlpobj, $do_fileassocs, $do_menu, $do_desktop, $do_script) = @_;
@@ -9080,6 +12004,9 @@ sub _do_postaction_shortcut {
   return 1;
 }
 
+=item C<parse_into_keywords>
+
+=cut
 
 sub parse_into_keywords {
   my ($str, @keys) = @_;
@@ -9105,6 +12032,17 @@ sub parse_into_keywords {
   return($error, %ret);
 }
 
+=item C<update_context_cache($bindir,$progext,$run_postinst_cmd)>
+
+Run the ConTeXt cache generation commands, using C<$bindir> and
+C<$progext> to check if commands can be run. Use the function reference
+C<$run_postinst_cmd> to actually run the commands. The return status is
+zero if all succeeded, nonzero otherwise. If the main ConTeXt program
+(C<luametatex>) cannot be run at all, the return status is status.
+
+Functions C<info> and C<debug> are called with status reports.
+
+=cut
 
 sub update_context_cache {
   my ($bindir,$progext,$run_postinst_cmd) = @_;
@@ -9130,6 +12068,17 @@ sub update_context_cache {
   return $errcount;
 }
 
+=item C<announce_execute_actions($how, [$tlpobj[, $what]])>
+
+Announces (records) that the actions, usually given in C<$tlpobj> (but
+can be omitted for global actions), should be executed after all
+packages have been unpacked. The optional C<$what> depends on the
+action, e.g., a parse_AddFormat_line reference for formats; not sure if
+it's used for anything else.
+
+This is called for every package that gets installed.
+
+=cut
 
 sub announce_execute_actions {
   my ($type,$tlp,$what) = @_;
@@ -9193,6 +12142,19 @@ sub announce_execute_actions {
 }
 
 
+=pod
+
+=item C<add_symlinks($root, $arch, $sys_bin, $sys_man, $sys_info)>
+
+=item C<remove_symlinks($root, $arch, $sys_bin, $sys_man, $sys_info)>
+
+These two functions try to create/remove symlinks for binaries, man pages,
+and info files as specified by the options $sys_bin, $sys_man, $sys_info.
+
+The functions return 1 on success and 0 on error.
+On Windows it returns undefined.
+
+=cut
 
 sub add_link_dir_dir {
   my ($from,$to) = @_;
@@ -9324,6 +12286,21 @@ sub add_remove_symlinks {
 sub add_symlinks    { return (add_remove_symlinks("add", @_));    }
 sub remove_symlinks { return (add_remove_symlinks("remove", @_)); }
 
+=pod
+
+=item C<w32_add_to_path($bindir, $multiuser)>
+=item C<w32_remove_from_path($bindir, $multiuser)>
+
+These two functions try to add/remove the binary directory $bindir
+on Windows to the registry PATH variable.
+
+If running as admin user and $multiuser is set, the system path will
+be adjusted, otherwise the user path.
+
+After calling these functions TeXLive::TLWinGoo::broadcast_env() should
+be called to make the changes immediately visible.
+
+=cut
 
 sub w32_add_to_path {
   my ($bindir, $multiuser) = @_;
@@ -9367,6 +12344,21 @@ sub w32_remove_from_path {
   TeXLive::TLWinGoo::adjust_reg_path_for_texlive('remove', $bindir, $mode);
 }
 
+=pod
+
+=item C<check_file_and_remove($what, $checksum, $checksize>
+
+Remove the file C<$what> if either the given C<$checksum> or
+C<$checksize> for C<$what> does not agree with our recomputation using
+C<TLCrypto::tlchecksum> and C<stat>, respectively. If a check argument
+is not given, that check is not performed. If the checksums agree, the
+size is not checked. The return status is random.
+
+This unusual behavior (removing the given file) is because this is used
+for newly-downloaded files; see the calls in the C<unpack> routine
+(which is the only caller).
+
+=cut
 
 sub check_file_and_remove {
   my ($xzfile, $checksum, $checksize) = @_;
@@ -9414,6 +12406,24 @@ sub check_file_and_remove {
   } 
 }
 
+=pod
+
+=item C<unpack($what, $targetdir, @opts>
+
+If necessary, downloads C$what>, and then unpacks it into C<$targetdir>.
+C<@opts> is assigned to a hash and can contain the following 
+keys: C<tmpdir> (use this directory for downloaded files), 
+C<checksum> (check downloaded file against this checksum), 
+C<size> (check downloaded file against this size),
+C<remove> (remove temporary files after operation).
+
+Returns a pair of values: in case of error return 0 and an additional
+explanation, in case of success return 1 and the name of the package.
+
+If C<checksum> or C<size> is C<-1>, no warnings about missing checksum/size
+is printed. This is used during restore and unwinding of failed updates.
+
+=cut
 
 sub unpack {
   my ($what, $target, %opts) = @_;
@@ -9485,6 +12495,17 @@ sub unpack {
   }
 }
 
+=pod
+
+=item C<untar($tarfile, $targetdir, $remove_tarfile)>
+
+Unpacks C<$tarfile> in C<$targetdir> (changing directories to
+C<$targetdir> and then back to the original directory).  If
+C<$remove_tarfile> is true, unlink C<$tarfile> after unpacking.
+
+Assumes the global C<$::progs{"tar"}> has been set up.
+
+=cut
 
 sub untar {
   my ($tarfile, $targetdir, $remove_tarfile) = @_;
@@ -9510,6 +12531,12 @@ sub untar {
 }
 
 
+=item C<tlcmp($file, $file)>
+
+Compare two files considering CR, LF, and CRLF as equivalent.
+Returns 1 if different, 0 if the same.
+
+=cut
 
 sub tlcmp {
   my ($filea, $fileb) = @_;
@@ -9527,6 +12554,12 @@ END_USAGE
 }
 
 
+=item C<read_file_ignore_cr($file)>
+
+Return contents of FILE as a string, converting all of CR, LF, and
+CRLF to just LF.
+
+=cut
 
 sub read_file_ignore_cr {
   my ($fname) = @_;
@@ -9544,6 +12577,25 @@ sub read_file_ignore_cr {
 }
 
 
+=item C<setup_programs($bindir, $platform, $tlfirst)>
+
+Populate the global C<$::progs> hash containing the paths to the
+programs C<lz4>, C<tar>, C<wget>, C<xz>. The C<$bindir> argument specifies
+the path to the location of the C<xz> binaries, the C<$platform>
+gives the TeX Live platform name, used as the extension on our
+executables.  If a program is not present in the TeX Live tree, we also
+check along PATH (without the platform extension.)
+
+If the C<$tlfirst> argument or the C<TEXLIVE_PREFER_OWN> envvar is set,
+prefer TL versions; else prefer system versions (except for Windows
+C<tar.exe>, where we always use ours).
+
+Check many different downloads and compressors to determine what is
+working.
+
+Return 0 if failure, nonzero if success.
+
+=cut
 
 sub setup_programs {
   my ($bindir, $platform, $tlfirst) = @_;
@@ -9759,6 +12811,23 @@ sub setup_unix_tl_one {
 }
 
 
+=item C<download_file( $relpath, $destination )>
+
+Try to download the file given in C<$relpath> from C<$TeXLiveURL>
+into C<$destination>, which can be either
+a filename of simply C<|>. In the latter case a file handle is returned.
+
+Downloading first checks for the environment variable C<TEXLIVE_DOWNLOADER>,
+which takes various built-in values. If not set, the next check is for
+C<TL_DOWNLOAD_PROGRAM> and C<TL_DOWNLOAD_ARGS>. The former overrides the
+above specification devolving to C<wget>, and the latter overrides the
+default wget arguments.
+
+C<TL_DOWNLOAD_ARGS> must be defined so that the file the output goes to
+is the first argument after the C<TL_DOWNLOAD_ARGS>.  Thus, for wget it
+would end in C<-O>.  Use with care.
+
+=cut
 
 sub download_file {
   my ($relpath, $dest) = @_;
@@ -9915,11 +12984,23 @@ sub _download_file_program {
   }
 }
 
+=item C<nulldev ()>
+
+Return C</dev/null> on Unix and C<nul> on Windows.
+
+=cut
 
 sub nulldev {
   return (&wndws()) ? 'nul' : '/dev/null';
 }
 
+=item C<get_full_line ($fh)>
+
+returns the next line from the file handle $fh, taking 
+continuation lines into account (last character of a line is \, and 
+no quoting is parsed).
+
+=cut
 
 sub get_full_line {
   my ($fh) = @_;
@@ -9938,6 +13019,15 @@ sub get_full_line {
 
 =back
 
+=head2 Installer Functions
+
+=over 4
+
+=item C<make_var_skeleton($prefix)>
+
+Generate a skeleton of empty directories in the C<TEXMFSYSVAR> tree.
+
+=cut
 
 sub make_var_skeleton {
   my ($prefix) = @_;
@@ -9954,6 +13044,12 @@ sub make_var_skeleton {
 }
 
 
+=item C<make_local_skeleton($prefix)>
+
+Generate a skeleton of empty directories in the C<TEXMFLOCAL> tree,
+unless C<TEXMFLOCAL> already exists.
+
+=cut
 
 sub make_local_skeleton {
   my ($prefix) = @_;
@@ -9976,6 +13072,28 @@ sub make_local_skeleton {
 }
 
 
+=item C<create_fmtutil($tlpdb, $dest)>
+
+=item C<create_updmap($tlpdb, $dest)>
+
+=item C<create_language_dat($tlpdb, $dest, $localconf)>
+
+=item C<create_language_def($tlpdb, $dest, $localconf)>
+
+=item C<create_language_lua($tlpdb, $dest, $localconf)>
+
+These five functions create C<fmtutil.cnf>, C<updmap.cfg>, C<language.dat>,
+C<language.def>, and C<language.dat.lua> respectively, in C<$dest> (which by
+default is below C<$TEXMFSYSVAR>).  These functions merge the information
+present in the TLPDB C<$tlpdb> (formats, maps, hyphenations) with local
+configuration additions: C<$localconf>.
+
+Currently the merging is done by omitting disabled entries specified
+in the local file, and then appending the content of the local
+configuration files at the end of the file. We should also check for
+duplicates, maybe even error checking.
+
+=cut
 
 sub get_disabled_local_configs {
   my $localconf = shift;
@@ -10271,6 +13389,20 @@ sub parse_AddFormat_line {
 
 =back
 
+=head2 Logging
+
+Logging and debugging messages.
+
+=over 4
+
+=item C<logit($out,$level,@rest)>
+
+Internal routine to write message to both C<$out> (references to
+filehandle) and C<$::LOGFILE>, at level C<$level>, of concatenated items
+in C<@rest>. If the log file is not initialized yet, the message is
+saved to be logged later (unless the log file never comes into existence).
+
+=cut
 
 sub logit {
   my ($out, $level, @rest) = @_;
@@ -10293,6 +13425,19 @@ sub _logit {
   }
 }
 
+=item C<info ($str1, $str2, ...)>
+
+Write a normal informational message, the concatenation of the argument
+strings.  The message will be written unless C<-q> was specified.  If
+the global C<$::machinereadable> is set (the C<--machine-readable>
+option to C<tlmgr>), then output is written to stderr, else to stdout.
+If the log file (see L<process_logging_options>) is defined, it also
+writes there.
+
+It is best to use this sparingly, mainly to give feedback during lengthy
+operations and for final results.
+
+=cut
 
 sub info {
   my $str = join("", @_);
@@ -10303,6 +13448,17 @@ sub info {
   }
 }
 
+=item C<debug ($str1, $str2, ...)>
+
+Write a debugging message, the concatenation of the argument strings.
+The message will be omitted unless C<-v> was specified.  If the log
+file (see L<process_logging_options>) is defined, it also writes there.
+
+This first level debugging message reports on the overall flow of
+work, but does not include repeated messages about processing of each
+package.
+
+=cut
 
 sub debug {
   return if ($::opt_verbosity < 1);
@@ -10313,6 +13469,17 @@ sub debug {
   }
 }
 
+=item C<ddebug ($str1, $str2, ...)>
+
+Write a deep debugging message, the concatenation of the argument
+strings.  The message will be omitted unless C<-v -v> (or higher) was
+specified.  If the log file (see L<process_logging_options>) is defined,
+it also writes there.
+
+This second level debugging message reports messages about processing
+each package, in addition to the first level.
+
+=cut
 
 sub ddebug {
   return if ($::opt_verbosity < 2);
@@ -10323,6 +13490,20 @@ sub ddebug {
   }
 }
 
+=item C<dddebug ($str1, $str2, ...)>
+
+Write the deepest debugging message, the concatenation of the argument
+strings.  The message will be omitted unless C<-v -v -v> was specified.
+If the log file (see L<process_logging_options>) is defined, it also
+writes there.
+
+In addition to the first and second levels, this third level debugging
+message reports messages about processing each line of any tlpdb files
+read, and messages about files tested or matched against tlpsrc
+patterns. This output is extremely voluminous, so unless you're
+debugging those parts of the code, it just gets in the way.
+
+=cut
 
 sub dddebug {
   return if ($::opt_verbosity < 3);
@@ -10333,6 +13514,14 @@ sub dddebug {
   }
 }
 
+=item C<log ($str1, $str2, ...)>
+
+Write a message to the log file (and nowhere else), the concatenation of
+the argument strings.  The log file may not ever be defined (e.g., the
+C<-logfile> option isn't given), in which case the message will never be
+written anywhere.
+
+=cut
 
 sub log {
   my $savequiet = $::opt_quiet;
@@ -10341,6 +13530,14 @@ sub log {
   $::opt_quiet = $savequiet;
 }
 
+=item C<tlwarn ($str1, $str2, ...)>
+
+Write a warning message, the concatenation of the argument strings.
+This always and unconditionally writes the message to standard error; if
+the log file (see L<process_logging_options>) is defined, it also writes
+there.
+
+=cut
 
 sub tlwarn {
   my $savequiet = $::opt_quiet;
@@ -10353,6 +13550,12 @@ sub tlwarn {
   }
 }
 
+=item C<tldie ($str1, $str2, ...)>
+
+Uses C<tlwarn> to issue a warning for @_ preceded by a newline, then
+exits with exit code 1.
+
+=cut
 
 sub tldie {
   tlwarn("\n", @_);
@@ -10363,6 +13566,17 @@ sub tldie {
   }
 }
 
+=item C<debug_hash_str($label, HASH)>
+
+Return LABEL followed by HASH elements, followed by a newline, as a
+single string. If HASH is a reference, it is followed (but no recursive
+derefencing).
+
+=item C<debug_hash($label, HASH)>
+
+Write the result of C<debug_hash_str> to stderr.
+
+=cut
 
 sub debug_hash_str {
   my ($label) = shift;
@@ -10387,6 +13601,11 @@ sub debug_hash {
   warn &debug_hash_str(@_);
 }
 
+=item C<backtrace()>
+
+Return call(er) stack, as a string.
+
+=cut
 
 sub backtrace {
   my $ret = "";
@@ -10401,6 +13620,48 @@ sub backtrace {
   return $ret;
 }
 
+=item C<process_logging_options ($texdir)>
+
+This function handles the common logging options for TeX Live scripts.
+It should be called before C<GetOptions> for any program-specific option
+handling.  For our conventional calling sequence, see (for example) the
+L<tlpfiles> script.
+
+These are the options handled here:
+
+=over 4
+
+=item B<-q>
+
+Omit normal informational messages.
+
+=item B<-v>
+
+Include debugging messages.  With one C<-v>, reports overall flow; with
+C<-v -v> (or C<-vv>), also reports per-package processing; with C<-v -v
+-v> (or C<-vvv>), also reports each line read from any tlpdb files.
+Further repeats of C<-v>, as in C<-v -v -v -v>, are accepted but
+ignored.  C<-vvvv> is an error.
+
+The idea behind these levels is to be able to specify C<-v> to get an
+overall idea of what is going on, but avoid terribly voluminous output
+when processing many packages, as we often are.  When debugging a
+specific problem with a specific package, C<-vv> can help.  When
+debugging problems with parsing tlpdb files, C<-vvv> gives that too.
+
+=item B<-logfile> I<file>
+
+Write all messages (informational, debugging, warnings) to I<file>, in
+addition to standard output or standard error.  In TeX Live, only the
+installer sets a log file by default; none of the other standard TeX
+Live scripts use this feature, but you can specify it explicitly.
+
+=back
+
+See also the L<info>, L<debug>, L<ddebug>, and L<tlwarn> functions,
+which actually write the messages.
+
+=cut
 
 sub process_logging_options {
   $::opt_verbosity = 0;
@@ -10429,6 +13690,18 @@ sub process_logging_options {
 
 =back
 
+=head2 Miscellaneous
+
+A few ideas from Fabrice Popineau's C<FileUtils.pm>.
+
+=over 4
+
+=item C<sort_uniq(@list)>
+
+The C<sort_uniq> function sorts the given array and throws away multiple
+occurrences of elements. It returns a sorted and unified array.
+
+=cut
 
 sub sort_uniq {
   my (@l) = @_;
@@ -10445,6 +13718,13 @@ sub sort_uniq {
 }
 
 
+=item C<push_uniq(\@list, @new_items)>
+
+The C<push_uniq> function pushes each element in the last argument
+@ITEMS to the $LIST referenced by the first argument, if it is not
+already in the list.
+
+=cut
 
 sub push_uniq {
   my ($l, @new_items) = @_;
@@ -10455,12 +13735,23 @@ sub push_uniq {
   }
 }
 
+=item C<member($item, @list)>
+
+The C<member> function returns true if the first argument 
+is also inclued in the list of the remaining arguments.
+
+=cut
 
 sub member {
   my $what = shift;
   return scalar grep($_ eq $what, @_);
 }
 
+=item C<merge_into(\%to, \%from)>
+
+Merges the keys of %from into %to.
+
+=cut
 
 sub merge_into {
   my ($to, $from) = @_;
@@ -10473,6 +13764,21 @@ sub merge_into {
   }
 }
 
+=item C<texdir_check($texdir)>
+
+Test whether installation with TEXDIR set to $texdir should be ok, e.g.,
+would be a creatable directory. Return 1 if ok, 0 if not.
+
+Writable or not, we will not allow installation to the root
+directory (Unix) or the root of a drive (Windows).
+
+We also do not allow paths containing various special characters, and
+print a message about this if second argument WARN is true. (We only
+want to do this for the regular text installer, since spewing output in
+a GUI program wouldn't be good; the generic message will have to do for
+them.)
+
+=cut
 
 sub texdir_check {
   my ($orig_texdir,$warn) = @_;
@@ -10505,6 +13811,15 @@ sub texdir_check {
   return 0;
 }
 
+=pod
+
+This function takes a single argument I<path> and returns it with
+C<"> chars surrounding it on Unix.  On Windows, the C<"> chars are only
+added if I<path> contains special characters, since unconditional quoting
+leads to errors there.  In all cases, any C<"> chars in I<path> itself
+are (erroneously) eradicated.
+ 
+=cut
 
 sub quotify_path_with_spaces {
   my $p = shift;
@@ -10516,6 +13831,20 @@ sub quotify_path_with_spaces {
   return($p);
 }
 
+=pod
+
+This function returns a "Windows-ized" version of its single argument
+I<path>, i.e., replaces all forward slashes with backslashes, and adds
+an additional C<"> at the beginning and end if I<path> contains any
+spaces.  It also makes the path absolute. So if $path does not start
+with one (arbitrary) characer followed by C<:>, we add the output of
+C<`cd`>.
+
+The result is suitable for running in shell commands, but not file tests
+or other manipulations, since in such internal Perl contexts, the quotes
+would be considered part of the filename.
+
+=cut
 
 sub conv_to_w32_path {
   my $p = shift;
@@ -10530,6 +13859,14 @@ sub conv_to_w32_path {
   return($pabs);
 }
 
+=pod
+
+The next two functions are meant for user input/output in installer menus.
+They help making the windows user happy by turning slashes into backslashes
+before displaying a path, and our code happy by turning backslashes into forwars
+slashes after reading a path. They both are no-ops on Unix.
+
+=cut
 
 sub native_slashify {
   my ($r) = @_;
@@ -10543,6 +13880,13 @@ sub forward_slashify {
   return $r;
 }
 
+=item C<setup_persistent_downloads()>
+
+Set up to use persistent connections using LWP/TLDownload, that is look
+for a download server.  Return the TLDownload object if successful, else
+false.
+
+=cut
 
 sub setup_persistent_downloads {
   my $certs = shift;
@@ -10569,6 +13913,20 @@ sub setup_persistent_downloads {
 }
 
 
+=item C<query_ctan_mirror()>
+
+Return a particular mirror given by the generic CTAN auto-redirecting
+default (specified in L<$TLConfig::TexLiveServerURL>) if we get a
+response, else the empty string.
+
+Use C<curl> if it is listed as a C<working_downloader>, else C<wget>,
+else give up. We can't support arbitrary downloaders here, as we do for
+regular package downloads, since certain options have to be set and the
+output has to be parsed.
+
+We try invoking the program three times (hardwired).
+
+=cut
 
 sub query_ctan_mirror {
   my @working_downloaders = @{$::progs{'working_downloaders'}};
@@ -10658,6 +14016,11 @@ sub query_ctan_mirror_wget {
   return;
 }
   
+=item C<check_on_working_mirror($mirror)>
+
+Check if MIRROR is functional.
+
+=cut
 
 sub check_on_working_mirror {
   my $mirror = shift;
@@ -10675,6 +14038,18 @@ sub check_on_working_mirror {
   return ($ret ? 0 : 1);
 }
 
+=item C<give_ctan_mirror_base()>
+
+ 1. get a mirror (retries 3 times to contact mirror.ctan.org)
+    - if no mirror found, use one of the backbone servers
+    - if it is an http server return it (no test is done)
+    - if it is a ftp server, continue
+ 2. if the ftp mirror is good, return it
+ 3. if the ftp mirror is bad, search for http mirror (5 times)
+ 4. if http mirror is found, return it (again, no test,)
+ 5. if no http mirror is found, return one of the backbone servers
+
+=cut
 
 sub give_ctan_mirror_base {
   my @backbone = qw!https://www.ctan.org/tex-archive!;
@@ -10713,6 +14088,18 @@ sub give_ctan_mirror {
   return (give_ctan_mirror_base(@_) . "/$TeXLiveServerPath");
 }
 
+=item C<create_mirror_list()>
+
+=item C<extract_mirror_entry($listentry)>
+
+C<create_mirror_list> returns the lists of viable mirrors according to 
+ctan-mirrors.pl, in a list which also contains continents, and country headers.
+
+C<extract_mirror_entry> extracts the actual repository data from one
+of these entries.
+
+
+=cut
 
 sub create_mirror_list {
   our $mirrors;
@@ -10742,6 +14129,13 @@ sub extract_mirror_entry {
   return $foo[$#foo] . "/" . $TeXLive::TLConfig::TeXLiveServerPath;
 }
 
+=pod
+
+=item C<< slurp_file($file) >>
+
+Reads the whole file and returns the content in a scalar.
+
+=cut
 
 sub slurp_file {
   my $file = shift;
@@ -10753,6 +14147,17 @@ sub slurp_file {
   return($file_data);
 }
 
+=pod
+
+=item C<< download_to_temp_or_file($url) >>
+
+If C<$url> is a url, tries to download the file into a temporary file.
+Otherwise assume that C<$url> is a local file.
+In both cases returns the local file.
+
+Returns the local file name if succeeded, otherwise undef.
+
+=cut
 
 sub download_to_temp_or_file {
   my $url = shift;
@@ -10773,6 +14178,16 @@ sub download_to_temp_or_file {
 }
 
 
+=item C<< compare_tlpobjs($tlpA, $tlpB) >>
+
+Compare the two passed L<TLPOBJ> objects.  Returns a hash:
+
+  $ret{'revision'}  = "revA:revB" # if revisions differ
+  $ret{'removed'}   = \[ list of files removed from A to B ]
+  $ret{'added'}     = \[ list of files added from A to B ]
+  $ret{'fmttriggers'} = 1 if the fmttriggers have changed
+
+=cut
 
 sub compare_tlpobjs {
   my ($tlpA, $tlpB) = @_;
@@ -10837,6 +14252,17 @@ sub compare_tlpobjs {
 }
 
 
+=item C<< compare_tlpdbs($tlpdbA, $tlpdbB, @more_ignored_pkgs) >>
+
+Compare the two passed L<TLPDB> objects, ignoring the packages
+C<00texlive.installer>, C<00texlive.image>, and any passed
+C<@more_ignore_pkgs>. Returns a hash:
+
+  $ret{'removed_packages'} = \[ list of removed packages from A to B ]
+  $ret{'added_packages'}   = \[ list of added packages from A to B ]
+  $ret{'different_packages'}->{$package} = output of compare_tlpobjs
+
+=cut
 
 sub compare_tlpdbs {
   my ($tlpdbA, $tlpdbB, @add_ignored_packs) = @_;
@@ -11016,6 +14442,37 @@ sub parse_line {
 }
 
 
+=item C<mktexupd ()>
+
+Append entries to C<ls-R> files.  Usage example:
+
+  my $updLSR=&mktexupd();
+  $updLSR->{mustexist}(1);
+  $updLSR->{add}(file1);
+  $updLSR->{add}(file2);
+  $updLSR->{add}(file3);
+  $updLSR->{exec}();
+  
+The first line creates a new object.  Only one such object should be 
+created in a program in order to avoid duplicate entries in C<ls-R> files.
+
+C<add> pushes a filename or a list of filenames to a hash encapsulated 
+in a closure.  Filenames must be specified with the full (absolute) path.  
+Duplicate entries are ignored.  
+
+C<exec> checks for each component of C<$TEXMFDBS> whether there are files
+in the hash which have to be appended to the corresponding C<ls-R> files 
+and eventually updates the corresponding C<ls-R> files.  Files which are 
+in directories not stated in C<$TEXMFDBS> are silently ignored.
+
+If the flag C<mustexist> is set, C<exec> aborts with an error message 
+if a file supposed to be appended to an C<ls-R> file doesn't exist physically
+on the file system.  This option was added for compatibility with the 
+C<mktexupd> shell script.  This option shouldn't be enabled in scripts,
+except for testing, because it degrades performance on non-cached file
+systems.
+
+=cut
 
 sub mktexupd {
   my %files;
@@ -11080,6 +14537,18 @@ sub mktexupd {
 }
 
 
+=item C<setup_sys_user_mode($prg, $optsref, $tmfc, $tmfsc, $tmfv, $tmfsv)>
+
+Return two-element list C<($texmfconfig,$texmfvar)> specifying which
+directories to use, either user or sys.  If C<$optsref->{'sys'}>  is
+true, we are in sys mode; else if C<$optsref->{'user'}> is set, we are
+in user mode; else a fatal error.
+
+If C<$prg> eq C<"mktexfmt">, and C<$TEXMFSYSVAR/web2c> is writable, use
+it instead of C<$TEXMFVAR>, even if we are in user mode. C<$TEXMFCONFIG>
+is not switched, however.
+
+=cut
 
 sub setup_sys_user_mode {
   my ($prg, $optsref, $TEXMFCONFIG, $TEXMFSYSCONFIG, 
@@ -11138,6 +14607,16 @@ sub setup_sys_user_mode {
 }
 
 
+=item C<prepend_own_path()>
+
+Prepend the location of the TeX Live binaries to the PATH environment
+variable. This is used by (e.g.) C<fmtutil>.  The location is found by
+calling C<Cwd::abs_path> on C<which('kpsewhich')>. We use kpsewhich
+because it is known to be a true binary executable; C<$0> could be a
+symlink into (say) C<texmf-dist/scripts/>, which is not a useful
+directory for PATH.
+
+=cut
 
 sub prepend_own_path {
   my $bindir = dirname(Cwd::abs_path(which('kpsewhich')));
@@ -11150,6 +14629,12 @@ sub prepend_own_path {
 }
 
 
+=item C<repository_to_array($r)>
+
+Return hash of tags to urls for space-separated list of repositories
+passed in C<$r>. If passed undef or empty string, die.
+
+=cut
 
 sub repository_to_array {
   my $r = shift;
@@ -11180,6 +14665,22 @@ sub repository_to_array {
 
 =back
 
+=head2 JSON
+
+=over 4
+
+=item C<encode_json($ref)>
+
+Returns the JSON representation of the object C<$ref> is pointing at.
+This tries to load the C<JSON> Perl module, and uses it if available,
+otherwise falls back to module internal conversion.
+
+The used backend can be selected by setting the environment variable
+C<TL_JSONMODE> to either C<json> or C<texlive> (all other values are
+ignored). If C<json> is requested and the C<JSON> module cannot be loaded
+the program terminates.
+
+=cut
 
 my $TLTrueValue = 1;
 my $TLFalseValue = 0;
@@ -11190,6 +14691,16 @@ bless $TLFalse, 'TLBOOLEAN';
 
 our $jsonmode = "";
 
+=pod
+
+=item C<True()>
+
+=item C<False()>
+
+These two crazy functions must be used to get proper JSON C<true> and
+C<false> in the output independent of the backend used.
+
+=cut
 
 sub True {
   ensure_json_available();
@@ -11322,17 +14833,28 @@ sub array_to_json {
   return($ret);
 }
 
+=pod
+
+=back
+
+=cut
 
 1;
+__END__
 
+=head1 SEE ALSO
 
+The other modules in C<Master/tlpkg/TeXLive/> (L<TeXLive::TLConfig> and
+the rest), and the scripts in C<Master/tlpg/bin/> (especially
+C<tl-update-tlpdb>), the documentation in C<Master/tlpkg/doc/>, etc.
 
+=head1 AUTHORS AND COPYRIGHT
 
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
 
-
-
-
-
+=cut
 
 
 
@@ -11355,6 +14877,47 @@ my $svnrev = '$Revision$';
 my $_modulerevision = ($svnrev =~ m/: ([0-9]+) /) ? $1 : "unknown";
 sub module_revision { return $_modulerevision; }
 
+=pod
+
+=head1 NAME
+
+C<TeXLive::TeXCatalogue> - TeX Live access to the TeX Catalogue from CTAN
+
+=head1 SYNOPSIS
+
+  use TeXLive::TeXCatalogue;
+  my $texcat = TeXLive::TLTREE->new();
+
+  $texcat->initialize();
+  $texcat->beautify();
+  $texcat->name();
+  $texcat->license();
+  $texcat->version();
+  $texcat->caption();
+  $texcat->description();
+  $texcat->ctan();
+  $texcat->texlive();
+  $texcat->miktex();
+  $texcat->docs();
+  $texcat->entry();
+  $texcat->alias();
+  $texcat->also();
+  $texcat->topics();
+  $texcat->contact();
+  $texcat->new(); 
+  $texcat->initialize();
+  $texcat->quest4texlive();
+  $texcat->location();
+  $texcat->entries();
+
+=head1 DESCRIPTION
+
+The L<TeXLive::TeXCatalogue> module provides access to the data stored
+in the TeX Catalogue.
+
+DOCUMENTATION MISSING, SORRY!!!
+
+=cut
 
 my $_parser = XML::Parser->new(
   ErrorContext => 2,
@@ -11617,15 +15180,21 @@ sub entries {
 }
 
 1;
+__END__
 
+=head1 SEE ALSO
 
+The other modules in C<Master/tlpkg/TeXLive/> (L<TeXLive::TLConfig> and
+the rest), and the scripts in C<Master/tlpkg/bin/> (especially
+C<tl-update-tlpdb>), the documentation in C<Master/tlpkg/doc/>, etc.
 
+=head1 AUTHORS AND COPYRIGHT
 
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
 
-
-
-
-
+=cut
 
 
 
@@ -11806,11 +15375,7 @@ sub load_translations() {
 
 1;
 
-
-
-
-
-
+__END__
 
 
 
@@ -18357,17 +21922,2465 @@ sub check_on_writable {
 
 
 1;
+__END__
+
+=head1 NAME
+
+tlmgr - the native TeX Live Manager
+
+=head1 SYNOPSIS
+
+tlmgr [I<option>...] I<action> [I<option>...] [I<operand>...]
+
+=head1 DESCRIPTION
+
+B<tlmgr> manages an existing TeX Live installation, both packages and
+configuration options.  For information on initially downloading and
+installing TeX Live, see L<https://tug.org/texlive/acquire.html>.
+
+The most up-to-date version of this documentation (updated nightly from
+the development sources) is available at
+L<https://tug.org/texlive/tlmgr.html>, along with procedures for updating
+C<tlmgr> itself and information about test versions.
+
+TeX Live is organized into a few top-level I<schemes>, each of which is
+specified as a different set of I<collections> and I<packages>, where a
+collection is a set of packages, and a package is what contains actual
+files.  Schemes typically contain a mix of collections and packages, but
+each package is included in exactly one collection, no more and no less.
+A TeX Live installation can be customized and managed at any level.
+
+See L<https://tug.org/texlive/doc> for all the TeX Live documentation
+available.
+
+=head1 EXAMPLES
+
+After successfully installing TeX Live, here are a few common operations
+with C<tlmgr>:
+
+=over 4
+
+=item C<tlmgr option repository ctan>
+
+=item C<tlmgr option repository https://mirror.ctan.org/systems/texlive/tlnet>
+
+Tell C<tlmgr> to use a nearby CTAN mirror for future updates; useful if
+you installed TeX Live from the DVD image and want to have continuing
+updates.  The two commands are equivalent; C<ctan> is just an alias for
+the given url.
+
+Caveat: C<mirror.ctan.org> resolves to many different hosts, and they
+are not perfectly synchronized; we recommend updating only daily (at
+most), and not more often. You can choose a particular mirror if
+problems; the list of all CTAN mirrors with the status of each is at
+L<https://ctan.org/mirrors/mirmon>.
+
+=item C<tlmgr update --list>
+
+Report what would be updated without actually updating anything.
+
+=item C<tlmgr update --all>
+
+Make your local TeX installation correspond to what is in the package
+repository (typically useful when updating from CTAN).
+
+=item C<tlmgr info> I<what>
+
+Display detailed information about a package I<what>, such as the installation
+status and description, of searches for I<what> in all packages.
+
+=back
+
+For all the capabilities and details of C<tlmgr>, please read the
+following voluminous information.
+
+=head1 OPTIONS
+
+The following options to C<tlmgr> are global options, not specific to
+any action.  All options, whether global or action-specific, can be
+given anywhere on the command line, and in any order.  The first
+non-option argument will be the main action.  In all cases,
+C<-->I<option> and C<->I<option> are equivalent, and an C<=> is optional
+between an option name and its value.
+
+=over 4
+
+=item B<--repository> I<url|path>
+
+Specify the package repository from which packages should be installed
+or updated, either a local directory or network location, as below. This
+overridesthe default package repository found in the installation's TeX
+Live Package Database (a.k.a. the TLPDB, which is given entirely in the
+file C<tlpkg/texlive.tlpdb>).
+
+This C<--repository> option changes the location only for the current
+run; to make a permanent change, use C<option repository> (see the
+L</option> action).
+
+As an example, you can choose a particular CTAN mirror with something
+like this:
+
+  -repository http://ctan.example.org/its/ctan/dir/systems/texlive/tlnet
+
+Of course a real hostname and its particular top-level CTAN directory
+have to be specified.  The list of CTAN mirrors is available at
+L<https://ctan.org/mirrors/mirmon>.
+
+Here's an example of using a local directory:
+
+  -repository /local/TL/repository
+
+For backward compatibility and convenience, C<--location> and C<--repo>
+are accepted as aliases for this option.
+
+Locations can be specified as any of the following:
+
+=over 4
+
+=item C</some/local/dir>
+
+=item C<file:/some/local/dir>
+
+Equivalent ways of specifying a local directory.
+
+=item C<ctan>
+
+=item C<https://mirror.ctan.org/systems/texlive/tlnet>
+
+Pick a CTAN mirror automatically, trying for one that is both nearby and
+up-to-date. The chosen mirror is used for the entire download. The bare
+C<ctan> is merely an alias for the full url. (See L<https://ctan.org> for
+more about CTAN and its mirrors.)
+
+=item C<http://server/path/to/tlnet>
+
+Standard HTTP. If the (default) LWP method is used, persistent
+connections are supported. TL can also use C<curl> or C<wget> to do the
+downloads, or an arbitrary user-specified program, as described in the
+C<tlmgr> documentation
+(L<https://tug.org/texlive/doc/tlmgr.html#ENVIRONMENT-VARIABLES>).
+
+=item C<https://server/path/to/tlnet>
+
+Again, if the (default) LWP method is used, this supports persistent
+connections. Unfortunately, some versions of C<wget> and C<curl> do not
+support https, and even when C<wget> supports https, certificates may be
+rejected even when the certificate is fine, due to a lack of local
+certificate roots. The simplest workaround for this problem is to use
+http or ftp.
+
+=item C<ftp://server/path/to/tlnet>
+
+If the (default) LWP method is used, persistent connections are
+supported.
+
+=item C<user@machine:/path/to/tlnet>
+
+=item C<scp://user@machine/path/to/tlnet>
+
+=item C<ssh://user@machine/path/to/tlnet>
+
+These forms are equivalent; they all use C<scp> to transfer files. Using
+C<ssh-agent> is recommended. (Info:
+L<https://en.wikipedia.org/wiki/OpenSSH>,
+L<https://en.wikipedia.org/wiki/Ssh-agent>.)
+
+=back
+
+If the repository is on the network, trailing C</> characters and/or
+trailing C</tlpkg> and/or C</archive> components are ignored.  
+
+=item B<--gui> [I<action>]
+
+Two notable GUI front-ends for C<tlmgr>, C<tlshell> and C<tlcockpit>,
+are started up as separate programs; see their own documentation.
+
+C<tlmgr> itself has a graphical interface as well as the command line
+interface. You can give the option to invoke it, C<--gui>, together with
+an action to be brought directly into the respective screen of the GUI.
+For example, running
+
+  tlmgr --gui update
+
+starts you directly at the update screen.  If no action is given, the
+GUI will be started at the main screen.  See L<GUI FOR TLMGR>.
+
+However, the native GUI requires Perl/TK, which is no longer included in
+TeX Live's Perl distribution for Windows. You may find C<tlshell> or
+C<tlcockpit> easier to work with. 
 
 
+=for comment Keep language list in sync with install-tl.
+
+=item B<--gui-lang> I<llcode>
+
+By default, the GUI tries to deduce your language from the environment
+(on Windows via the registry, on Unix via C<LC_MESSAGES>). If that fails
+you can select a different language by giving this option with a
+language code (based on ISO 639-1). Currently supported (but not
+necessarily completely translated) are: S<English (en, default)>,
+S<Czech (cs)>, S<German (de)>, S<French (fr)>, S<Italian (it)>,
+S<Japanese (ja)>, S<Dutch (nl)>, S<Polish (pl)>, S<Brazilian Portuguese
+(pt_BR)>, S<Russian (ru)>, S<Slovak (sk)>, S<Slovenian (sl)>, S<Serbian
+(sr)>, S<Ukrainian (uk)>, S<Vietnamese (vi)>, S<simplified Chinese
+(zh_CN)>, and S<traditional Chinese (zh_TW)>.
+
+tlshell shares its message catalog with tlmgr.
+
+=item B<--command-logfile> I<file>
+
+C<tlmgr> logs the output of all programs invoked (mktexlr, mtxrun, fmtutil,
+updmap) to a separate log file, by default
+C<TEXMFSYSVAR/web2c/tlmgr-commands.log>.  This option allows you to specify a
+different file for the log.
+
+=item B<--debug-translation>
+
+In GUI mode, this switch tells C<tlmgr> to report any untranslated (or
+missing) messages to standard error.  This can help translators to see
+what remains to be done.
+
+=item B<--machine-readable>
+
+Instead of the normal output intended for human consumption, write (to
+standard output) a fixed format more suitable for machine parsing.  See
+the L<MACHINE-READABLE OUTPUT> section below.
+
+=item B<--no-execute-actions>
+
+Suppress the execution of the execute actions as defined in the tlpsrc
+files.  Documented only for completeness, as this is only useful in
+debugging.
+
+=item B<--package-logfile> I<file>
+
+C<tlmgr> logs all package actions (install, remove, update, failed
+updates, failed restores) to a separate log file, by default
+C<TEXMFSYSVAR/web2c/tlmgr.log>.  This option allows you to specify a
+different file for the log.
+
+=item B<--pause>
+
+This option makes C<tlmgr> wait for user input before exiting.  Useful on
+Windows to avoid disappearing command windows.
+
+=item B<--persistent-downloads>
+
+=item B<--no-persistent-downloads>
+
+For network-based installations, this option (on by default) makes
+C<tlmgr> try to set up a persistent connection (using the C<LWP> Perl
+module).  The idea is to open and reuse only one connection per session
+between your computer and the server, instead of initiating a new
+download for each package.
+
+If this is not possible, C<tlmgr> will fall back to using C<wget>.  To
+disable these persistent connections, use C<--no-persistent-downloads>.
+
+=item B<--pin-file>
+
+Change the pinning file location from C<TEXMFLOCAL/tlpkg/pinning.txt>
+(see L</Pinning> below).  Documented only for completeness, as this is
+only useful in debugging.
+
+=item B<--usermode>
+
+Activates user mode for this run of C<tlmgr>; see L<USER MODE> below.
+
+=item B<--usertree> I<dir>
+
+Uses I<dir> for the tree in user mode; see L<USER MODE> below.
+
+=item B<--verify-repo=[none|main|all]>
+
+Defines the level of verification done: If C<none> is specified, no
+verification whatsoever is done. If C<main> is given and a working GnuPG
+(C<gpg>) binary is available, all repositories are checked, but only the
+main repository is required to be signed. If C<all> is given, then all
+repositories need to be signed.  See L<CRYPTOGRAPHIC VERIFICATION> below
+for details.
+
+=back
+
+The standard options for TeX Live programs are also accepted:
+C<--help/-h/-?>, C<--version>, C<-q> (no informational messages), C<-v>
+(debugging messages, can be repeated).  For the details about these, see
+the C<TeXLive::TLUtils> documentation.
+
+The C<--version> option shows version information about the TeX Live
+release and about the C<tlmgr> script itself.  If C<-v> is also given,
+revision number for the loaded TeX Live Perl modules are shown, too.
+
+=head1 ACTIONS
+
+=head2 help
+
+Display this help information and exit (same as C<--help>, and on the
+web at L<https://tug.org/texlive/doc/tlmgr.html>).  Sometimes the
+C<perldoc> and/or C<PAGER> programs on the system have problems,
+resulting in control characters being literally output.  This can't
+always be detected, but you can set the C<NOPERLDOC> environment
+variable and C<perldoc> will not be used.
+
+=head2 version
+
+Gives version information (same as C<--version>).
+
+If C<-v> has been given the revisions of the used modules are reported, too.
+
+=head2 backup
+
+=over 4
+
+=item B<backup [I<option>...] --all>
+
+=item B<backup [I<option>...] I<pkg>...>
+
+If the C<--clean> option is not specified, this action makes a backup of
+the given packages, or all packages given C<--all>. These backups are
+saved to the value of the C<--backupdir> option, if that is an existing
+and writable directory. If C<--backupdir> is not given, the C<backupdir>
+option setting in the TLPDB is used, if present. If both are missing, no
+backups are made. (The installer sets C<backupdir> to
+C<.../tlpkg/backups>, under the TL root installation directory, so it is
+usually defined; see the L</option> description for more information.)
+
+If the C<--clean> option is specified, backups are pruned (removed)
+instead of saved. The optional integer value I<N> may be specified to
+set the number of backups that will be retained when cleaning. If C<N>
+is not given, the value of the C<autobackup> option is used. If both are
+missing, an error is issued. For more details of backup pruning, see
+the C<option> action.
+
+Options:
+
+=over 4
+
+=item B<--backupdir> I<directory>
+
+Overrides the C<backupdir> option setting in the TLPDB.
+The I<directory> argument is required and must specify an existing,
+writable directory where backups are to be placed.
+
+=item B<--all>
+
+If C<--clean> is not specified, make a backup of all packages in the TeX
+Live installation; this will take quite a lot of space and time.  If
+C<--clean> is specified, all packages are pruned.
+
+=item B<--clean>[=I<N>]
+
+Instead of making backups, prune the backup directory of old backups, as
+explained above. The optional integer argument I<N> overrides the
+C<autobackup> option set in the TLPDB.  You must use C<--all> or a list
+of packages together with this option, as desired.
+
+=item B<--dry-run>
+
+Nothing is actually backed up or removed; instead, the actions to be
+performed are written to the terminal.
+
+=back
+
+=back
+
+=head2 candidates I<pkg>
+
+Shows the available candidate repositories for package I<pkg>.
+See L<MULTIPLE REPOSITORIES> below.
+
+=head2 check [I<option>...] [depends|executes|files|runfiles|texmfdbs|all]
+
+Execute one (or all) check(s) of the consistency of the installation.
+If no problems are found, there will be no output. (To get a view of
+what is being done, run C<tlmgr -v check>.)
+
+=over 4
+
+=item B<depends>
+
+Lists those packages which occur as dependencies in an installed collection,
+but are themselves not installed, and those packages which are not
+contained in any collection.
+
+If you call C<tlmgr check collections> this test will be carried out
+instead since former versions for C<tlmgr> called it that way.
+
+=item B<executes>
+
+Check that the files referred to by C<execute> directives in the TeX
+Live Database are present.
+
+=item B<files>
+
+Checks that all files listed in the local TLPDB (C<texlive.tlpdb>) are
+actually present, and lists those missing.
+
+=item B<runfiles>
+
+List those filenames that are occurring more than one time in the
+runfiles sections, except for known duplicates.
+
+=item B<texmfdbs>
+
+Checks related to the C<ls-R> files. If you have defined new trees, or
+changed the C<TEXMF> or C<TEXMFDBS> variables, it can't hurt to run
+this. It checks that:
+
+=over 8
+
+=item - all items in C<TEXMFDBS> have the C<!!> prefix.
+
+=item - all items in C<TEXMFBDS> have an C<ls-R> file (if they exist at all).
+
+=item - all items in C<TEXMF> with C<!!> are listed in C<TEXMFDBS>.
+
+=item - all items in C<TEXMF> with an C<ls-R> file are listed in C<TEXMFDBS>.
+
+=back
+
+=back
+
+Options:
+
+=over 4
+
+=item B<--use-svn>
+
+Use the output of C<svn status> instead of listing the files; for
+checking the TL development repository. (This is run nightly.)
+
+=back
+
+=head2 conf
+
+=over 4
+
+=item  B<conf [texmf|tlmgr|updmap [--conffile I<file>] [--delete] [I<key> [I<value>]]]>
+
+=item B<conf auxtrees [--conffile I<file>] [show|add|remove] [I<value>]>
+
+With only C<conf>, show general configuration information for TeX Live,
+including active configuration files, path settings, and more.  This is
+like running C<texconfig conf>, but works on all supported platforms.
+
+With one of C<conf texmf>, C<conf tlmgr>, or C<conf updmap>, shows all
+key/value pairs (i.e., all settings) as saved in C<ROOT/texmf.cnf>, the
+user-specific C<tlmgr> configuration file (see below), or the first
+found (via C<kpsewhich>) C<updmap.cfg> file, respectively.
+
+If I<key> is given in addition, shows the value of only that I<key> in
+the respective file.  If option I<--delete> is also given, the value in
+the given configuration file is entirely removed (not just commented
+out).
+
+If I<value> is given in addition, I<key> is set to I<value> in the 
+respective file.  I<No error checking is done!>
+
+The C<PATH> value shown by C<conf> is as used by C<tlmgr>.  The
+directory in which the C<tlmgr> executable is found is automatically
+prepended to the PATH value inherited from the environment.
+
+Here is a practical example of changing configuration values. If the
+execution of (some or all) system commands via C<\write18> was left
+enabled during installation, you can disable it afterwards:
+  
+  tlmgr conf texmf shell_escape 0
+
+The subcommand C<auxtrees> allows adding and removing arbitrary
+additional texmf trees, completely under user control.  C<auxtrees show>
+shows the list of additional trees, C<auxtrees add> I<tree> adds a tree
+to the list, and C<auxtrees remove> I<tree> removes a tree from the list
+(if present). The trees should not contain an C<ls-R> file (or files
+will not be found if the C<ls-R> becomes stale). This works by
+manipulating the Kpathsea variable C<TEXMFAUXTREES>, in (by default)
+C<ROOT/texmf.cnf>.  Example:
+
+  tlmgr conf auxtrees add /quick/test/tree
+  tlmgr conf auxtrees remove /quick/test/tree
+
+In all cases the configuration file can be explicitly specified via the
+option C<--conffile> I<file>, e.g., if you don't want to change the
+system-wide configuration.
+
+Warning: The general facility for changing configuration values is here,
+but tinkering with settings in this way is strongly discouraged.  Again,
+no error checking on either keys or values is done, so any sort of
+breakage is possible.
+
+=back
+
+=head2 dump-tlpdb [I<option>...] [--json]
+
+Dump complete local or remote TLPDB to standard output, as-is.  The
+output is analogous to the C<--machine-readable> output; see
+L<MACHINE-READABLE OUTPUT> section.
+
+Options:
+
+=over 4
+
+=item B<--local>
+
+Dump the local TLPDB.
+
+=item B<--remote>
+
+Dump the remote TLPDB.
+
+=item B<--json>
+
+Instead of dumping the actual content, the database is dumped as
+JSON. For the format of JSON output see C<tlpkg/doc/JSON-formats.txt>,
+format definition C<TLPDB>.
+
+=back
+
+Exactly one of C<--local> and C<--remote> must be given.
+
+In either case, the first line of the output specifies the repository
+location, in this format:
+
+  "location-url" "\t" location
+
+where C<location-url> is the literal field name, followed by a tab, and
+I<location> is the file or url to the repository.
+
+Line endings may be either LF or CRLF depending on the current platform.
+
+=head2 generate
+
+=over 4
+
+=item B<generate [I<option>...] language>
+
+=item B<generate [I<option>...] language.dat>
+
+=item B<generate [I<option>...] language.def>
+
+=item B<generate [I<option>...] language.dat.lua>
+
+=back
+
+The C<generate> action overwrites any manual changes made in the
+respective files: it recreates them from scratch based on the
+information of the installed packages, plus local adaptions.
+The TeX Live installer and C<tlmgr> routinely call C<generate> for
+all of these files.
+
+For managing your own fonts, please read the C<updmap --help>
+information and/or L<https://tug.org/fonts/fontinstall.html>.
+
+For managing your own formats, please read the C<fmtutil --help>
+information.
+
+In more detail: C<generate> remakes any of the configuration files
+C<language.dat>, C<language.def>, and C<language.dat.lua>
+from the information present in the local TLPDB, plus
+locally-maintained files.
+
+The locally-maintained files are C<language-local.dat>,
+C<language-local.def>, or C<language-local.dat.lua>,
+searched for in C<TEXMFLOCAL> in the respective
+directories.  If local additions are present, the final file is made by
+starting with the main file, omitting any entries that the local file
+specifies to be disabled, and finally appending the local file.
+
+(Historical note: The formerly supported C<updmap-local.cfg> and
+C<fmtutil-local.cnf> are no longer read, since C<updmap> and C<fmtutil>
+now reads and supports multiple configuration files.  Thus,
+local additions can and should be put into an C<updmap.cfg> of C<fmtutil.cnf>
+file in C<TEXMFLOCAL>.  The C<generate updmap> and C<generate fmtutil> actions
+no longer exist.)
+
+Local files specify entries to be disabled with a comment line, namely
+one of these:
+
+  %!NAME
+  --!NAME
+
+where C<language.dat> and C<language.def> use C<%>, 
+and C<language.dat.lua> use C<-->.  In all cases, the I<name> is
+the respective format name or hyphenation pattern identifier.
+Examples:
+
+  %!german
+  --!usenglishmax
+
+(Of course, you're not likely to actually want to disable those
+particular items.  They're just examples.)
+
+After such a disabling line, the local file can include another entry
+for the same item, if a different definition is desired.  In general,
+except for the special disabling lines, the local files follow the same
+syntax as the master files.
+
+The form C<generate language> recreates all three files C<language.dat>,
+C<language.def>, and C<language.dat.lua>, while the forms with an
+extension recreates only that given language file.
+
+Options:
+
+=over 4
+
+=item B<--dest> I<output_file>
+
+specifies the output file (defaults to the respective location in
+C<TEXMFSYSVAR>).  If C<--dest> is given to C<generate language>, it
+serves as a basename onto which C<.dat> will be appended for the name of
+the C<language.dat> output file, C<.def> will be appended to the value
+for the name of the C<language.def> output file, and C<.dat.lua> to the
+name of the C<language.dat.lua> file.  (This is just to avoid
+overwriting; if you want a specific name for each output file, we
+recommend invoking C<tlmgr> twice.)
+
+=item B<--localcfg> I<local_conf_file>
+
+specifies the (optional) local additions (defaults to the respective
+location in C<TEXMFLOCAL>).
+
+=item B<--rebuild-sys>
+
+tells C<tlmgr> to run necessary programs after config files have been
+regenerated. These are:
+C<fmtutil-sys --all> after C<generate fmtutil>,
+C<fmtutil-sys --byhyphen .../language.dat> after C<generate language.dat>,
+and
+C<fmtutil-sys --byhyphen .../language.def> after C<generate language.def>.
+
+These subsequent calls cause the newly-generated files to actually take
+effect.  This is not done by default since those calls are lengthy
+processes and one might want to made several related changes in
+succession before invoking these programs.
+
+=back
+
+The respective locations are as follows:
+
+  tex/generic/config/language.dat (and language-local.dat)
+  tex/generic/config/language.def (and language-local.def)
+  tex/generic/config/language.dat.lua (and language-local.dat.lua)
+
+=head2 gui
+
+Start the graphical user interface. See B<GUI> below.
+
+=head2 info
+
+=over 4
+
+=item B<info [I<option>...] I<pkg>...>
+
+=item B<info [I<option>...] collections>
+
+=item B<info [I<option>...] schemes>
+
+With no argument, lists all packages available at the package
+repository, prefixing those already installed with C<i>.
+
+With the single word C<collections> or C<schemes> as the argument, lists
+the request type instead of all packages.
+
+With any other arguments, display information about I<pkg>: the name,
+category, short and long description, sizes, installation status, and TeX Live
+revision number.  If I<pkg> is not locally installed, searches in the
+remote installation source.
+
+For normal packages (not collections or schemes), the sizes of the four
+groups of files (run/src/doc/bin files) are shown separately. For
+collections, the cumulative size is shown, including all
+directly-dependent packages (but not dependent collections). For
+schemes, the cumulative size is also shown, including all
+directly-dependent collections and packages.
+
+If I<pkg> is not found locally or remotely, the search action is used
+and lists matching packages and files.
+
+It also displays information taken from the TeX Catalogue, namely the
+package version, date, and license.  Consider these, especially the
+package version, as approximations only, due to timing skew of the
+updates of the different pieces.  By contrast, the C<revision> value
+comes directly from TL and is reliable.
+
+The former actions C<show> and C<list> are merged into this action,
+but are still supported for backward compatibility.
+
+Options:
+
+=over 4
+
+=item B<--list>
+
+If the option C<--list> is given with a package, the list of contained
+files is also shown, including those for platform-specific dependencies.
+When given with schemes and collections, C<--list> outputs their
+dependencies in a similar way.
+
+=item B<--only-installed>
+
+If this option is given, the installation source will not be used; only
+locally installed packages, collections, or schemes are listed.
+
+=item B<--only-remote>
+
+Only list packages from the remote repository. Useful when checking what
+is available in a remote repository using
+C<tlmgr --repo ... --only-remote info>. Note that
+C<--only-installed> and C<--only-remote> cannot both be specified.
+
+=item B<--data C<item1,item2,...>>
+
+If the option C<--data> is given, its argument must be a comma or colon 
+separated list of field names from: C<name>, C<category>, C<localrev>,
+C<remoterev>, C<shortdesc>, C<longdesc>, C<installed>, C<size>,
+C<relocatable>, C<depends>, C<cat-version>, C<cat-date>, C<cat-license>,
+plus various C<cat-contact-*> fields (see below).
+
+The C<cat-*> fields all come from the TeX Catalogue
+(L<https://ctan.org/pkg/catalogue>). For each, there are two more
+variants with prefix C<l> and C<r>, e.g., C<lcat-version> and
+C<rcat-version>, which indicate the local and remote information,
+respectively. The variants without C<l> and C<r> show the most current
+one, which is normally the remote value.
+
+The requested packages' information is listed in CSV format, one package
+per line, and the column information is given by the C<itemN>. The
+C<depends> column contains the names of all the dependencies separated
+by C<:> characters.
+
+At this writing, the C<cat-contact-*> fields include: C<home>,
+C<repository>, C<support>, C<bugs>, C<announce>, C<development>. Each
+may be empty or a url value. A brief description is on the CTAN upload
+page for new packages: L<https://ctan.org/upload>.
+
+=item B<--json>
+
+In case C<--json> is specified, the output is a JSON encoded array where
+each array element is the JSON representation of a single C<TLPOBJ> but
+with additional information. For details see
+C<tlpkg/doc/JSON-formats.txt>, format definition: C<TLPOBJINFO>. If both
+C<--json> and C<--data> are given, C<--json> takes precedence.
+
+=back
+
+=back
+
+=head2 init-usertree
+
+Sets up a texmf tree for so-called user mode management, either the
+default user tree (C<TEXMFHOME>), or one specified on the command line
+with C<--usertree>.  See L<USER MODE> below.
+
+=head2 install [I<option>...] I<pkg>...
+
+Install each I<pkg> given on the command line, if it is not already
+installed.  It does not touch existing packages; see the C<update>
+action for how to get the latest version of a package.
+
+By default this also installs all packages on which the given I<pkg>s are
+dependent.  Options:
+
+=over 4
+
+=item B<--dry-run>
+
+Nothing is actually installed; instead, the actions to be performed are
+written to the terminal.
+
+=item B<--file>
+
+Instead of fetching a package from the installation repository, use
+the package files given on the command line.  These files must
+be standard TeX Live package files (with contained tlpobj file).
+
+=item B<--force>
+
+If updates to C<tlmgr> itself (or other parts of the basic
+infrastructure) are present, C<tlmgr> will bail out and not perform the
+installation unless this option is given.  Not recommended.
+
+=item B<--no-depends>
+
+Do not install dependencies.  (By default, installing a package ensures
+that all dependencies of this package are fulfilled.)
+
+=item B<--no-depends-at-all>
+
+Normally, when you install a package which ships binary files the
+respective binary package will also be installed.  That is, for a
+package C<foo>, the package C<foo.i386-linux> will also be installed on
+an C<i386-linux> system.  This option suppresses this behavior, and also
+implies C<--no-depends>.  Don't use it unless you are sure of what you
+are doing.
+
+=item B<--reinstall>
+
+Reinstall a package (including dependencies for collections) even if it
+already seems to be installed (i.e, is present in the TLPDB).  This is
+useful to recover from accidental removal of files in the hierarchy.
+
+When re-installing, only dependencies on normal packages are followed
+(i.e., not those of category Scheme or Collection).
+
+=item B<--with-doc>
+
+=item B<--with-src>
+
+While not recommended, the C<install-tl> program provides an option to
+omit installation of all documentation and/or source files.  (By
+default, everything is installed.)  After such an installation, you may
+find that you want the documentation or source files for a given package
+after all.  You can get them by using these options in conjunction with
+C<--reinstall>, as in (using the C<fontspec> package as the example):
+
+  tlmgr install --reinstall --with-doc --with-src fontspec
+
+=back
+
+This action does not automatically add new symlinks in system
+directories; you need to run C<tlmgr path add> (L</path>) yourself if
+you are using this feature and want new symlinks added.
+
+=head2 key
+
+=over 4
+
+=item B<key list>
+
+=item B<key add I<file>>
+
+=item B<key remove I<keyid>>
+
+The action C<key> allows listing, adding and removing additional GPG
+keys to the set of trusted keys, that is, those that are used to verify
+the TeX Live databases.
+
+With the C<list> argument, C<key> lists all keys.
+
+The C<add> argument requires another argument, either a filename or
+C<-> for stdin, from which the key is added. The key is added to the
+local keyring C<GNUPGHOME/repository-keys.gpg>, which is normally
+C<tlpkg/gpg/repository-keys.gpg>.
+
+The C<remove> argument requires a key id and removes the requested id
+from the local keyring.
+
+=back
+
+=head2 list
+
+Synonym for L</info>.
+
+=head2 option
+
+=over 4
+
+=item B<option [--json] [show]>
+
+=item B<option [--json] showall|help>
+
+=item B<option I<key> [I<value>]>
+
+=back
+
+The first form, C<show>, shows the global TeX Live settings currently
+saved in the TLPDB with a short description and the C<key> used for
+changing it in parentheses.
+
+The second form, C<showall>, is similar, but also shows options which
+can be defined but are not currently set to any value (C<help> is a
+synonym).
+
+Both C<show...> forms take an option C<--json>, which dumps the option
+information in JSON format.  In this case, both forms dump the same
+data. For the format of the JSON output see
+C<tlpkg/doc/JSON-formats.txt>, format definition C<TLOPTION>.
+
+In the third form, with I<key>, if I<value> is not given, the setting
+for I<key> is displayed.  If I<value> is present, I<key> is set to
+I<value>.
+
+Possible values for I<key> are (run C<tlmgr option showall> for
+the definitive list):
+
+ repository (default package repository),
+ formats    (generate formats at installation or update time),
+ postcode   (run postinst code blobs)
+ docfiles   (install documentation files),
+ srcfiles   (install source files),
+ backupdir  (default directory for backups),
+ autobackup (number of backups to keep).
+ sys_bin    (directory to which executables are linked by the path action)
+ sys_man    (directory to which man pages are linked by the path action)
+ sys_info   (directory to which Info files are linked by the path action)
+ desktop_integration (Windows-only: create Start menu shortcuts)
+ fileassocs (Windows-only: change file associations)
+ multiuser  (Windows-only: install for all users)
+
+One common use of C<option> is to permanently change the installation to
+get further updates from the Internet, after originally installing from
+DVD.  To do this, you can run
+
+ tlmgr option repository https://mirror.ctan.org/systems/texlive/tlnet
+
+The C<install-tl> documentation has more information about the possible
+values for C<repository>.  (For backward compatibility, C<location> can
+be used as a synonym for C<repository>.)
+
+If C<formats> is set (this is the default), then formats are regenerated
+when either the engine or the format files have changed.  Disable this
+only when you know how and want to regenerate formats yourself whenever
+needed (which is often, in practice).
+
+The C<postcode> option controls execution of per-package
+postinstallation action code.  It is set by default, and again disabling
+is not likely to be of interest except to developers doing debugging.
+
+The C<docfiles> and C<srcfiles> options control the installation of
+their respective file groups (documentation, sources; grouping is
+approximate) per package. By default both are enabled (1).  Either or
+both can be disabled (set to 0) if disk space is limited or for minimal
+testing installations, etc.  When disabled, the respective files are not
+downloaded at all.
+
+The options C<autobackup> and C<backupdir> determine the defaults for
+the actions C<update>, C<backup> and C<restore>. These three actions
+need a directory in which to read or write the backups. If
+C<--backupdir> is not specified on the command line, the C<backupdir>
+option value is used (if set). The TL installer sets C<backupdir> to
+C<.../tlpkg/backups>, under the TL root installation directory.
+
+The C<autobackup> option (de)activates automatic generation of backups.
+Its value is an integer.  If the C<autobackup> value is C<-1>, no
+backups are removed.  If C<autobackup> is 0 or more, it specifies the
+number of backups to keep.  Thus, backups are disabled if the value is
+0.  In the C<--clean> mode of the C<backup> action this option also
+specifies the number to be kept.  The default value is 1, so that
+backups are made, but only one backup is kept.
+
+To setup C<autobackup> to C<-1> on the command line, use:
+
+  tlmgr option -- autobackup -1
+
+The C<--> avoids having the C<-1> treated as an option.  (The C<-->
+stops parsing for options at the point where it appears; this is a
+general feature across most Unix programs.)
+
+The C<sys_bin>, C<sys_man>, and C<sys_info> options are used on Unix
+systems to control the generation of links for executables, Info files
+and man pages. See the C<path> action for details.
+
+The last three options affect behavior on Windows installations.  If
+C<desktop_integration> is set, then some packages will install items in
+a sub-folder of the Start menu for C<tlmgr gui>, documentation, etc.  If
+C<fileassocs> is set, Windows file associations are made (see also the
+C<postaction> action).  Finally, if C<multiuser> is set, then adaptions
+to the registry and the menus are done for all users on the system
+instead of only the current user.  All three options are on by default.
+
+=head2 paper
+
+=over 4
+
+=item B<paper [a4|letter]>
+
+=item B<<[xdvi|pdftex|dvips|dvipdfmx|context|psutils] paper [I<papersize>|--list]>>
+
+=item B<paper --json>
+
+=back
+
+With no arguments (C<tlmgr paper>), shows the default paper size setting
+for all known programs.
+
+With one argument (e.g., C<tlmgr paper a4>), sets the default for all
+known programs to that paper size.
+
+With a program given as the first argument and no paper size specified
+(e.g., C<tlmgr dvips paper>), shows the default paper size for that
+program.
+
+With a program given as the first argument and a paper size as the last
+argument (e.g., C<tlmgr dvips paper a4>), set the default for that
+program to that paper size.
+
+With a program given as the first argument and C<--list> given as the
+last argument (e.g., C<tlmgr dvips paper --list>), shows all valid paper
+sizes for that program.  The first size shown is the default.
+
+If C<--json> is specified without other options, the paper setup is
+dumped in JSON format. For the format of JSON output see
+C<tlpkg/doc/JSON-formats.txt>, format definition C<TLPAPER>.
+
+Incidentally, this syntax of having a specific program name before the
+C<paper> keyword is unusual.  It is inherited from the longstanding
+C<texconfig> script, which supports other configuration settings for
+some programs, notably C<dvips>.  C<tlmgr> does not support those extra
+settings.
+
+=head2 path
+
+=over 4
+
+=item B<path [--windowsmode=user|admin] add>
+
+=item B<path [--windowsmode=user|admin] remove>
+
+On Unix, adds or removes symlinks for executables, man pages, and info
+pages in the system directories specified by the respective options (see
+the L</option> description above). Does not change any initialization
+files, either system or personal. Furthermore, any executables added or
+removed by future updates are not taken care of automatically; this
+command must be rerun as needed.
+
+On Windows, the registry part where the binary directory is added or
+removed is determined in the following way:
+
+If the user has admin rights, and the option C<--windowsmode> is not given,
+the setting I<w32_multi_user> determines the location (i.e., if it is
+on then the system path, otherwise the user path is changed).
+
+If the user has admin rights, and the option C<--windowsmode> is given, this
+option determines the path to be adjusted.
+
+If the user does not have admin rights, and the option C<--windowsmode>
+is not given, and the setting I<w32_multi_user> is off, the user path
+is changed, while if the setting I<w32_multi_user> is on, a warning is
+issued that the caller does not have enough privileges.
+
+If the user does not have admin rights, and the option C<--windowsmode>
+is given, it must be C<user> and the user path will be adjusted. If a
+user without admin rights uses the option C<--windowsmode admin> a warning
+is issued that the caller does not have enough privileges.
+
+=back
+
+=head2 pinning 
+
+The C<pinning> action manages the pinning file, see L</Pinning> below.
+
+=over 4
+
+=item C<pinning show>
+
+Shows the current pinning data.
+
+=item C<pinning add> I<repo> I<pkgglob>...
+
+Pins the packages matching the I<pkgglob>(s) to the repository
+I<repo>.
+
+=item C<pinning remove> I<repo> I<pkgglob>...
+
+Any packages recorded in the pinning file matching the <pkgglob>s for
+the given repository I<repo> are removed.
+
+=item C<pinning remove I<repo> --all>
+
+Remove all pinning data for repository I<repo>.
+
+=back
+
+=head2 platform
+
+=over 4
+
+=item B<platform list|add|remove I<platform>...>
+
+=item B<platform set I<platform>>
+
+=item B<platform set auto>
+
+C<platform list> lists the TeX Live names of all the platforms
+(a.k.a. architectures), (C<i386-linux>, ...) available at the package
+repository.
+
+C<platform add> I<platform>... adds the executables for each given platform
+I<platform> to the installation from the repository.
+
+C<platform remove> I<platform>... removes the executables for each given 
+platform I<platform> from the installation, but keeps the currently 
+running platform in any case.
+
+C<platform set> I<platform> switches TeX Live to always use the given
+platform instead of auto detection.
+
+C<platform set auto> switches TeX Live to auto detection mode for platform.
+
+Platform detection is needed to select the proper C<xz> and 
+C<wget> binaries that are shipped with TeX Live.
+
+C<arch> is a synonym for C<platform>.
+
+Options:
+
+=over 4
+
+=item B<--dry-run>
+
+Nothing is actually installed; instead, the actions to be performed are
+written to the terminal.
+
+=back
+
+=back
+
+=cut
 
 
+=pod
 
+=head2 postaction
 
+=over 4
 
+=item B<postaction [I<option>...] install [shortcut|fileassoc|script] [I<pkg>...]>
 
+=item B<postaction [I<option>...] remove [shortcut|fileassoc|script] [I<pkg>...]>
 
+Carry out the postaction C<shortcut>, C<fileassoc>, or C<script> given
+as the second required argument in install or remove mode (which is the
+first required argument), for either the packages given on the command
+line, or for all if C<--all> is given.
 
+Options:
 
+=over 4
+
+=item B<--windowsmode=[user|admin]>
+
+If the option C<--windowsmode> is given the value C<user>, all actions will
+only be carried out in the user-accessible parts of the
+registry/filesystem, while the value C<admin> selects the system-wide
+parts of the registry for the file associations.  If you do not have
+enough permissions, using C<--windowsmode=admin> will not succeed.
+
+=item B<--fileassocmode=[1|2]>
+
+C<--fileassocmode> specifies the action for file associations.  If it is
+set to 1 (the default), only new associations are added; if it is set to
+2, all associations are set to the TeX Live programs.  (See also
+C<option fileassocs>.)
+
+=item B<--all>
+
+Carry out the postactions for all packages
+
+=back
+
+=back
+
+=head2 print-platform
+
+Print the TeX Live identifier for the detected platform
+(hardware/operating system) combination to standard output, and exit.
+C<--print-arch> is a synonym.
+
+=head2 print-platform-info
+
+Print the TeX Live platform identifier, TL platform long name, and
+original output from guess.
+
+=head2 remove [I<option>...] I<pkg>...
+
+Remove each I<pkg> specified.  Removing a collection removes all package
+dependencies (unless C<--no-depends> is specified), but not any
+collection dependencies of that collection.  However, when removing a
+package, dependencies are never removed.  Options:
+
+=over 4
+
+=item B<--all>
+
+Uninstalls all of TeX Live, asking for confirmation unless C<--force> is
+also specified.
+
+=item B<--backup>
+
+=item B<--backupdir> I<directory>
+
+These options behave just as with the L<update|/update
+[I<option>...] [I<pkg>...]> action (q.v.), except they apply to making
+backups of packages before they are removed.  The default is to make
+such a backup, that is, to save a copy of packages before removal.
+
+The L</restore> action explains how to restore from a backup.
+
+=item B<--no-depends>
+
+Do not remove dependent packages.
+
+=item B<--no-depends-at-all>
+
+See above under L<install|/install [I<option>...] I<pkg>...> (and beware).
+
+=item B<--force>
+
+By default, removal of a package or collection that is a dependency of
+another collection or scheme is not allowed.  With this option, the
+package will be removed unconditionally.  Use with care.
+
+A package that has been removed using the C<--force> option because it
+is still listed in an installed collection or scheme will not be
+updated, and will be mentioned as C<forcibly removed> in the output of
+C<tlmgr update --list>.
+
+=item B<--dry-run>
+
+Nothing is actually removed; instead, the actions to be performed are
+written to the terminal.
+
+=back
+
+Except with C<--all>, this C<remove> action does not automatically
+remove symlinks to executables from system directories; you need to run
+C<tlmgr path remove> (L</path>) yourself if you remove an individual
+package with a symlink in a system directory.
+
+=head2 repository
+
+=over 4
+
+=item B<repository list>
+
+=item B<repository list I<path|url|tag>>
+
+=item B<repository add I<path> [I<tag>]>
+
+=item B<repository remove I<path|tag>>
+
+=item B<repository set I<path>[#I<tag>] [I<path>[#I<tag>] ...]>
+
+=item B<repository status>
+
+This action manages the list of repositories.  See L<MULTIPLE
+REPOSITORIES> below for detailed explanations.
+
+The first form, C<repository list>, lists all configured repositories
+and the respective tags if set. If a path, url, or tag is given after
+the C<list> keyword, it is interpreted as the source from which to
+initialize a TL database and lists the contained packages. This can also
+be an otherwise-unused repository, either local or remote. If the option
+C<--with-platforms> is specified in addition, for each package the
+available platforms (if any) are also listed.
+
+The form C<repository add> adds a repository (optionally attaching a
+tag) to the list of repositories, while C<repository remove> removes a
+repository, either by full path/url, or by tag.
+
+The form C<repository set> sets the list of available repositories to
+the items given on the command line, overwriting previous settings.
+
+The form C<repository status> reports the verification status of the
+loaded repositories with the format of one repository per line
+with fields separated by a single space:
+
+=over 4
+
+=item The tag (which can be the same as the url);
+
+= the url;
+
+= iff machine-readable output is specified, the verification code (a
+number);
+
+= a textual description of the verification status, as the last field
+extending to the end of line.
+
+=back 
+
+That is, in normal (not machine-readable) output, the third field
+(numeric verification status) is not present.
+
+In all cases, one of the repositories must be tagged as C<main>;
+otherwise, all operations will fail!
+
+=back
+
+=head2 restore
+
+=over 4
+
+=item B<restore [I<option>...] I<pkg> [I<rev>]>
+
+=item B<restore [I<option>...] --all>
+
+Restore a package from a previously-made backup.
+
+If C<--all> is given, try to restore the latest revision of all 
+package backups found in the backup directory.
+
+Otherwise, if neither I<pkg> nor I<rev> are given, list the available
+backup revisions for all packages.  With I<pkg> given but no I<rev>,
+list all available backup revisions of I<pkg>.
+
+When listing available packages, C<tlmgr> shows the revision, and in
+parenthesis the creation time if available (in format yyyy-mm-dd hh:mm).
+
+If (and only if) both I<pkg> and a valid revision number I<rev> are
+specified, try to restore the package from the specified backup.
+
+Options:
+
+=over 4
+
+=item B<--all>
+
+Try to restore the latest revision of all package backups found in the
+backup directory. Additional non-option arguments (like I<pkg>) are not
+allowed.
+
+=item B<--backupdir> I<directory>
+
+Specify the directory where the backups are to be found. If not given it
+will be taken from the configuration setting in the TLPDB.
+
+=item B<--dry-run>
+
+Nothing is actually restored; instead, the actions to be performed are
+written to the terminal.
+
+=item B<--force>
+
+Don't ask questions.
+
+=item B<--json>
+
+When listing backups, the option C<--json> turn on JSON output.
+The format is an array of JSON objects (C<name>, C<rev>, C<date>).
+For details see C<tlpkg/doc/JSON-formats.txt>, format definition: C<TLBACKUPS>.
+If both C<--json> and C<--data> are given, C<--json> takes precedence.
+
+=back
+
+=back
+
+=head2 search
+
+=over 4
+
+=item B<search [I<option>...] I<what>>
+
+=item B<search [I<option>...] --file I<what>>
+
+=item B<search [I<option>...] --all I<what>>
+
+By default, search the names, short descriptions, and long descriptions
+of all locally installed packages for the argument I<what>, interpreted
+as a (Perl) regular expression.
+
+Options:
+
+=over 4
+
+=item B<--file>
+
+List all filenames containing I<what>.
+
+=item B<--all>
+
+Search everything: package names, descriptions and filenames.
+
+=item B<--global>
+
+Search the TeX Live Database of the installation medium, instead of the
+local installation.
+
+=item B<--word>
+
+Restrict the search of package names and descriptions (but not
+filenames) to match only full words.  For example, searching for
+C<table> with this option will not output packages containing the word
+C<tables> (unless they also contain the word C<table> on its own).
+
+=back
+
+=back
+
+=head2 shell
+
+Starts an interactive mode, where tlmgr prompts for commands. This can
+be used directly, or for scripting. The first line of output is
+C<protocol> I<n>, where I<n> is an unsigned number identifying the
+protocol version (currently 1).
+
+In general, tlmgr actions that can be given on the command line
+translate to commands in this shell mode.  For example, you can say
+C<update --list> to see what would be updated. The TLPDB is loaded the
+first time it is needed (not at the beginning), and used for the rest of
+the session.
+
+Besides these actions, a few commands are specific to shell mode:
+
+=over 4
+
+=item protocol
+
+Print C<protocol I<n>>, the current protocol version.
+
+=item help
+
+Print pointers to this documentation.
+
+=item version
+
+Print tlmgr version information.
+
+=item quit, end, bye, byebye, EOF
+
+Exit.
+
+=item restart
+
+Restart C<tlmgr shell> with the original command line; most useful when
+developing C<tlmgr>.
+
+=item load [local|remote]
+
+Explicitly load the local or remote, respectively, TLPDB.
+
+=item save
+
+Save the local TLPDB, presumably after other operations have changed it.
+
+=item get [I<var>]
+=item set [I<var> [I<val>]]
+
+Get the value of I<var>, or set it to I<val>.  Possible I<var> names:
+C<debug-translation>, C<machine-readable>, C<no-execute-actions>,
+C<require-verification>, C<verify-downloads>, C<repository>, and
+C<prompt>. All except C<repository> and C<prompt> are booleans, taking
+values 0 and 1, and behave like the corresponding command line option.
+The C<repository> variable takes a string, and sets the remote
+repository location. The C<prompt> variable takes a string, and sets the
+current default prompt.
+
+If I<var> or then I<val> is not specified, it is prompted for.
+
+=back
+
+=head2 show
+
+Synonym for L</info>.
+
+=head2 uninstall
+
+Synonym for L<remove|/remove [I<option>...] I<pkg>...>.
+
+=head2 update [I<option>...] [I<pkg>...]
+
+Updates the packages given as arguments to the latest version available
+at the installation source.  Either C<--all> or at least one I<pkg> name
+must be specified.  Options:
+
+=over 4
+
+=item B<--all>
+
+Update all installed packages except for C<tlmgr> itself. If updates to
+C<tlmgr> itself are present, this gives an error, unless also the option
+C<--force> or C<--self> is given. (See below.)
+
+In addition to updating the installed packages, during the update of a
+collection the local installation is (by default) synchronized to the
+status of the collection on the server, for both additions and removals.
+
+This means that if a package has been removed on the server (and thus
+has also been removed from the respective collection), C<tlmgr> will
+remove the package in the local installation.  This is called
+``auto-remove'' and is announced as such when using the option
+C<--list>.  This auto-removal can be suppressed using the option
+C<--no-auto-remove> (not recommended, see option description).
+
+Analogously, if a package has been added to a collection on the server
+that is also installed locally, it will be added to the local
+installation.  This is called ``auto-install'' and is announced as such
+when using the option C<--list>.  This auto-installation can be
+suppressed using the option C<--no-auto-install> (also not recommended).
+
+An exception to the collection dependency checks (including the
+auto-installation of packages just mentioned) are those that have been
+``forcibly removed'' by you, that is, you called C<tlmgr remove --force>
+on them.  (See the C<remove> action documentation.)  To reinstall any
+such forcibly removed packages use C<--reinstall-forcibly-removed>.
+
+To reiterate: automatic removals and additions are entirely determined
+by comparison of collections. Thus, if you manually install an
+individual package C<foo> which is later removed from the server,
+C<tlmgr> will not notice and will not remove it locally. (It has to be
+this way, without major rearchitecture work, because the tlpdb does not
+record the repository from which packages come from.)
+
+If you want to exclude some packages from the current update run (e.g.,
+due to a slow link), see the C<--exclude> option below.
+
+=item B<--self>
+
+Update C<tlmgr> itself (that is, the infrastructure packages) if updates
+to it are present. On Windows this includes updates to the private Perl
+interpreter shipped inside TeX Live.
+
+If this option is given together with either C<--all> or a list of
+packages, then C<tlmgr> will be updated first and, if this update
+succeeds, the new version will be restarted to complete the rest of the
+updates.
+
+In short:
+
+  tlmgr update --self        # update infrastructure only
+  tlmgr update --self --all  # update infrastructure and all packages
+  tlmgr update --force --all # update all packages but *not* infrastructure
+
+=item B<--dry-run>
+
+Nothing is actually installed; instead, the actions to be performed are
+written to the terminal.  This is a more detailed report than C<--list>.
+
+=item B<--list> [I<pkg>]
+
+Concisely list the packages which would be updated, newly installed, or
+removed, without actually changing anything. 
+If C<--all> is also given, all available updates are listed.
+If C<--self> is given, but not C<--all>, only updates to the
+critical packages (tlmgr, texlive infrastructure, perl on Windows, etc.)
+are listed.
+If neither C<--all> nor C<--self> is given, and in addition no I<pkg> is
+given, then C<--all> is assumed (thus, C<tlmgr update --list> is the
+same as C<tlmgr update --list --all>).
+If neither C<--all> nor C<--self> is given, but specific package names are
+given, those packages are checked for updates.
+
+=item B<--exclude> I<pkg>
+
+Exclude I<pkg> from the update process.  If this option is given more
+than once, its arguments accumulate.
+
+An argument I<pkg> excludes both the package I<pkg> itself and all
+its related platform-specific packages I<pkg.ARCH>.  For example,
+
+  tlmgr update --all --exclude a2ping
+
+will not update C<a2ping>, C<a2ping.i386-linux>, or
+any other C<a2ping.>I<ARCH> package.
+
+If this option specifies a package that would otherwise be a candidate
+for auto-installation, auto-removal, or reinstallation of a forcibly
+removed package, C<tlmgr> quits with an error message.  Excludes are not
+supported in these circumstances.
+
+This option can also be set permanently in the tlmgr config file with 
+the key C<update-exclude>.
+
+=item B<--no-auto-remove> [I<pkg>...]
+
+By default, C<tlmgr> tries to remove packages in an existing collection
+which have disappeared on the server, as described above under C<--all>.
+This option prevents such removals, either for all packages (with
+C<--all>), or for just the given I<pkg> names. This can lead to an
+inconsistent TeX installation, since packages are not infrequently
+renamed or replaced by their authors. Therefore this is not recommended.
+
+=item B<--no-auto-install> [I<pkg>...]
+
+Under normal circumstances C<tlmgr> will install packages which are new
+on the server, as described above under C<--all>.  This option prevents
+any such automatic installation, either for all packages (with
+C<--all>), or the given I<pkg> names.
+
+Furthermore, after the C<tlmgr> run using this has finished, the
+packages that would have been auto-installed I<will be considered as
+forcibly removed>.  So, if C<foobar> is the only new package on the
+server, then
+
+  tlmgr update --all --no-auto-install
+
+is equivalent to
+
+  tlmgr update --all
+  tlmgr remove --force foobar
+
+Again, since packages are sometimes renamed or replaced, using this
+option is not recommended.
+
+=item B<--reinstall-forcibly-removed>
+
+Under normal circumstances C<tlmgr> will not install packages that have
+been forcibly removed by the user; that is, removed with C<remove
+--force>, or whose installation was prohibited by C<--no-auto-install>
+during an earlier update.
+
+This option makes C<tlmgr> ignore the forcible removals and re-install
+all such packages. This can be used to completely synchronize an
+installation with the server's idea of what is available:
+
+  tlmgr update --reinstall-forcibly-removed --all
+
+=item B<--backup>
+
+=item B<--backupdir> I<directory>
+
+These two options control the creation of backups of packages I<before>
+updating; that is, backing up packages as currently installed.  If
+neither option is given, no backup will made. If C<--backupdir> is
+given and specifies a writable directory then a backup will be made in
+that location. If only C<--backup> is given, then a backup will be made
+to the directory previously set via the L</option> action (see
+below). If both are given then a backup will be made to the specified
+I<directory>.
+
+You can also set options via the L</option> action to automatically make
+backups for all packages, and/or keep only a certain number of backups.
+
+C<tlmgr> always makes a temporary backup when updating packages, in case
+of download or other failure during an update.  In contrast, the purpose
+of this C<--backup> option is to save a persistent backup in case the
+actual I<content> of the update causes problems, e.g., introduces an TeX
+incompatibility.
+
+The L</restore> action explains how to restore from a backup.
+
+=item B<--no-depends>
+
+If you call for updating a package normally all depending packages
+will also be checked for updates and updated if necessary. This switch
+suppresses this behavior.
+
+=item B<--no-depends-at-all>
+
+See above under L<install|/install [I<option>...] I<pkg>...> (and beware).
+
+=item B<--force>
+
+Force update of normal packages, without updating C<tlmgr> itself 
+(unless the C<--self> option is also given).  Not recommended.
+
+Also, C<update --list> is still performed regardless of this option.
+
+=back
+
+If the package on the server is older than the package already installed
+(e.g., if the selected mirror is out of date), C<tlmgr> does not
+downgrade.  Also, packages for uninstalled platforms are not installed.
+
+C<tlmgr> saves one copy of the main C<texlive.tlpdb> file used for an
+update with a suffix representing the repository url, as in
+C<tlpkg/texlive.tlpdb.main.>I<long-hash-string>. Thus, even when many
+mirrors are used, only one main C<tlpdb> backup is kept. For non-main
+repositories, which do not generally have (m)any mirrors, no pruning of
+backups is done.
+
+This action does not automatically add or remove new symlinks in system
+directories; you need to run C<tlmgr> L</path> yourself if you are using
+this feature and want new symlinks added.
+
+=head1 CONFIGURATION FILE FOR TLMGR
+
+C<tlmgr> reads two configuration files: one is system-wide, in
+C<TEXMFSYSCONFIG/tlmgr/config>, and the other is user-specific, in
+C<TEXMFCONFIG/tlmgr/config>.  The user-specific one is the default for
+the C<conf tlmgr> action.  (Run C<kpsewhich
+-var-value=TEXMFSYSCONFIG> or C<... TEXMFCONFIG ...> to see the actual
+directory names.)
+
+A few defaults corresponding to command-line options can be set in these
+configuration files.  In addition, the system-wide file can contain a
+directive to restrict the allowed actions.
+
+In these config files, empty lines and lines starting with # are
+ignored.  All other lines must look like:
+
+  key = value
+
+where the spaces are optional but the C<=> is required.
+
+The allowed keys are:
+
+=over 4
+
+=item C<auto-remove => 0 or 1 (default 1), same as command-line
+option.
+
+=item C<gui-expertmode => 0 or 1 (default 1).
+This switches between the full GUI and a simplified GUI with only the
+most common settings.
+
+=item C<gui-lang => I<llcode>, with a language code value as with the
+command-line option.
+
+=item C<no-checksums => 0 or 1 (default 0, see below).
+
+=item C<persistent-downloads => 0 or 1 (default 1), same as
+command-line option.
+
+=item C<require-verification => 0 or 1 (default 0), same as
+command-line option.
+
+=item C<tkfontscale => I<floating-point number> (default 1.0);
+scaling factor for fonts in the Tk-based frontends.
+
+=item C<update-exclude => I<comma-separated list of packages>
+(no spaces allowed). Same as the command line option C<--exclude>
+for the C<update> action.
+
+=item C<verify-downloads => 0 or 1 (default 1), same as
+command-line option.
+
+=back
+
+The system-wide config file can contain one additional key:
+
+=over 4
+
+=item C<allowed-actions => I<action1>[,I<action2>,...]
+The value is a comma-separated list (no spaces) of C<tlmgr> actions
+which are allowed to be executed when C<tlmgr> is invoked in system mode
+(that is, without C<--usermode>). This allows distributors to include
+C<tlmgr> in their packaging, but allow only a restricted set of actions
+that do not interfere with their distro package manager. For native TeX
+Live installations, it doesn't make sense to set this.
+
+=back
+
+Finally, the C<no-checksums> key needs more explanation. By default,
+package checksums computed and stored on the server (in the TLPDB) are
+compared to checksums computed locally after downloading.
+C<no-checksums> disables this process. The checksum algorithm is
+SHA-512. Your system must have one of (looked for in this order) the
+Perl C<Digest::SHA> module, the C<openssl> program
+(L<https://openssl.org>), the C<sha512sum> program (from GNU Coreutils,
+L<https://www.gnu.org/software/coreutils>), or finally the C<shasum>
+program (just to support old Macs). If none of these are available, a
+warning is issued and C<tlmgr> proceeds without checking checksums.
+C<no-checksums> avoids the warning. (Incidentally, other SHA
+implementations, such as the pure Perl and pure Lua modules, are much
+too slow to be usable in our context.)
+
+=head1 CRYPTOGRAPHIC VERIFICATION
+
+C<tlmgr> and C<install-tl> perform cryptographic verification if
+possible.  If verification is performed and successful, the programs
+report C<(verified)> after loading the TLPDB; otherwise, they report
+C<(not verified)>.  But either way, by default the installation and/or
+updates proceed normally.
+
+If a program named C<gpg> is available (that is, found in C<PATH>), by
+default cryptographic signatures will be checked: we require the main
+repository be signed, but not any additional repositories. If C<gpg> is
+not available, by default signatures are not checked and no verification
+is carried out, but C<tlmgr> still proceeds normally.
+
+The behavior of the verification can be controlled by the command line
+and config file option C<verify-repo> which takes one of the following
+values: C<none>, C<main>, or C<all>. With C<none>, no verification
+whatsoever is attempted.  With C<main> (the default) verification is
+required only for the main repository, and only if C<gpg> is available;
+though attempted for all, missing signatures of subsidiary repositories
+will not result in an error.  Finally, in the case of C<all>, C<gpg>
+must be available and all repositories need to be signed.
+
+In all cases, if a signature is checked and fails to verify, an error
+is raised.
+
+Cryptographic verification requires checksum checking (described just
+above) to succeed, and a working GnuPG (C<gpg>) program (see below for
+search method).  Then, unless cryptographic verification has been
+disabled, a signature file (C<texlive.tlpdb.*.asc>) of the checksum file
+is downloaded and the signature verified. The signature is created by
+the TeX Live Distribution GPG key 0x0D5E5D9106BAB6BC, which in turn is
+signed by Karl Berry's key 0x0716748A30D155AD and
+Norbert Preining's key 0x6CACA448860CDC13.  All
+of these keys are obtainable from the standard key servers.
+
+Additional trusted keys can be added using the C<key> action.
+
+=head2 Configuration of GnuPG invocation
+
+The executable used for GnuPG is searched as follows: If the environment
+variable C<TL_GNUPG> is set, it is tested and used; otherwise C<gpg> is
+checked; finally C<gpg2> is checked.
+
+Further adaptation of the C<gpg> invocation can be made using the two
+environment variables C<TL_GNUPGHOME>, which is passed to C<gpg> as the
+value for C<--homedir>, and C<TL_GNUPGARGS>, which replaces the default
+options C<--no-secmem-warning --no-permission-warning>.
+
+=head1 USER MODE
+
+C<tlmgr> provides a restricted way, called ``user mode'', to manage
+arbitrary texmf trees in the same way as the main installation.  For
+example, this allows people without write permissions on the
+installation location to update/install packages into a tree of their
+own.
+
+C<tlmgr> is switched into user mode with the command line option
+C<--usermode>.  It does not switch automatically, nor is there any
+configuration file setting for it.  Thus, this option has to be
+explicitly given every time user mode is to be activated.
+
+This mode of C<tlmgr> works on a user tree, by default the value of the
+C<TEXMFHOME> variable.  This can be overridden with the command line
+option C<--usertree>.  In the following when we speak of the user tree
+we mean either C<TEXMFHOME> or the one given on the command line.
+
+Not all actions are allowed in user mode; C<tlmgr> will warn you and not
+carry out any problematic actions.  Currently not supported (and
+probably will never be) is the C<platform> action.  The C<gui> action is
+currently not supported, but may be in a future release.
+
+Some C<tlmgr> actions don't need any write permissions and thus work the
+same in user mode and normal mode.  Currently these are: C<check>,
+C<help>, C<list>, C<print-platform>, C<print-platform-info>, C<search>,
+C<show>, C<version>.
+
+On the other hand, most of the actions dealing with package management
+do need write permissions, and thus behave differently in user mode, as
+described below: C<install>, C<update>, C<remove>, C<option>, C<paper>,
+C<generate>, C<backup>, C<restore>, C<uninstall>, C<symlinks>.
+
+Before using C<tlmgr> in user mode, you have to set up the user tree
+with the C<init-usertree> action.  This creates I<usertree>C</web2c> and
+I<usertree>C</tlpkg/tlpobj>, and a minimal
+I<usertree>C</tlpkg/texlive.tlpdb>.  At that point, you can tell
+C<tlmgr> to do the (supported) actions by adding the C<--usermode>
+command line option.
+
+In user mode the file I<usertree>C</tlpkg/texlive.tlpdb> contains only
+the packages that have been installed into the user tree using C<tlmgr>,
+plus additional options from the ``virtual'' package
+C<00texlive.installation> (similar to the main installation's
+C<texlive.tlpdb>).
+
+All actions on packages in user mode can only be carried out on packages
+that are known as C<relocatable>.  This excludes all packages containing
+executables and a few other core packages.  Of the 2500 or so packages
+currently in TeX Live the vast majority are relocatable and can be
+installed into a user tree.
+
+Description of changes of actions in user mode:
+
+=head2 User mode install
+
+In user mode, the C<install> action checks that the package and all
+dependencies are all either relocated or already installed in the system
+installation.  If this is the case, it unpacks all containers to be
+installed into the user tree (to repeat, that's either C<TEXMFHOME> or
+the value of C<--usertree>) and add the respective packages to the user
+tree's C<texlive.tlpdb> (creating it if need be).
+
+Currently installing a collection in user mode installs all dependent
+packages, but in contrast to normal mode, does I<not> install dependent
+collections.  For example, in normal mode C<tlmgr install
+collection-context> would install C<collection-basic> and other
+collections, while in user mode, I<only> the packages mentioned in
+C<collection-context> are installed.
+
+If a package shipping map files is installed in user mode, a backup of
+the user's C<updmap.cfg> in C<USERTREE/web2c/> is made, and then this file
+regenerated from the list of installed packages.
+
+=head2 User mode backup, restore, remove, update
+
+In user mode, these actions check that all packages to be acted on are
+installed in the user tree before proceeding; otherwise, they behave
+just as in normal mode.
+ 
+=head2 User mode generate, option, paper
+
+In user mode, these actions operate only on the user tree's
+configuration files and/or C<texlive.tlpdb>.
+
+=head2 User mode logs
+
+In user mode, C<tlmgr.log> and <tlmgr-commands.log> are written in the 
+C<TEXMFVAR/web2c/> directlry instead of C<TEXMFSYSVAR/web2c/>.
+
+=head1 MULTIPLE REPOSITORIES
+
+The main TeX Live repository contains a vast array of packages.
+Nevertheless, additional local repositories can be useful to provide
+locally-installed resources, such as proprietary fonts and house styles.
+Also, alternative package repositories distribute packages that cannot
+or should not be included in TeX Live, for whatever reason.
+
+The simplest and most reliable method is to temporarily set the
+installation source to any repository (with the C<-repository> or
+C<option repository> command line options), and perform your operations.
+
+When you are using multiple repositories over a sustained length of
+time, however, explicitly switching between them becomes inconvenient.
+Thus, it's possible to tell C<tlmgr> about additional repositories you
+want to use.  The basic command is C<tlmgr repository add>.  The rest of
+this section explains further.
+
+When using multiple repositories, one of them has to be set as the main
+repository, which distributes most of the installed packages.  When you
+switch from a single repository installation to a multiple repository
+installation, the previous sole repository will be set as the main
+repository.
+
+By default, even if multiple repositories are configured, packages are
+I<still> I<only> installed from the main repository.  Thus, simply
+adding a second repository does not actually enable installation of
+anything from there.  You also have to specify which packages should be
+taken from the new repository, by specifying so-called ``pinning''
+rules, described next.
+
+=head2 Pinning
+
+When a package C<foo> is pinned to a repository, a package C<foo> in any
+other repository, even if it has a higher revision number, will not be
+considered an installable candidate.
+
+As mentioned above, by default everything is pinned to the main
+repository.  Let's now go through an example of setting up a second
+repository and enabling updates of a package from it.
+
+First, check that we have support for multiple repositories, and have
+only one enabled (as is the case by default):
+
+ $ tlmgr repository list
+ List of repositories (with tags if set):
+   /var/www/norbert/tlnet
+
+Ok.  Let's add the C<tlcontrib> repository (this is a real
+repository hosted at L<http://contrib.texlive.info>) with the tag C<tlcontrib>:
+
+ $ tlmgr repository add http://contrib.texlive.info/current tlcontrib
+
+Check the repository list again:
+
+ $ tlmgr repository list
+ List of repositories (with tags if set):
+    http://contrib.texlive.info/current (tlcontrib)
+    /var/www/norbert/tlnet (main)
+
+Now we specify a pinning entry to get the package C<classico> from
+C<tlcontrib>:
+
+ $ tlmgr pinning add tlcontrib classico
+
+Check that we can find C<classico>:
+
+ $ tlmgr show classico
+ package:     classico
+ ...
+ shortdesc:   URW Classico fonts
+ ...
+
+- install C<classico>:
+
+ $ tlmgr install classico
+ tlmgr: package repositories:
+ ...
+ [1/1,  ??:??/??:??] install: classico @tlcontrib [737k]
+
+In the output here you can see that the C<classico> package has been
+installed from the C<tlcontrib> repository (C<@tlcontrib>).
+
+Finally, C<tlmgr pinning> also supports removing certain or all packages
+from a given repository:
+
+  $ tlmgr pinning remove tlcontrib classico # remove just classico
+  $ tlmgr pinning remove tlcontrib --all    # take nothing from tlcontrib
+
+A summary of C<tlmgr pinning> actions is given above.
+
+=head1 GUI FOR TLMGR
+
+The graphical user interface for C<tlmgr> requires Perl/Tk
+L<https://search.cpan.org/search?query=perl%2Ftk>. For Unix-based
+systems Perl/Tk (as well as Perl of course) has to be installed
+outside of TL.  L<https://tug.org/texlive/distro.html#perltk> has a
+list of invocations for some distros.  For Windows the necessary
+modules are no longer shipped within TeX Live, so you'll have to have an
+external Perl available that includes them.
+
+We are talking here about the GUI built into tlmgr itself, not about the
+other tlmgr GUIs, which are: tlshell (Tcl/Tk-based), tlcockpit
+(Java-based) and, only on Macs, TeX Live Utility. These are invoked as
+separate programs.
+
+The GUI mode of tlmgr is started with the invocation C<tlmgr gui>;
+assuming Tk is loadable, the graphical user interface will be shown.
+The main window contains a menu bar, the main display, and a status
+area where messages normally shown on the console are displayed.
+
+Within the main display there are three main parts: the C<Display
+configuration> area, the list of packages, and the action buttons.
+
+Also, at the top right the currently loaded repository is shown; this
+also acts as a button and when clicked will try to load the default
+repository.  To load a different repository, see the C<tlmgr> menu item.
+
+Finally, the status area at the bottom of the window gives additional
+information about what is going on.
+
+=head2 Main display
+
+=head3 Display configuration area
+
+The first part of the main display allows you to specify (filter) which
+packages are shown.  By default, all are shown.  Changes here are
+reflected right away.
+
+=over 4
+
+=item Status
+
+Select whether to show all packages (the default), only those installed,
+only those I<not> installed, or only those with update available.
+
+=item Category
+
+Select which categories are shown: packages, collections, and/or
+schemes.  These are briefly explained in the L</DESCRIPTION> section
+above.
+
+=item Match
+
+Select packages matching for a specific pattern.  By default, this
+searches both descriptions and filenames.  You can also select a subset
+for searching.
+
+=item Selection
+
+Select packages to those selected, those not selected, or all.  Here,
+``selected'' means that the checkbox in the beginning of the line of a
+package is ticked.
+
+=item Display configuration buttons
+
+To the right there are three buttons: select all packages, select none
+(a.k.a. deselect all), and reset all these filters to the defaults,
+i.e., show all available.
+
+=back
+
+=head3 Package list area
+
+The second are of the main display lists all installed packages.  If a
+repository is loaded, those that are available but not installed are
+also listed.
+
+Double clicking on a package line pops up an informational window with
+further details: the long description, included files, etc.
+
+Each line of the package list consists of the following items:
+
+=over 4
+
+=item a checkbox
+
+Used to select particular packages; some of the action buttons (see
+below) work only on the selected packages.
+
+=item package name
+
+The name (identifier) of the package as given in the database.
+
+=item local revision (and version)
+
+If the package is installed the TeX Live revision number for the
+installed package will be shown.  If there is a catalogue version given
+in the database for this package, it will be shown in parentheses.
+However, the catalogue version, unlike the TL revision, is not
+guaranteed to reflect what is actually installed.
+
+=item remote revision (and version)
+
+If a repository has been loaded the revision of the package in the
+repository (if present) is shown.  As with the local column, if a
+catalogue version is provided it will be displayed.  And also as with
+the local column, the catalogue version may be stale.
+
+=item short description
+
+The short description of the package.
+
+=back
+
+=head3 Main display action buttons
+
+Below the list of packages are several buttons:
+
+=over 4
+
+=item Update all installed
+
+This calls C<tlmgr update --all>, i.e., tries to update all available
+packages.  Below this button is a toggle to allow reinstallation of
+previously removed packages as part of this action.
+
+The other four buttons only work on the selected packages, i.e., those
+where the checkbox at the beginning of the package line is ticked.
+
+=item Update
+
+Update only the selected packages.
+
+=item Install
+
+Install the selected packages; acts like C<tlmgr install>, i.e., also
+installs dependencies.  Thus, installing a collection installs all its
+constituent packages.
+
+=item Remove
+
+Removes the selected packages; acts like C<tlmgr remove>, i.e., it will
+also remove dependencies of collections (but not dependencies of normal
+packages).
+
+=item Backup
+
+Makes a backup of the selected packages; acts like C<tlmgr backup>. This
+action needs the option C<backupdir> set (see C<Options -> General>).
+
+=back
+
+=head2 Menu bar
+
+The following entries can be found in the menu bar:
+
+=over 4
+
+=item C<tlmgr> menu
+
+The items here load various repositories: the default as specified in
+the TeX Live database, the default network repository, the repository
+specified on the command line (if any), and an arbitrarily
+manually-entered one.  Also has the so-necessary C<quit> operation.
+
+=item C<Options menu>
+
+Provides access to several groups of options: C<Paper> (configuration of
+default paper sizes), C<Platforms> (only on Unix, configuration of the
+supported/installed platforms), C<GUI Language> (select language used in
+the GUI interface), and C<General> (everything else).
+
+Several toggles are also here.  The first is C<Expert options>, which is
+set by default.  If you turn this off, the next time you start the GUI a
+simplified screen will be shown that display only the most important
+functionality.  This setting is saved in the configuration file of
+C<tlmgr>; see L<CONFIGURATION FILE FOR TLMGR> for details.
+
+The other toggles are all off by default: for debugging output, to
+disable the automatic installation of new packages, and to disable the
+automatic removal of packages deleted from the server.  Playing with the
+choices of what is or isn't installed may lead to an inconsistent TeX Live
+installation; e.g., when a package is renamed.
+
+=item C<Actions menu>
+
+Provides access to several actions: update the filename database (aka
+C<ls-R>, C<mktexlsr>, C<texhash>), rebuild all formats (C<fmtutil-sys
+--all>), update the font map database (C<updmap-sys>), restore from a backup
+of a package, and use of symbolic links in system directories (not on
+Windows).
+
+The final action is to remove the entire TeX Live installation (also not
+on Windows).
+
+=item C<Help menu>
+
+Provides access to the TeX Live manual (also on the web at
+L<https://tug.org/texlive/doc.html>) and the usual ``About'' box.
+
+=back
+
+=head2 GUI options
+
+Some generic Perl/Tk options can be specified with C<tlmgr gui> to
+control the display:
+
+=over 4
+
+=item C<-background> I<color>
+
+Set background color.
+
+=item C<-font "> I<fontname> I<fontsize> C<">
+
+Set font, e.g., C<tlmgr gui -font "helvetica 18">.  The argument to
+C<-font> must be quoted, i.e., passed as a single string.
+
+=item C<-foreground> I<color>
+
+Set foreground color.
+
+=item C<-geometry> I<geomspec>
+
+Set the X geometry, e.g., C<tlmgr gui -geometry 1024x512-0+0> creates
+the window of (approximately) the given size in the upper-right corner
+of the display.
+
+=item C<-xrm> I<xresource>
+
+Pass the arbitrary X resource string I<xresource>.
+
+=back
+
+A few other obscure options are recognized but not mentioned here.  See
+the Perl/Tk documentation (L<https://search.cpan.org/perldoc?Tk>) for the
+complete list, and any X documentation for general information.
+
+=head1 MACHINE-READABLE OUTPUT
+
+With the C<--machine-readable> option, C<tlmgr> writes to stdout in the
+fixed line-oriented format described here, and the usual informational
+messages for human consumption are written to stderr (normally they are
+written to stdout).  The idea is that a program can get all the
+information it needs by reading stdout.
+
+Currently this option only applies to the 
+L<update|/update [I<option>...] [I<pkg>...]>,
+L<install|/install [I<option>...] I<pkg>...>, and
+L</option> actions.
+
+=head2 Machine-readable C<update> and C<install> output
+
+The output format is as follows:
+
+  fieldname "\t" value
+  ...
+  "end-of-header"
+  pkgname status localrev serverrev size runtime esttot
+  ...
+  "end-of-updates"
+  other output from post actions, not in machine readable form
+
+The header section currently has two fields: C<location-url> (the
+repository source from which updates are being drawn), and
+C<total-bytes> (the total number of bytes to be downloaded).
+
+The I<localrev> and I<serverrev> fields for each package are the
+revision numbers in the local installation and server repository,
+respectively.  The I<size> field is the number of bytes to be
+downloaded, i.e., the size of the compressed tar file for a network
+installation, not the unpacked size. The runtime and esttot fields 
+are only present for updated and auto-install packages, and contain
+the currently passed time since start of installation/updates
+and the estimated total time.
+
+Line endings may be either LF or CRLF depending on the current platform.
+
+=over 4
+
+=item C<location-url> I<location>
+
+The I<location> may be a url (including C<file:///foo/bar/...>), or a
+directory name (C</foo/bar>).  It is the package repository from which
+the new package information was drawn.
+
+=item C<total-bytes> I<count>
+
+The I<count> is simply a decimal number, the sum of the sizes of all the
+packages that need updating or installing (which are listed subsequently).
+
+=back
+
+Then comes a line with only the literal string C<end-of-header>.
+
+Each following line until a line with literal string C<end-of-updates>
+reports on one package.  The fields on
+each line are separated by a tab.  Here are the fields.
+
+=over 4
+
+=item I<pkgname>
+
+The TeX Live package identifier, with a possible platform suffix for
+executables.  For instance, C<pdftex> and C<pdftex.i386-linux> are given
+as two separate packages, one on each line.
+
+=item I<status>
+
+The status of the package update.  One character, as follows:
+
+=over 8
+
+=item C<d>
+
+The package was removed on the server.
+
+=item C<f>
+
+The package was removed in the local installation, even though a
+collection depended on it.  (E.g., the user ran C<tlmgr remove
+--force>.)
+
+=item C<u>
+
+Normal update is needed.
+
+=item C<r>
+
+Reversed non-update: the locally-installed version is newer than the
+version on the server.
+
+=item C<a>
+
+Automatically-determined need for installation, the package is new on
+the server and is (most probably) part of an installed collection.
+
+=item C<i>
+
+Package will be installed and isn't present in the local installation
+(action install).
+
+=item C<I>
+
+Package is already present but will be reinstalled (action install).
+
+=back
+
+=item I<localrev>
+
+The revision number of the installed package, or C<-> if it is not
+present locally.
+
+=item I<serverrev>
+
+The revision number of the package on the server, or C<-> if it is not
+present on the server.
+
+=item I<size>
+
+The size in bytes of the package on the server.  The sum of all the
+package sizes is given in the C<total-bytes> header field mentioned above.
+
+=item I<runtime>
+
+The run time since start of installations or updates.
+
+=item I<esttot>
+
+The estimated total time.
+
+=back
+
+=head2 Machine-readable C<option> output
+
+The output format is as follows:
+
+  key "\t" value
+
+If a value is not saved in the database the string C<(not set)> is shown.
+
+If you are developing a program that uses this output, and find that
+changes would be helpful, do not hesitate to write the mailing list.
+
+=head1 ENVIRONMENT VARIABLES
+
+C<tlmgr> uses many of the standard TeX environment variables, as
+reported by, e.g., C<tlmgr conf> (L</conf>).
+
+In addition, for ease in scripting and debugging, C<tlmgr> looks for the
+following environment variables. These are not of interest for normal
+user installations.
+
+=over 4
+
+=item C<TEXLIVE_COMPRESSOR>
+
+This variable allows selecting a different compressor program for
+backups and intermediate rollback containers. The order of selection is:
+
+=over 8
+
+=item 1.
+
+If the environment variable C<TEXLIVE_COMPRESSOR> is
+defined, use it; abort if it doesn't work. Possible values:
+C<lz4>, C<gzip>, C<xz>. The necessary options are added internally.
+
+=item 2.
+
+If lz4 is available (either from the system or TL) and working, use that.
+
+=item 3.
+
+If gzip is available (from the system) and working, use that.
+
+=item 4.
+
+If xz is available (either from the system or TL) and working, use that.
+  
+=back
+
+lz4 and gzip are faster in creating tlmgr's local backups, hence they
+are preferred. The unconditional use of xz for the tlnet containers is
+unaffected, to minimize download sizes.
+
+=item C<TEXLIVE_DOWNLOADER>
+
+=item C<TL_DOWNLOAD_PROGRAM>
+
+=item C<TL_DOWNLOAD_ARGS>
+
+These options allow selecting different download programs then the ones
+automatically selected by the installer. The order of selection is:
+
+=over 8
+
+=item 1.
+
+If the environment variable C<TEXLIVE_DOWNLOADER> is defined, use it;
+abort if the specified program doesn't work. Possible values: C<lwp>,
+C<curl>, C<wget>. The necessary options are added internally.
+
+=item 2.
+
+If the environment variable C<TL_DOWNLOAD_PROGRAM> is
+defined (can be any value), use it together with
+C<TL_DOWNLOAD_ARGS>; abort if it doesn't work.
+
+=item 3.
+
+If LWP is available and working, use that (by far the most
+efficient method, as it supports persistent downloads).
+
+=item 4.
+
+If curl is available (from the system) and working, use that.
+
+=item 5.
+
+If wget is available (either from the system or TL) and working, use that.
+
+=back
+
+TL provides C<wget> binaries for platforms where necessary, so some
+download method should always be available.
+
+=item C<TEXLIVE_PREFER_OWN>
+
+By default, compression and download programs provided by the system,
+i.e., found along C<PATH> are preferred over those shipped with TeX
+Live.
+
+This can create problems with systems that are too old, and so can be
+overridden by setting the environment variable C<TEXLIVE_PREFER_OWN> to
+1. In this case, executables shipped with TL will be preferred.
+
+Extra compression/download programs not provided by TL, such as gzip,
+lwp, and curl, are still checked for on the system and used if
+available, per the above. C<TEXLIVE_PREFER_OWN> only applies when the
+program being checked for is shipped with TL, namely the lz4 and
+xz compressors and wget downloader.
+
+Exception: on Windows, the C<tar.exe> shipped with TL is always used,
+regardless of any setting.
+
+=back
+
+=head1 AUTHORS AND COPYRIGHT
+
+This script and its documentation were written for the TeX Live
+distribution (L<https://tug.org/texlive>) and both are licensed under the
+GNU General Public License Version 2 or later.
+
+$Id$
+=cut
 
 
 
