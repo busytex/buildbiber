@@ -50,8 +50,8 @@ jobs:
       - name: Test Static Perl
         run: |
           ldd ./staticperl_tlmgr_install-tl || true
-          PERLLIB=build/native/perl/prefix ./staticperl_tlmgr_install-tl tlmgr --help || true
-          PERLLIB=build/native/perl/prefix ./staticperl_tlmgr_install-tl install-tl --help || true
+          PERLLIB=build/native/perl/prefix:build/native/perl/prefix/lib/perl5:build/native/perl/prefix/lib/perl5/5.35.4 ./staticperl_tlmgr_install-tl tlmgr --help || true
+          #PERLLIB=build/native/perl/prefix ./staticperl_tlmgr_install-tl install-tl --help || true
 
 #      - name: Artifacts
 #        uses: actions/upload-artifact@v4
