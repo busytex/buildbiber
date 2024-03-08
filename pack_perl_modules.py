@@ -9,7 +9,18 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--comment-signature', default = 'PACKPERLMODULES')
 parser.add_argument('--encoding', default = 'utf-8')
 parser.add_argument('--method', default = 'inchook', choices = ['inchook', 'incpatch'], help = 'order of pm files is important for [incpatch] and not important for [inchook]')
-parser.add_argument('--delete-pod', nargs = '*', default = ['=pod,=cut', '__END__,=cut', '=back,=cut', '=head1,=cut', '=head2,=cut','=head3,=cut', '=head4,=cut', '=head5,=cut', '=head6,=cut',  '=item,=cut'])
+parser.add_argument('--delete-pod', nargs = '*', default = [
+    '=pod,=cut', 
+    '__END__,=cut', 
+    #'=back,=cut', 
+    '=head1,=cut', 
+    '=head2,=cut',
+    '=head3,=cut', 
+    '=head4,=cut', 
+    '=head5,=cut', 
+    '=head6,=cut',  
+    '=item,=cut'
+])
 parser.add_argument('--delete-pod-sep', default = ',')
 parser.add_argument('--delete-comments-naive', action = 'store_true')
 parser.add_argument('--comment-unshift-inc', action = 'store_true')
@@ -53,12 +64,12 @@ if args.method == 'inchook':
         path, *key = p.split('@')
         if not key:
             key = [os.path.basename(path)]
-        print('#', args.comment_signature, 'BEGIN', p)
+        print('#', args.comment_signature, 'BEGIN', path)
         print(f'''"{key[0]}" => <<'__EOI__',''')
         print(read_pl_source(path))
         print('1;')
         print('__EOI__')
-        print('#', args.comment_signature, 'END', p)
+        print('#', args.comment_signature, 'END', path)
     print(');')
     print('unshift @INC, sub {')
     print('my $module = $modules{$_[1]}')
@@ -72,12 +83,12 @@ if args.method == 'incpatch':
         path, *key = p.split('@')
         if not key:
             key = [os.path.basename(path)]
-        print('#', args.comment_signature, 'BEGIN', p)
+        print('#', args.comment_signature, 'BEGIN', path)
         print('BEGIN {')
         print(read_pl_source(path))
         print('$INC{ ( __PACKAGE__ =~ s{::}{/}rg ) . ".pm" } = 1;')
         print('}')
-        print('#', args.comment_signature, 'END', p)
+        print('#', args.comment_signature, 'END', path)
 
 if args.pl:
     print('#', args.comment_signature, 'BEGIN', args.pl)

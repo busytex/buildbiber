@@ -1,6 +1,6 @@
 BEGIN {
 my %modules = (
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLWinGoo.pm@TeXLive/TLWinGoo.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLWinGoo.pm
 "TeXLive/TLWinGoo.pm" => <<'__EOI__',
 
 
@@ -958,11 +958,10 @@ sub maybe_make_ro {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLWinGoo.pm@TeXLive/TLWinGoo.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLConfFile.pm@TeXLive/TLConfFile.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLWinGoo.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLConfFile.pm
 "TeXLive/TLConfFile.pm" => <<'__EOI__',
 
 use strict;
@@ -1445,11 +1444,10 @@ sub write_config_file {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLConfFile.pm@TeXLive/TLConfFile.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLConfig.pm@TeXLive/TLConfig.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLConfFile.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLConfig.pm
 "TeXLive/TLConfig.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -1678,10 +1676,15 @@ our $ChecksumExtension = "sha512";
 
 
 
+
+
+
+
+
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLConfig.pm@TeXLive/TLConfig.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLCrypto.pm@TeXLive/TLCrypto.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLConfig.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLCrypto.pm
 "TeXLive/TLCrypto.pm" => <<'__EOI__',
 
 package TeXLive::TLCrypto;
@@ -2109,9 +2112,10 @@ our %VerificationStatusDescription = (
   $VS_UNKNOWN          => 'unknown',
 );
 
+=back
+=cut
 
 1;
-
 
 
 
@@ -2126,8 +2130,8 @@ our %VerificationStatusDescription = (
 
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLCrypto.pm@TeXLive/TLCrypto.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLDownload.pm@TeXLive/TLDownload.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLCrypto.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLDownload.pm
 "TeXLive/TLDownload.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -2294,11 +2298,10 @@ sub get_file {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLDownload.pm@TeXLive/TLDownload.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPDB.pm@TeXLive/TLPDB.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLDownload.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPDB.pm
 "TeXLive/TLPDB.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -4030,6 +4033,8 @@ sub language_lua_lines {
   return(@lines);
 }
 
+=back
+
 
 
 sub is_virtual {
@@ -4339,11 +4344,10 @@ sub match_glob {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPDB.pm@TeXLive/TLPDB.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPOBJ.pm@TeXLive/TLPOBJ.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPDB.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPOBJ.pm
 "TeXLive/TLPOBJ.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -5659,11 +5663,10 @@ $_tmp
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPOBJ.pm@TeXLive/TLPOBJ.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPSRC.pm@TeXLive/TLPSRC.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPOBJ.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPSRC.pm
 "TeXLive/TLPSRC.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -6291,11 +6294,10 @@ sub postactions {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPSRC.pm@TeXLive/TLPSRC.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPaper.pm@TeXLive/TLPaper.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPSRC.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPaper.pm
 "TeXLive/TLPaper.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -7102,8 +7104,9 @@ sub paper_do_simple {
   return($F_OK);
 }
 
+=back
+=cut
 1;
-
 
 
 
@@ -7118,8 +7121,8 @@ sub paper_do_simple {
 
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPaper.pm@TeXLive/TLPaper.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLTREE.pm@TeXLive/TLTREE.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLPaper.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLTREE.pm
 "TeXLive/TLTREE.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -7583,11 +7586,10 @@ sub architectures {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLTREE.pm@TeXLive/TLTREE.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLUtils.pm@TeXLive/TLUtils.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLTREE.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLUtils.pm
 "TeXLive/TLUtils.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -7914,6 +7916,8 @@ sub unix {
 }
 
 
+=back
+
 
 sub getenv {
   my $envvar=shift;
@@ -8173,6 +8177,8 @@ sub expand_tilde {
   return $str;
 }
 
+=back
+
 
 sub dirname_and_basename {
   my $path=shift;
@@ -8353,6 +8359,110 @@ sub mkdirhier {
       die "$0: $reterror";
     }
   }
+}
+
+
+
+my $Is_VMS = $^O eq 'VMS';
+my $Is_MacOS = $^O eq 'MacOS';
+
+my $force_writeable = ($^O eq 'os2' || $^O eq 'dos' || $^O eq 'MSWin32' ||
+		       $^O eq 'amigaos' || $^O eq 'MacOS' || $^O eq 'epoc');
+
+sub rmtree {
+  my($roots, $verbose, $safe) = @_;
+  my(@files);
+  my($count) = 0;
+  $verbose ||= 0;
+  $safe ||= 0;
+
+  if ( defined($roots) && length($roots) ) {
+    $roots = [$roots] unless ref $roots;
+  } else {
+    warn "No root path(s) specified";
+    return 0;
+  }
+
+  my($root);
+  foreach $root (@{$roots}) {
+    if ($Is_MacOS) {
+      $root = ":$root" if $root !~ /:/;
+      $root =~ s#([^:])\z#$1:#;
+    } else {
+      $root =~ s#/\z##;
+    }
+    (undef, undef, my $rp) = lstat $root or next;
+    $rp &= 07777;	# don't forget setuid, setgid, sticky bits
+    if ( -d _ ) {
+      chmod($rp | 0700, ($Is_VMS ? VMS::Filespec::fileify($root) : $root))
+        or warn "Can't make directory $root read+writeable: $!"
+          unless $safe;
+
+      if (opendir my $d, $root) {
+        no strict 'refs';
+        if (!defined ${"\cTAINT"} or ${"\cTAINT"}) {
+          @files = map { /^(.*)$/s ; $1 } readdir $d;
+        } else {
+          @files = readdir $d;
+        }
+        closedir $d;
+      } else {
+        warn "Can't read $root: $!";
+        @files = ();
+      }
+      @files = reverse @files if $Is_VMS;
+      ($root = VMS::Filespec::unixify($root)) =~ s#\.dir\z## if $Is_VMS;
+      if ($Is_MacOS) {
+        @files = map("$root$_", @files);
+      } else {
+        @files = map("$root/$_", grep $_!~/^\.{1,2}\z/s,@files);
+      }
+      $count += rmtree(\@files,$verbose,$safe);
+      if ($safe &&
+            ($Is_VMS ? !&VMS::Filespec::candelete($root) : !-w $root)) {
+        print "skipped $root\n" if $verbose;
+        next;
+      }
+      chmod $rp | 0700, $root
+        or warn "Can't make directory $root writeable: $!"
+          if $force_writeable;
+      print "rmdir $root\n" if $verbose;
+      if (rmdir $root) {
+	      ++$count;
+      } else {
+        warn "Can't remove directory $root: $!";
+        chmod($rp, ($Is_VMS ? VMS::Filespec::fileify($root) : $root))
+          or warn("and can't restore permissions to "
+            . sprintf("0%o",$rp) . "\n");
+      }
+    } else {
+      if ($safe &&
+            ($Is_VMS ? !&VMS::Filespec::candelete($root)
+              : !(-l $root || -w $root)))
+      {
+        print "skipped $root\n" if $verbose;
+        next;
+      }
+      chmod $rp | 0600, $root
+        or warn "Can't make file $root writeable: $!"
+          if $force_writeable;
+      print "unlink $root\n" if $verbose;
+      for (;;) {
+        unless (unlink $root) {
+          warn "Can't unlink file $root: $!";
+          if ($force_writeable) {
+            chmod $rp, $root
+              or warn("and can't restore permissions to "
+                . sprintf("0%o",$rp) . "\n");
+          }
+          last;
+        }
+        ++$count;
+        last unless $Is_VMS && lstat $root;
+      }
+    }
+  }
+  $count;
 }
 
 
@@ -8563,6 +8673,14 @@ sub all_dirs_and_removed_dirs {
   }
   return (%by_dir, %removed_dirs);
 }
+
+
+sub removed_dirs {
+  my (@files) = @_;
+  my (%by_dir, %removed_dirs) = all_dirs_and_removed_dirs(@files);
+  return keys %removed_dirs;
+}
+
 
 
 sub time_estimate {
@@ -9818,6 +9936,8 @@ sub get_full_line {
 }
 
 
+=back
+
 
 sub make_var_skeleton {
   my ($prefix) = @_;
@@ -10149,6 +10269,8 @@ sub parse_AddFormat_line {
   return %ret;
 }
 
+=back
+
 
 sub logit {
   my ($out, $level, @rest) = @_;
@@ -10278,6 +10400,50 @@ sub backtrace {
 
   return $ret;
 }
+
+
+sub process_logging_options {
+  $::opt_verbosity = 0;
+  $::opt_quiet = 0;
+  my $opt_logfile;
+  my $opt_Verbosity = 0;
+  my $opt_VERBOSITY = 0;
+  my $oldconfig = Getopt::Long::Configure(qw(pass_through permute));
+  GetOptions("logfile=s" => \$opt_logfile,
+             "v+"  => \$::opt_verbosity,
+             "vv"  => \$opt_Verbosity,
+             "vvv" => \$opt_VERBOSITY,
+             "q"   => \$::opt_quiet);
+  Getopt::Long::Configure($oldconfig);
+
+  $::opt_verbosity = 2 if $opt_Verbosity;
+  $::opt_verbosity = 3 if $opt_VERBOSITY;
+
+  if ($opt_logfile) {
+    open(TLUTILS_LOGFILE, ">$opt_logfile")
+    || die "open(>$opt_logfile) failed: $!\n";
+    $::LOGFILE = \*TLUTILS_LOGFILE;
+    $::LOGFILENAME = $opt_logfile;
+  }
+}
+
+=back
+
+
+sub sort_uniq {
+  my (@l) = @_;
+  my ($e, $f, @r);
+  $f = "";
+  @l = sort(@l);
+  foreach $e (@l) {
+    if ($e ne $f) {
+      $f = $e;
+      push @r, $e;
+    }
+  }
+  return @r;
+}
+
 
 
 sub push_uniq {
@@ -11012,6 +11178,8 @@ sub repository_to_array {
 }
 
 
+=back
+
 
 my $TLTrueValue = 1;
 my $TLFalseValue = 0;
@@ -11168,11 +11336,10 @@ sub array_to_json {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLUtils.pm@TeXLive/TLUtils.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TeXCatalogue.pm@TeXLive/TeXCatalogue.pm
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TLUtils.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TeXCatalogue.pm
 "TeXLive/TeXCatalogue.pm" => <<'__EOI__',
 
 use strict; use warnings;
@@ -11462,11 +11629,10 @@ sub entries {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TeXCatalogue.pm@TeXLive/TeXCatalogue.pm
-# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/trans.pl@TeXLive/trans.pl
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/TeXCatalogue.pm
+# PACKPERLMODULES BEGIN https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/trans.pl
 "TeXLive/trans.pl" => <<'__EOI__',
 
 use strict;
@@ -11648,10 +11814,9 @@ sub load_translations() {
 
 
 
-
 1;
 __EOI__
-# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/trans.pl@TeXLive/trans.pl
+# PACKPERLMODULES END https://raw.githubusercontent.com/TeX-Live/installer/ad18812c20014153d52d6628ed11ad246b52fe69/tlpkg/TeXLive/trans.pl
 );
 unshift @INC, sub {
 my $module = $modules{$_[1]}
@@ -18192,7 +18357,6 @@ sub check_on_writable {
 
 
 1;
-
 
 
 
