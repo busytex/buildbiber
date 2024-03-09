@@ -36,7 +36,7 @@ void xs_init         (pTHX)
 ///////////////////////////////////////
 
 
-static char script[1 << 20] = "print('hello world');";
+static char script[1 << 22] = "print('hello world');";
 
 extern char _binary_tlmgr_pl_start[];
 extern char _binary_tlmgr_pl_end[];
