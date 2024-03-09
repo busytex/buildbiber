@@ -71,8 +71,8 @@ int main(int argc, char **argv)
     }
 
     char* myperl_argv[100] = {"staticperl_tlmgr", "-e", script, "--"};
-    memcpy(myperl_argv + 4, argv + 1, (argc - 1) * sizeof(char*));
-    int myperl_argc = 4 + (argc - 1);
+    memcpy(myperl_argv + 4, argv + 2, (argc - 2) * sizeof(char*));
+    int myperl_argc = 4 + (argc - 2);
     myperl_argv[myperl_argc] = NULL;
 
     perl_parse(my_perl, xs_init, myperl_argc, myperl_argv, (char **)NULL);
