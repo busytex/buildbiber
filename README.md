@@ -3,6 +3,14 @@
 2. Test staticperl operation
 3. Explore polyfilling backtick/system perl calls, especially of kpsewhich (and maybe of tar/xz extraction) - can be done in process
 
+# texlive-basic.profile
+```
+TEXDIR $(ROOT)/$(basename $@)                                 
+TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      
+TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       
+TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config 
+```
+
 # Perl static/embedding experiments for busytex
 1. Compile static Perl embedding `updmap.pl` and `fmtutil.pl`
 2. Compile dynamic Perl embedding `tlmgr`

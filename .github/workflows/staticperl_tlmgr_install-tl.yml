@@ -58,6 +58,9 @@ jobs:
           echo INSTALL-TL
           ./staticperl_tlmgr_install-tl install-tl --help || true
 
+      - name: Test install-tl
+        run: TEXLIVE_INSTALL_NO_RESUME=1 ./staticperl_tlmgr_install-tl install-tl --profile ./texlive-basic.profile 
+
 #      - name: Artifacts
 #        uses: actions/upload-artifact@v4
 #        with:
