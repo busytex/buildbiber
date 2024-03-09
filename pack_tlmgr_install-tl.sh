@@ -1,5 +1,7 @@
 TEXLIVEINSTALLERTAG=ad18812c20014153d52d6628ed11ad246b52fe69
 
+curl -O https://raw.githubusercontent.com/TeX-Live/installer/$TEXLIVEINSTALLERTAG/tlpkg/installer/config.guess
+
 python pack_perl_modules.py  --delete-comments-naive --comment-unshift-inc --method=inchook \
   --pl https://raw.githubusercontent.com/TeX-Live/installer/$TEXLIVEINSTALLERTAG/texmf-dist/scripts/texlive/tlmgr.pl --pm \
   https://raw.githubusercontent.com/TeX-Live/installer/$TEXLIVEINSTALLERTAG/tlpkg/TeXLive/TLWinGoo.pm@TeXLive/TLWinGoo.pm \
