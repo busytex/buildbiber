@@ -49,11 +49,11 @@ jobs:
 
       - name: Test Static Perl
         run: |
-          ldd ./staticperl_tlmgr_install-tl || true
           export PERLLIB=build/native/perl/prefix:build/native/perl/prefix/lib/perl5:build/native/perl/prefix/lib/perl5/5.35.4:build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/
 
           # build/native/perl/prefix/lib/perl5/5.35.4/strict.pm
           # build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/Cwd.pm
+          ldd ./staticperl_tlmgr_install-tl || true
           
           echo TLMGR
           ./staticperl_tlmgr_install-tl tlmgr --help || true
@@ -62,7 +62,10 @@ jobs:
           ./staticperl_tlmgr_install-tl install-tl --help || true
 
       - name: Test install-tl
-        run: TEXLIVE_INSTALL_NO_RESUME=1 ./staticperl_tlmgr_install-tl install-tl --no-interaction --no-gui --scheme basic #  --profile ./texlive-basic.profile 
+        run: |
+          export PERLLIB=build/native/perl/prefix:build/native/perl/prefix/lib/perl5:build/native/perl/prefix/lib/perl5/5.35.4:build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/
+          
+          TEXLIVE_INSTALL_NO_RESUME=1 ./staticperl_tlmgr_install-tl install-tl --no-interaction --no-gui --scheme basic #  --profile ./texlive-basic.profile 
 
 #      - name: Artifacts
 #        uses: actions/upload-artifact@v4
