@@ -70,8 +70,12 @@ int main(int argc, char **argv)
         script[iSize] = '\0';
     }
 
-    char *one_args[] = { "staticperl_tlmgr", "-e", script, "--", argv[2], NULL };
-    perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
+    char* myperl_argv[100] = {"staticperl_tlmgr", "-e", script, "--"};
+    memcpy(myperl_argv + 4, argv + 1, (argc - 1) * sizeof(char*));
+    int myperl_argc = 4 + (argc - 1);
+    myperl_argv[myperl_argc] = NULL;
+
+    perl_parse(my_perl, xs_init, myperl_argc, myperl_argv, (char **)NULL);
     perl_run(my_perl);
     perl_destruct(my_perl);
     perl_free(my_perl);
