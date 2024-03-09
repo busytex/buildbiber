@@ -51,6 +51,9 @@ jobs:
         run: |
           ldd ./staticperl_tlmgr_install-tl || true
           export PERLLIB=build/native/perl/prefix:build/native/perl/prefix/lib/perl5:build/native/perl/prefix/lib/perl5/5.35.4:build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/
+
+          # build/native/perl/prefix/lib/perl5/5.35.4/strict.pm
+          # build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/Cwd.pm
           
           echo TLMGR
           ./staticperl_tlmgr_install-tl tlmgr --help || true
