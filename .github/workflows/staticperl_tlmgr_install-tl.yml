@@ -65,7 +65,7 @@ jobs:
         run: |
           export PERLLIB=build/native/perl/prefix:build/native/perl/prefix/lib/perl5:build/native/perl/prefix/lib/perl5/5.35.4:build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/
           
-          TEXLIVE_INSTALL_NO_RESUME=1 ./staticperl_tlmgr_install-tl install-tl -v -v --no-interaction --no-gui --repository "http://mirror.las.iastate.edu/tex-archive/systems/texlive/tlnet" --scheme basic #  --profile ./texlive-basic.profile 
+          TEXLIVE_INSTALL_NO_RESUME=1 strace -f ./staticperl_tlmgr_install-tl install-tl -v -v --no-interaction --no-gui --repository "http://mirror.las.iastate.edu/tex-archive/systems/texlive/tlnet" --scheme basic #  --profile ./texlive-basic.profile 
 
 #      - name: Artifacts
 #        uses: actions/upload-artifact@v4
