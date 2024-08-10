@@ -45,7 +45,7 @@ jobs:
           ./staticperl_fmtutil_updmap updmap.pl --help || true
           
           ./staticperl_fmtutil_updmap fmtutil.pl --help || true
-          strace -ff ./staticperl_fmtutil_updmap fmtutil.pl --help 
+          strace -ff -e trace=file,read,write,close  ./staticperl_fmtutil_updmap fmtutil.pl --help 
           
-          cc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
-          LD_PRELOAD=$PWD/log_file_access.so ./staticperl_fmtutil_updmap fmtutil.pl --help 
+          cc -shared -fPIC log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
+          LD_PRELOAD=$PWD/log_file_access_dynamic.so ./staticperl_fmtutil_updmap fmtutil.pl --help 
