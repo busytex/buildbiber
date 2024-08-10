@@ -46,11 +46,10 @@ jobs:
       
       - name: Test Native Perl
         run: |
-          strace -ff perl -e 'use Cwd;' 
           strace -ff -e trace=file,read,write,close perl -e 'use Cwd;' 
           
-          ./staticperl_fmtutil_updmap fmtutil.pl --help || true
-          strace -ff perl fmtutil.pl --help 
+          #./staticperl_fmtutil_updmap fmtutil.pl --help || true
+          #strace -ff perl fmtutil.pl --help 
           
           cc -shared -fPIC log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
-          LD_PRELOAD=$PWD/log_file_access_dynamic.so ./staticperl_fmtutil_updmap fmtutil.pl --help 
+          LD_PRELOAD=$PWD/log_file_access_dynamic.so strace-e trace=file,read,write,close perl -e 'use Cwd;'  #./staticperl_fmtutil_updmap fmtutil.pl --help 
