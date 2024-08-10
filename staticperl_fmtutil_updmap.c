@@ -124,6 +124,8 @@ int fstatat(int dirfd, const char *restrict pathname, struct stat *restrict stat
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fstatat");
     return orig_func(dirfd, pathname, statbuf, flags);
 }
+
+/*
 int fstatat64(int dirfd, const char *restrict pathname, struct stat64 *restrict statbuf, int flags)
 {
     typedef int (*orig_func_type)(int dirfd, const char *restrict pathname, struct stat64 *restrict statbuf, int flags);
@@ -131,6 +133,8 @@ int fstatat64(int dirfd, const char *restrict pathname, struct stat64 *restrict 
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fstatat64");
     return orig_func(dirfd, pathname, statbuf, flags);
 }
+*/
+
 int newfstatat(int dirfd, const char *restrict pathname, struct stat *restrict statbuf, int flags)
 {
     typedef int (*orig_func_type)(int dirfd, const char *restrict pathname, struct stat *restrict statbuf, int flags);
