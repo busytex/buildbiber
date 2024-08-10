@@ -5,8 +5,10 @@
 #include <errno.h>
 #include <string.h>
 #include <dlfcn.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 #include <stdarg.h>
+
+#include <sys/stat.h>
 
 #include <EXTERN.h>
 #include <perl.h>
@@ -37,13 +39,13 @@ void xs_init         (pTHX)
 
 #ifdef LOGFILEACCESS
 
-#include <stdio.h>
-#include <string.h>
+/*
 
-#include <unistd.h>
-#include <errno.h>
-#include <dlfcn.h>
-#include <sys/stat.h>
+/usr/include/fcntl.h:34:5: note: previous declaration of 'open' was here
+   34 | int open(const char *, int, ...);
+   int openat(int, const char *, int, ...);
+
+*/
 
 FILE* fopen(const char *path, const char *mode)
 {
