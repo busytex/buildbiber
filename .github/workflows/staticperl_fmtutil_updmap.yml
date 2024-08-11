@@ -52,4 +52,4 @@ jobs:
           #strace -ff perl fmtutil.pl --help 
           
           cc -shared -fPIC log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
-          LD_PRELOAD=$PWD/log_file_access_dynamic.so strace-e trace=file,read,write,close perl -e 'use Cwd;'  #./staticperl_fmtutil_updmap fmtutil.pl --help 
+          LD_PRELOAD=$PWD/log_file_access_dynamic.so perl -e 'use Cwd;'  #./staticperl_fmtutil_updmap fmtutil.pl --help 
