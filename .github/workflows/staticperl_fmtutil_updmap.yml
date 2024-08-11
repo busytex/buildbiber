@@ -48,6 +48,7 @@ jobs:
         run: |
           git clone https://github.com/busytex/busyfs
           mv build/native/perl/prefix busyfs/dist-native
+          find busyfs/dist-native -name '*.so'
           cd busyfs
           python packfs.py -i dist-native -o packfs.h
           cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
@@ -58,7 +59,7 @@ jobs:
           #LD_PRELOAD=$PWD/log_file_access_dynamic.so perl -e 'use Cwd;'  #./staticperl_fmtutil_updmap fmtutil.pl --help 
           
           #LD_PRELOAD=$PWD/busyfs/packfs.so strace -ff -e trace=file,read,write,close perl -e 'open (FILE, "dist-native/lib/perl5/5.35.4/x86_64-linux/Cwd.pm"); print <FILE>;'
-          LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'open (FILE, "dist-native/lib/perl5/5.35.4/x86_64-linux/Cwd.pm"); print <FILE>;'
+          #LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'open (FILE, "dist-native/lib/perl5/5.35.4/x86_64-linux/Cwd.pm"); print <FILE>;'
           
-          LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4/x86_64-linux perl -e 'use Cwd;'
-          LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4/x86_64-linux strace -ff -e trace=file,read,write,close  -perl -e 'use Cwd;'
+          #LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux strace -ff -e trace=file,read,write,close  -perl -e 'use Cwd;'
+          LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux perl -e 'use Cwd;'
