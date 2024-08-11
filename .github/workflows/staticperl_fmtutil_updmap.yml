@@ -57,5 +57,6 @@ jobs:
           cc -shared -fPIC log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
           LD_PRELOAD=$PWD/log_file_access_dynamic.so perl -e 'use Cwd;'  #./staticperl_fmtutil_updmap fmtutil.pl --help 
           
+          LD_PRELOAD=$PWD/busyfs/packfs.so strace -ff -e trace=file,read,write,close perl -e 'open (FILE, "prefix/lib/perl5/5.35.4/x86_64-linux/Cwd.pm", "updmap.pl"); print <FILE>;'
+          LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'open (FILE, "prefix/lib/perl5/5.35.4/x86_64-linux/Cwd.pm", "updmap.pl"); print <FILE>;'
           nm $PWD/busyfs/packfs.so
-          LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=prefix strace -ff -e trace=file,read,write,close perl -e 'open (FILE, "prefix/lib/perl5/5.35.4/x86_64-linux/Cwd.pm", "updmap.pl"); print <FILE>;'
