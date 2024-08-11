@@ -49,7 +49,7 @@ jobs:
           git clone https://github.com/busytex/busyfs
           mv build/native/perl/prefix busyfs/dist-native
           cd busyfs
-          python packfs.py -i prefix -o packfs.h
+          python packfs.py -i dist-native -o packfs.h
           cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
           cd ..
 
