@@ -46,10 +46,16 @@ jobs:
       
       - name: Test Native Perl
         run: |
+          git clone https://github.com/busytex/busyfs
+          mv build/native/perl/prefix busyfs/prefix
+          cd busyfs
+          python packfs.py -i prefix -o packfs.h
+          cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
+          cd ..
+
           strace -ff -e trace=file,read,write,close perl -e 'use Cwd;' 
-          
-          #./staticperl_fmtutil_updmap fmtutil.pl --help || true
-          #strace -ff perl fmtutil.pl --help 
-          
           cc -shared -fPIC log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
           LD_PRELOAD=$PWD/log_file_access_dynamic.so perl -e 'use Cwd;'  #./staticperl_fmtutil_updmap fmtutil.pl --help 
+          
+          nm $PWD/busyfs/packfs.so
+          LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=prefix strace -ff -e trace=file,read,write,close perl -e 'open (FILE, "prefix/lib/perl5/5.35.4/x86_64-linux/Cwd.pm", "updmap.pl"); print <FILE>;'
