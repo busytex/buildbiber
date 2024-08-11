@@ -62,6 +62,7 @@ jobs:
           #LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'open (FILE, "dist-native/lib/perl5/5.35.4/x86_64-linux/Cwd.pm"); print <FILE>;'
           
           #LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux strace -ff -e trace=file,read,write,close  -perl -e 'use Cwd;'
+          export PERL_DL_DEBUG=1
           LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'use Cwd;'
           strace -ff -e trace=file,read,write,close  perl -e 'use Cwd;'
           echo FAIL
