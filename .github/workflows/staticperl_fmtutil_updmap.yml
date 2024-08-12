@@ -40,12 +40,13 @@ jobs:
           ld -r -b binary -o fmtutil.o fmtutil.pl
           ld -r -b binary -o updmap.o  updmap.pl
 
-          gcc -o staticperl_fmtutil_updmap staticperl_fmtutil_updmap.c fmtutil.o updmap.o -I$PWD/build/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
+          gcc -o staticperl_fmtutil_updmap staticperl_fmtutil_updmap.c fmtutil.o updmap.o -I$PWD/build/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE      -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib                         build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Cwd/Cwd.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm 
           ldd ./staticperl_fmtutil_updmap || true
           ./staticperl_fmtutil_updmap updmap.pl --help || true
       
       - name: Test Native Perl
         run: |
+          find build
           git clone https://github.com/busytex/busyfs
           mv build/native/perl/prefix busyfs/dist-native
           find busyfs/dist-native -name '*.a'
@@ -64,7 +65,7 @@ jobs:
           
           #LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux strace -ff -e trace=file,read,write,close  -perl -e 'use Cwd;'
           export PERL_DL_DEBUG=1
-          LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'use Cwd;'
-          strace -ff -e trace=file,read,write,close  perl -e 'use Cwd;'
+          LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'use Cwd;print(Cwd::cwd()."\n");'
+          strace -ff -e trace=file,read,write,close  perl -e 'use Cwd;print(Cwd::cwd()."\n");'
           #echo FAIL
-          #LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux perl -e 'use Cwd;'
+          LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux perl -e 'use Cwd;print(Cwd::cwd()."\n");'
