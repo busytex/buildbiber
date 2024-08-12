@@ -34,7 +34,7 @@ void xs_init         (pTHX)
 
     newXS("Fcntl::bootstrap", boot_Fcntl, file);
     newXS("IO::bootstrap", boot_IO, file);
-    newXS("Cwd::bootstrap", boot_IO, file);
+    newXS("Cwd::bootstrap", boot_Cwd, file);
     newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
 }
 ///////////////////////////////////////
