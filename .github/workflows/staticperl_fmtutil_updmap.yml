@@ -66,7 +66,7 @@ jobs:
           #LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux strace -ff -e trace=file,read,write,close  -perl -e 'use Cwd;'
           export PERL_DL_DEBUG=1
           echo RUN0
-          PERLLIB=busyfs/dist-native/lib/perl5/5.35.4:busyfs/dist-native/lib/perl5/5.35.4/x86_64-linux ./staticperl_fmtutil_updmap -e 'use Cwd;print(Cwd::cwd()."\n");'
+          PERLLIB=busyfs/dist-native/lib/perl5/5.35.4:busyfs/dist-native/lib/perl5/5.35.4/x86_64-linux strace -ff -e trace=file,read,write,close ./staticperl_fmtutil_updmap -e 'use Cwd;print(Cwd::cwd()."\n");'
           #echo RUN1
           #LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'use Cwd;print(Cwd::cwd()."\n");'
           #echo RUN2
