@@ -24,7 +24,7 @@ jobs:
           tar -xf source/$(basename $URLPERL) --strip-components=1 --directory=build/native/perl
           
           cd build/native/perl
-          sh ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -ldl -lm -lutil -lc"
+          sh ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl  Cwd Opcode re" -Dusedevel -Dlibs="-lpthread -ldl -lm -lutil -lc"
           make miniperl generate_uudmap
           make perl
           make install
@@ -65,5 +65,5 @@ jobs:
           export PERL_DL_DEBUG=1
           LD_PRELOAD=$PWD/busyfs/packfs.so perl -e 'use Cwd;'
           strace -ff -e trace=file,read,write,close  perl -e 'use Cwd;'
-          echo FAIL
-          LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux perl -e 'use Cwd;'
+          #echo FAIL
+          #LD_PRELOAD=$PWD/busyfs/packfs.so PERLLIB=dist-native/lib/perl5/5.35.4:dist-native/lib/perl5/5.35.4/x86_64-linux perl -e 'use Cwd;'
