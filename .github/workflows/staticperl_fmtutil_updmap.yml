@@ -54,6 +54,7 @@ jobs:
           cd busyfs
           python packfs.py -i dist-native -o packfs.h
           cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
+          find dist-native -name '*.o' -delete
           cd ..
 
           #strace -ff -e trace=file,read,write,close perl -e 'use Cwd;' 
