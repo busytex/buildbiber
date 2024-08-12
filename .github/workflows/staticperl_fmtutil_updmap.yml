@@ -52,6 +52,9 @@ jobs:
           find busyfs/dist-native -name '*.a'
           find busyfs/dist-native -name '*.so'
           cd busyfs
+          find dist-native -name '*.ld' -delete
+          find dist-native -name '*.a' -delete
+          find dist-native -name '*.h' -delete
           python packfs.py -i dist-native -o packfs.h
           cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
           find dist-native -name '*.o' -delete
