@@ -65,11 +65,15 @@ int main(int argc, char **argv)
         strncpy(script,    _binary_fmtutil_pl_start, iSize);
         script[iSize] = '\0';
     }
-    if(0 == strcmp("updmap.pl", argv[1]))
+    else if(0 == strcmp("updmap.pl", argv[1]))
     {
         int iSize = (int)(_binary_updmap_pl_end - _binary_updmap_pl_start);
         strncpy(script,    _binary_updmap_pl_start, iSize);
         script[iSize] = '\0';
+    }
+    else if(0 == strcmp("-e", argv[1]))
+    {
+        strcpy(script, argv[2]);
     }
 
     char *one_args[] = { "staticperl_fmtutil_updmap", "-e", script, "--", argv[2], NULL };
