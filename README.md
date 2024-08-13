@@ -25,6 +25,11 @@ TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config
 - https://github.com/Perl/perl5/compare/blead...haukex:emperl_v5.30.0
 - https://github.com/gh0stwizard/staticperl-modules/tree/master
 - https://github.com/haukex/emperl5/blob/emperl_v5.30.0/hints/emscripten.sh
+- https://github.com/Perl/perl5/blob/blead/perlio.h
+- https://github.com/Perl/perl5/blob/blead/perlio.c
+- https://github.com/Perl/perl5/blob/blead/fakesdio.h
+- https://github.com/Perl/perl5/blob/blead/iperlsys.h#L743-L797
+- https://stackoverflow.com/questions/69405351/embedding-perl-only-modules-along-with-embedded-perl-interpreter
 
 # References from wipbiber
 - https://stackoverflow.com/questions/1114789/how-can-i-convert-perl-to-c
