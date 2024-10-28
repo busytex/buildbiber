@@ -75,10 +75,10 @@
 + ./lib/auto/Cwd/Cwd.so
 + ./lib/auto/POSIX/POSIX.so
 
-# ./shlib/x86_64-linux/libcrypto.so.3
 # ./shlib/x86_64-linux/libexslt.so.0
-# ./shlib/x86_64-linux/libbtparse.so
-# ./shlib/x86_64-linux/libssl.so.3
 # ./shlib/x86_64-linux/libxslt.so.1
-# ./shlib/x86_64-linux/libz.so.1
 # ./shlib/x86_64-linux/libxml2.so.2
+# ./shlib/x86_64-linux/libz.so.1
+# ./shlib/x86_64-linux/libcrypto.so.3
+# ./shlib/x86_64-linux/libssl.so.3
+# ./shlib/x86_64-linux/libbtparse.so
